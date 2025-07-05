@@ -45,12 +45,7 @@ export const DATA = {
         icon: Icons.linkedin,
         navbar: true,
       },
-      X: {
-        name: "X",
-        url: "https://x.com/haileycheng",
-        icon: Icons.x,
-        navbar: true,
-      },
+
       email: {
         name: "Send Email",
         url: "mailto:heilcheng2-c@my.cityu.edu.hk",
@@ -60,7 +55,7 @@ export const DATA = {
     },
   },
 
-  work: [
+  technicalExperience: [
     {
       company: "Google DeepMind",
       href: "https://deepmind.com",
@@ -70,8 +65,10 @@ export const DATA = {
       logoUrl: "/deepmind.jpg",
       start: "May 2025",
       end: "Present",
-      description:
-        "Engineered a scalable model evaluation platform using Python, PyTorch, and Docker, which improved benchmarking efficiency by 15% and supported parallel execution across 5+ academic test suites (e.g., MMLU, HumanEval). Designed and deployed a fully automated CI/CD pipeline with GitHub Actions to enforce 95% unit test coverage, guaranteeing reproducible, production-ready builds for a system.",
+      bullets: [
+        "Engineered a scalable model evaluation platform using Python, PyTorch, and Docker, which improved benchmarking efficiency by 15% and supported parallel execution across 5+ academic test suites (e.g., MMLU, HumanEval)",
+        "Designed and deployed a fully automated CI/CD pipeline with GitHub Actions to enforce 95% unit test coverage, guaranteeing reproducible, production-ready builds for a system"
+      ],
     },
     {
       company: "Coglix.ai",
@@ -82,8 +79,10 @@ export const DATA = {
       logoUrl: "",
       start: "November 2024",
       end: "Present",
-      description:
-        "AI-driven speech practice analysis platform for stroke patients. Engineered an end-to-end speech analysis platform using Python, PyTorch, and NLP libraries (Transformers, Librosa) to extract 15+ acoustic and prosodic features for generating personalized therapeutic metrics. Trained a custom deep learning model to over 90% accuracy for phoneme-level error detection and deployed the system as a low-latency REST API (Flask, Docker), achieving a sub-300ms response time for real-time feedback.",
+      bullets: [
+        "Engineered an end-to-end speech analysis platform using Python, PyTorch, and NLP libraries (Transformers, Librosa) to extract 15+ acoustic and prosodic features for generating personalized therapeutic metrics",
+        "Trained a custom deep learning model to over 90% accuracy for phoneme-level error detection and deployed the system as a low-latency REST API (Flask, Docker), achieving a sub-300ms response time for real-time feedback"
+      ],
     },
     {
       company: "City University of Hong Kong",
@@ -94,8 +93,11 @@ export const DATA = {
       logoUrl: "",
       start: "September 2024",
       end: "Present",
-      description:
-        "Thesis: Hybrid ODE-Neural Network for Personalized Treatment Prediction. Engineered a multi-task deep learning model in Python and PyTorch as a computationally efficient surrogate for a complex 15-state ODE system, reducing prediction latency from hours to milliseconds. Designed the neural network (98% AUC, 91.7% accuracy) and developed an end-to-end MLOps pipeline for data generation (N=1,000), training, and validation, achieving an R² of 0.78 on regression tasks.",
+      bullets: [
+        "Thesis: Hybrid ODE-Neural Network for Personalized Treatment Prediction",
+        "Engineered a multi-task deep learning model in Python and PyTorch as a computationally efficient surrogate for a complex 15-state ODE system, reducing prediction latency from hours to milliseconds",
+        "Designed the neural network (98% AUC, 91.7% accuracy) and developed an end-to-end MLOps pipeline for data generation (N=1,000), training, and validation, achieving an R² of 0.78 on regression tasks"
+      ],
     },
   ],
   education: [
