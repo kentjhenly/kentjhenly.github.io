@@ -21,12 +21,26 @@ const Cube = ({ position, color }: CubeProps) => {
   );
 };
 
-const RubiksCubeScene = () => {
+// Component that uses useFrame hook (must be inside Canvas)
+const RotatingCubeGroup = ({ isSolving, children }: { isSolving: boolean; children: React.ReactNode }) => {
   const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current && !isSolving) {
+      // Gentle rotation when not solving
+      groupRef.current.rotation.y += 0.005;
+      groupRef.current.rotation.x += 0.002;
+    }
+  });
+
+  return <group ref={groupRef}>{children}</group>;
+};
+
+const RubiksCubeScene = () => {
   const [isSolving, setIsSolving] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const groupRef = useRef<THREE.Group>(null);
 
   // Rubik's cube colors
   const colors = {
@@ -47,14 +61,6 @@ const RubiksCubeScene = () => {
       }
     }
   }
-
-  useFrame(() => {
-    if (groupRef.current && !isSolving) {
-      // Gentle rotation when not solving
-      groupRef.current.rotation.y += 0.005;
-      groupRef.current.rotation.x += 0.002;
-    }
-  });
 
   // Simple mouse controls
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -106,7 +112,7 @@ const RubiksCubeScene = () => {
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
         
-        <group ref={groupRef}>
+        <RotatingCubeGroup isSolving={isSolving}>
           {/* Generate all 27 cubes */}
           {cubePositions.map((position, index) => {
             // Determine color based on position
@@ -124,7 +130,7 @@ const RubiksCubeScene = () => {
               <Cube key={index} position={position} color={color} />
             );
           })}
-        </group>
+        </RotatingCubeGroup>
       </Canvas>
       
       {/* Controls */}
