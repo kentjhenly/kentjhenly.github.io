@@ -33,6 +33,34 @@ To enable the GitHub contribution graph:
 4. **Update Username**:
    - In `src/app/page.tsx`, change the username in `<GitHubContributions username="your_username" />`
 
+### 3D Rubik's Cube Solver
+
+To customize the 3D Rubik's cube solver:
+
+1. **Install Dependencies** (if not already installed):
+   ```bash
+   npm install three @types/three @react-three/fiber @react-three/drei --legacy-peer-deps
+   ```
+
+2. **Customize the Solving Algorithm**:
+   - Open `src/components/rubiks-cube.tsx`
+   - Modify the `solvingSteps` array to add your own moves
+   - Example: `{ rotation: "R", axis: "y", angle: Math.PI / 2 }`
+
+3. **Change Cube Colors**:
+   - Update the `colors` object in the component
+   - Modify the color assignment logic in the cube generation loop
+
+4. **Adjust Animation Speed**:
+   - Change the `duration` value (currently 1000ms per move)
+   - Modify the `useFrame` rotation speed for idle animation
+
+5. **Add More Features**:
+   - Implement scramble functionality
+   - Add more complex solving algorithms (CFOP, Roux)
+   - Include sound effects for moves
+   - Add statistics tracking
+
 ## Tech Stack
 
 - Next.js 14
@@ -46,3 +74,4 @@ To enable the GitHub contribution graph:
 - MDX (for blog)
 - GitHub Actions (for deployment)
 - pnpm (package manager)
+
