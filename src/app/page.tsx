@@ -4,6 +4,7 @@ import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { ProjectCard } from "@/components/project-card";
 import { ResumeCard } from "@/components/resume-card";
 import { GitHubContributions } from "@/components/github-contributions";
+import { RubiksCube } from "@/components/rubiks-cube";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
@@ -138,6 +139,7 @@ export default function Page() {
         </div>
       </section>
       <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
+      <RubiksCube delay={BLUR_FADE_DELAY * 14} />
       <section id="hackathons">
         <div className="space-y-12 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 15}>

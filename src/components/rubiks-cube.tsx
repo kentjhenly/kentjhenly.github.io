@@ -1,7 +1,123 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 import BlurFade from "./magicui/blur-fade";
+
+interface CubeProps {
+  position: [number, number, number];
+  color: string;
+}
+
+const Cube = ({ position, color }: CubeProps) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <boxGeometry args={[0.9, 0.9, 0.9]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+};
+
+const RubiksCubeScene = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const [isSolving, setIsSolving] = useState(false);
+
+  // Rubik's cube colors
+  const colors = {
+    white: "#ffffff",
+    yellow: "#ffff00",
+    red: "#ff0000",
+    orange: "#ff8c00",
+    blue: "#0000ff",
+    green: "#00ff00",
+  };
+
+  // Define cube positions (3x3x3)
+  const cubePositions: [number, number, number][] = [];
+  for (let x = -1; x <= 1; x++) {
+    for (let y = -1; y <= 1; y++) {
+      for (let z = -1; z <= 1; z++) {
+        cubePositions.push([x, y, z]);
+      }
+    }
+  }
+
+  useFrame(() => {
+    if (groupRef.current && !isSolving) {
+      // Gentle rotation when not solving
+      groupRef.current.rotation.y += 0.005;
+      groupRef.current.rotation.x += 0.002;
+    }
+  });
+
+  const startSolving = () => {
+    setIsSolving(true);
+    // Simple solving animation
+    setTimeout(() => {
+      setIsSolving(false);
+    }, 3000);
+  };
+
+  const resetCube = () => {
+    setIsSolving(false);
+    if (groupRef.current) {
+      groupRef.current.rotation.set(0, 0, 0);
+    }
+  };
+
+  return (
+    <div className="w-full h-96 relative">
+      <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        
+        <group ref={groupRef}>
+          {/* Generate all 27 cubes */}
+          {cubePositions.map((position, index) => {
+            // Determine color based on position
+            let color = colors.white;
+            const [x, y, z] = position;
+            
+            if (z === 1) color = colors.blue;
+            else if (z === -1) color = colors.green;
+            else if (x === 1) color = colors.red;
+            else if (x === -1) color = colors.orange;
+            else if (y === 1) color = colors.yellow;
+            else if (y === -1) color = colors.white;
+            
+            return (
+              <Cube key={index} position={position} color={color} />
+            );
+          })}
+        </group>
+        
+        <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+      </Canvas>
+      
+      {/* Controls */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+        <button
+          onClick={startSolving}
+          disabled={isSolving}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+        >
+          {isSolving ? "Solving..." : "Solve"}
+        </button>
+        <button
+          onClick={resetCube}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
 
 interface RubiksCubeProps {
   delay?: number;
@@ -9,46 +125,10 @@ interface RubiksCubeProps {
 
 export const RubiksCube = ({ delay }: RubiksCubeProps) => {
   const [isClient, setIsClient] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  if (hasError) {
-    return (
-      <BlurFade delay={delay}>
-        <div className="space-y-12 w-full py-12">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                3D Rubik&apos;s Cube Solver.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Interactive 3D visualization of a Rubik&apos;s cube solving algorithm.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex justify-center">
-            <div className="bg-card border rounded-lg p-6 w-full max-w-2xl">
-              <div className="h-96 flex items-center justify-center text-center">
-                <div>
-                  <p className="text-red-500 mb-4">Failed to load 3D cube</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Reload Page
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </BlurFade>
-    );
-  }
 
   return (
     <BlurFade delay={delay}>
@@ -66,18 +146,7 @@ export const RubiksCube = ({ delay }: RubiksCubeProps) => {
         
         <div className="flex justify-center">
           <div className="bg-card border rounded-lg p-6 w-full max-w-2xl">
-            {isClient ? (
-              <div className="h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="mb-4">3D Cube Loading...</p>
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                </div>
-              </div>
-            ) : (
-              <div className="h-96 flex items-center justify-center">
-                <p>Loading 3D Cube...</p>
-              </div>
-            )}
+            {isClient ? <RubiksCubeScene /> : <div className="h-96 flex items-center justify-center">Loading 3D Cube...</div>}
           </div>
         </div>
       </div>
