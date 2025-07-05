@@ -91,13 +91,13 @@ const RubiksCubeScene = ({ delay = 0 }: RubiksCubeProps) => {
           const duration = 1000; // 1 second per move
           
           // Animate the rotation
-          const startRotation = groupRef.current.rotation[step.axis as keyof THREE.Euler];
+          const startRotation = groupRef.current.rotation[step.axis as keyof THREE.Euler] as number;
           const targetRotation = startRotation + step.angle;
           
           const animate = (progress: number) => {
             if (groupRef.current) {
               const currentRotation = startRotation + (targetRotation - startRotation) * progress;
-              groupRef.current.rotation[step.axis as keyof THREE.Euler] = currentRotation;
+              (groupRef.current.rotation as any)[step.axis] = currentRotation;
             }
           };
 
@@ -127,7 +127,7 @@ const RubiksCubeScene = ({ delay = 0 }: RubiksCubeProps) => {
         setIsSolving(false);
       }, 1000);
     }
-  }, [isSolving, currentStep]);
+  }, [isSolving, currentStep, solvingSteps]);
 
   return (
     <div className="w-full h-96 relative">
