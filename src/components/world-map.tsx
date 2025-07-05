@@ -29,13 +29,13 @@ interface WorldMapProps {
 export const WorldMap = ({ delay }: WorldMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+  const [position, setPosition] = useState({ coordinates: [0, 0] as [number, number], zoom: 1 });
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const handleMoveEnd = (position: any) => {
+  const handleMoveEnd = (position: { coordinates: [number, number]; zoom: number }) => {
     setPosition(position);
   };
 
