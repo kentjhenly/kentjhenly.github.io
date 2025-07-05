@@ -11,7 +11,7 @@ export const DATA = {
     "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems.",
   summary:
     "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems. Proven ability to deliver high-performance solutions demonstrated through projects at Google DeepMind and in a fast-paced startup environment. Proficient in Python, PyTorch, Docker, and MLOps.",
-  avatarUrl: "/me.png",
+  avatarUrl: "/me.jpeg",
   skills: [
     "Python",
     "PyTorch",
@@ -67,7 +67,7 @@ export const DATA = {
       badges: ["Remote"],
       location: "Remote",
       title: "Google Summer of Code Participant",
-      logoUrl: "/deepmind-logo.png",
+      logoUrl: "/deepmind.jpg",
       start: "May 2025",
       end: "Present",
       description:
@@ -79,7 +79,7 @@ export const DATA = {
       href: "https://coglix.ai",
       location: "Hong Kong",
       title: "Co-Founder & Machine Learning Engineer",
-      logoUrl: "/coglix-logo.png",
+      logoUrl: "",
       start: "November 2024",
       end: "Present",
       description:
@@ -91,7 +91,7 @@ export const DATA = {
       badges: ["Research"],
       location: "Hong Kong",
       title: "Undergraduate Researcher",
-      logoUrl: "/cityu-logo.png",
+      logoUrl: "",
       start: "September 2024",
       end: "Present",
       description:
@@ -103,7 +103,7 @@ export const DATA = {
       school: "City University of Hong Kong",
       href: "https://www.cityu.edu.hk",
       degree: "Bachelor of Science in Computing Mathematics (GREAT Stream), Minor in Computer Science",
-      logoUrl: "/cityu-logo.png",
+      logoUrl: "",
       start: "2023",
       end: "2027",
     },
@@ -111,7 +111,7 @@ export const DATA = {
       school: "University of California, Berkeley",
       href: "https://berkeley.edu",
       degree: "Exchange Student, Mathematics",
-      logoUrl: "/berkeley-logo.png",
+      logoUrl: "",
       start: "2024",
       end: "2024",
     },
