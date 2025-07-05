@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -52,12 +52,12 @@ const RubiksCubeScene = ({ delay = 0 }: RubiksCubeProps) => {
   }
 
   // Simple solving algorithm steps (R U R' U')
-  const solvingSteps = [
+  const solvingSteps = useMemo(() => [
     { rotation: "R", axis: "y", angle: Math.PI / 2 },
     { rotation: "U", axis: "x", angle: -Math.PI / 2 },
     { rotation: "R'", axis: "y", angle: -Math.PI / 2 },
     { rotation: "U'", axis: "x", angle: Math.PI / 2 },
-  ];
+  ], []);
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -191,6 +191,12 @@ const RubiksCubeScene = ({ delay = 0 }: RubiksCubeProps) => {
 };
 
 export const RubiksCube = ({ delay }: RubiksCubeProps) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <BlurFade delay={delay}>
       <div className="space-y-12 w-full py-12">
@@ -207,7 +213,7 @@ export const RubiksCube = ({ delay }: RubiksCubeProps) => {
         
         <div className="flex justify-center">
           <div className="bg-card border rounded-lg p-6 w-full max-w-2xl">
-            <RubiksCubeScene />
+            {isClient ? <RubiksCubeScene /> : <div className="h-96 flex items-center justify-center">Loading 3D Cube...</div>}
           </div>
         </div>
       </div>
