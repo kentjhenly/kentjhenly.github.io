@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import BlurFade from "./magicui/blur-fade";
 
@@ -25,6 +24,9 @@ const Cube = ({ position, color }: CubeProps) => {
 const RubiksCubeScene = () => {
   const groupRef = useRef<THREE.Group>(null);
   const [isSolving, setIsSolving] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
   // Rubik's cube colors
   const colors = {
@@ -54,6 +56,28 @@ const RubiksCubeScene = () => {
     }
   });
 
+  // Simple mouse controls
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setLastMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && groupRef.current) {
+      const deltaX = e.clientX - lastMousePosition.x;
+      const deltaY = e.clientY - lastMousePosition.y;
+      
+      groupRef.current.rotation.y += deltaX * 0.01;
+      groupRef.current.rotation.x += deltaY * 0.01;
+      
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const startSolving = () => {
     setIsSolving(true);
     // Simple solving animation
@@ -70,7 +94,13 @@ const RubiksCubeScene = () => {
   };
 
   return (
-    <div className="w-full h-96 relative">
+    <div 
+      className="w-full h-96 relative cursor-grab active:cursor-grabbing"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
@@ -95,8 +125,6 @@ const RubiksCubeScene = () => {
             );
           })}
         </group>
-        
-        <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
       </Canvas>
       
       {/* Controls */}
