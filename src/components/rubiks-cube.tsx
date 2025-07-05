@@ -22,13 +22,11 @@ const Cube = ({ position, color }: CubeProps) => {
 };
 
 // Component that uses useFrame hook (must be inside Canvas)
-const RotatingCubeGroup = ({ isSolving, children, onGroupRef }: { 
+const RotatingCubeGroup = ({ isSolving, children, groupRef }: { 
   isSolving: boolean; 
   children: React.ReactNode;
-  onGroupRef: (ref: THREE.Group | null) => void;
+  groupRef: React.RefObject<THREE.Group>;
 }) => {
-  const groupRef = useRef<THREE.Group>(null);
-
   useFrame(() => {
     if (groupRef.current && !isSolving) {
       // Gentle rotation when not solving
@@ -36,11 +34,6 @@ const RotatingCubeGroup = ({ isSolving, children, onGroupRef }: {
       groupRef.current.rotation.x += 0.002;
     }
   });
-
-  // Pass the ref to parent component
-  useEffect(() => {
-    onGroupRef(groupRef.current);
-  }, [onGroupRef]);
 
   return <group ref={groupRef}>{children}</group>;
 };
@@ -138,7 +131,7 @@ const RubiksCubeScene = () => {
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
         
-        <RotatingCubeGroup isSolving={isSolving} onGroupRef={(ref) => { groupRef.current = ref; }}>
+        <RotatingCubeGroup isSolving={isSolving} groupRef={groupRef}>
           {/* Generate all 27 cubes */}
           {cubePositions.map((position, index) => {
             // Determine color based on position
