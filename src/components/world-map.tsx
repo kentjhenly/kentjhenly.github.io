@@ -148,7 +148,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 maxZoom={4}
                 minZoom={1}
               >
-                <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@3/countries-110m.json">
+                <Geographies geography="/world-countries.json">
                   {({ geographies }) =>
                     geographies.map((geo) => {
                       const isVisited = visitedCountries.includes(geo.properties.ISO_A3);
