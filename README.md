@@ -1,11 +1,12 @@
 # Hailey Cheng - Portfolio
 
-Personal portfolio website built with Next.js, showcasing my work in AI/ML, software engineering, and research experience.
+Personal portfolio website built with Next.js, showcasing my work in AI/ML, mathematical biology research, and software engineering experience.
 
 ## 🚀 Features
 
 - **Modern Design**: Clean, responsive design with dark/light mode
 - **AI/ML Focus**: Highlighting experience at Google DeepMind and Coglix.ai
+- **Research Showcase**: Mathematical biology and AI in biomedicine projects
 - **Interactive Elements**: Smooth animations and transitions
 - **Blog Support**: MDX-based blog system
 - **GitHub Pages Ready**: Optimized for static hosting
@@ -14,6 +15,7 @@ Personal portfolio website built with Next.js, showcasing my work in AI/ML, soft
 
 - **Framework**: Next.js 14
 - **Styling**: Tailwind CSS
+- **UI Components**: Shadcn/UI, Magic UI
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Deployment**: GitHub Pages
@@ -40,13 +42,14 @@ pnpm dev
 
 ## 🚀 Deployment
 
-### GitHub Pages (Recommended)
+### GitHub Pages (Modified for Static Export)
 
-This project is configured for automatic deployment to GitHub Pages:
+This project has been modified from the original Vercel-optimized template to work with GitHub Pages:
 
-1. **Push to main branch**: The GitHub Actions workflow will automatically build and deploy your site
-2. **Enable GitHub Pages**: Go to your repository settings → Pages → Source: Deploy from a branch → gh-pages branch
-3. **Your site will be available at**: `https://heilcheng.github.io`
+1. **Static Export**: Configured Next.js for static site generation
+2. **GitHub Actions**: Automated build and deployment workflow
+3. **Base Path**: Optimized for GitHub Pages URL structure
+4. **Image Handling**: Unoptimized images for static hosting compatibility
 
 ### Manual Build
 
@@ -62,10 +65,9 @@ The static files will be generated in the `out/` directory.
 
 Edit `src/data/resume.tsx` to update:
 - Personal details
-- Work experience
+- Technical experience
 - Education
 - Projects
-- Skills
 - Contact information
 
 ### Add Blog Posts
@@ -92,6 +94,16 @@ Edit `src/data/resume.tsx` to update:
 ├── public/              # Static assets
 └── .github/workflows/   # GitHub Actions
 ```
+
+## 🔧 Modifications from Original Template
+
+This portfolio is based on a Next.js template but has been significantly modified for GitHub Pages deployment:
+
+- **Static Export**: Added `output: 'export'` configuration
+- **GitHub Actions**: Custom deployment workflow for GitHub Pages
+- **Base Path**: Configured for GitHub Pages URL structure
+- **Image Optimization**: Disabled for static hosting compatibility
+- **Content**: Completely customized with personal information and projects
 
 ## 🤝 Contributing
 
