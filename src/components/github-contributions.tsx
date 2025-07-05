@@ -103,9 +103,9 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
     }
 
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex gap-1">
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex gap-1">
+          <div key={weekIndex} className="flex flex-col gap-1">
             {week.map((day, dayIndex) => (
               <div
                 key={dayIndex}
