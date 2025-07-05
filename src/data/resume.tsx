@@ -210,59 +210,84 @@ export const DATA = {
   ],
   books: [
     {
-      title: "The Watching Brief",
-      author: "Margaret Ng Ngoi Yee",
-      number: 1,
+      theme: "Political Philosophy & Social Theory",
+      books: [
+        {
+          title: "The Social Contract",
+          author: "Jean-Jacques Rousseau",
+          number: 1,
+        },
+        {
+          title: "On Liberty",
+          author: "John Stuart Mill",
+          number: 2,
+        },
+        {
+          title: "Distinction: A Social Critique of the Judgement of Taste",
+          author: "Pierre Bourdieu",
+          number: 3,
+        },
+        {
+          title: "The Spirit of the Laws",
+          author: "Montesquieu",
+          number: 4,
+        },
+      ],
     },
     {
-      title: "Distinction: A Social Critique of the Judgement of Taste",
-      author: "Pierre Bourdieu",
-      number: 2,
+      theme: "Contemporary Philosophy",
+      books: [
+        {
+          title: "Agonie des Eros",
+          author: "Byung-Chul Han",
+          number: 5,
+        },
+        {
+          title: "Thus Spoke Zarathustra",
+          author: "Friedrich Nietzsche",
+          number: 6,
+        },
+      ],
     },
     {
-      title: "Agonie des Eros",
-      author: "Byung-Chul Han",
-      number: 3,
+      theme: "History & Global Affairs",
+      books: [
+        {
+          title: "A Concise History of Hong Kong",
+          author: "John M. Carroll",
+          number: 7,
+        },
+        {
+          title: "Understanding Global Conflict and Cooperation",
+          author: "David A. Welch and Joseph S. Nye, Jr.",
+          number: 8,
+        },
+      ],
     },
     {
-      title: "The Social Contract",
-      author: "Jean-Jacques Rousseau",
-      number: 4,
+      theme: "Digital Life & Privacy",
+      books: [
+        {
+          title: "The Art of Invisibility",
+          author: "Kevin Mitnick",
+          number: 9,
+        },
+        {
+          title: "Digital Minimalism",
+          author: "Cal Newport",
+          number: 10,
+        },
+      ],
     },
     {
-      title: "The Spirit of the Laws",
-      author: "Montesquieu",
-      number: 5,
-    },
-    {
-      title: "The Art of Invisibility",
-      author: "Kevin Mitnick",
-      number: 6,
-    },
-    {
-      title: "A Concise History of Hong Kong",
-      author: "John M. Carroll",
-      number: 7,
-    },
-    {
-      title: "Understanding Global Conflict and Cooperation",
-      author: "David A. Welch and Joseph S. Nye, Jr.",
-      number: 8,
-    },
-    {
-      title: "On Liberty",
-      author: "John Stuart Mill",
-      number: 9,
-    },
-    {
-      title: "Digital Minimalism",
-      author: "Cal Newport",
-      number: 10,
-    },
-    {
-      title: "Thus Spoke Zarathustra",
-      author: "Friedrich Nietzsche",
-      number: 11,
+      theme: "Memoir & Personal Reflections",
+      books: [
+        {
+          title: "The Watching Brief",
+          author: "Margaret Ng Ngoi Yee",
+          number: 11,
+        },
+      ],
     },
   ],
 } as const;

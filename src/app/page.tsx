@@ -149,26 +149,37 @@ export default function Page() {
                   Commonplace Book.
                 </h2>
                 <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Authentic way for others to understand what shapes my thinking.
+                  A personal collection of readings and ideas that shape my worldview.
                 </p>
               </div>
             </div>
           </BlurFade>
           <BlurFade delay={BLUR_FADE_DELAY * 16}>
-            <ul className="mb-4 ml-4 divide-y divide-dashed border-l">
-              {DATA.books.map((book, id) => (
-                <BlurFade
-                  key={book.title + book.author}
-                  delay={BLUR_FADE_DELAY * 17 + id * 0.05}
-                >
-                  <BookCard
-                    title={book.title}
-                    author={book.author}
-                    number={book.number}
-                  />
-                </BlurFade>
+            <div className="space-y-8">
+              {DATA.books.map((themeGroup, themeId) => (
+                <div key={themeGroup.theme} className="space-y-4">
+                  <BlurFade delay={BLUR_FADE_DELAY * 17 + themeId * 0.1}>
+                    <h3 className="text-lg font-semibold text-muted-foreground">
+                      {themeGroup.theme}
+                    </h3>
+                  </BlurFade>
+                  <ul className="mb-4 ml-4 divide-y divide-dashed border-l">
+                    {themeGroup.books.map((book, bookId) => (
+                      <BlurFade
+                        key={book.title + book.author}
+                        delay={BLUR_FADE_DELAY * 18 + themeId * 0.1 + bookId * 0.05}
+                      >
+                        <BookCard
+                          title={book.title}
+                          author={book.author}
+                          number={book.number}
+                        />
+                      </BlurFade>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </div>
           </BlurFade>
         </div>
       </section>

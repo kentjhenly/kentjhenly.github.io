@@ -1,4 +1,19 @@
-This portfolio is a modified version of [dillionverma/portfolio](https://github.com/dillionverma/portfolio).
+🏛️ Political Philosophy & Social Theory
+The Social Contract — Jean-Jacques Rousseau
+On Liberty — John Stuart Mill
+Distinction: A Social Critique of the Judgement of Taste — Pierre Bourdieu
+The Spirit of the Laws — Montesquieu
+💭 Contemporary Philosophy
+Agonie des Eros — Byung-Chul Han
+Thus Spoke Zarathustra — Friedrich Nietzsche
+🌏 History & Global Affairs
+A Concise History of Hong Kong — John M. Carroll
+Understanding Global Conflict and Cooperation — David A. Welch and Joseph S. Nye, Jr.
+💻 Digital Life & Privacy
+The Art of Invisibility — Kevin Mitnick
+Digital Minimalism — Cal Newport
+✍️ Memoir & Personal Reflections
+The Watching Brief — Margaret Ng Ngoi YeeThis portfolio is a modified version of [dillionverma/portfolio](https://github.com/dillionverma/portfolio).
 
 Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and now fixed to be deployable on GitHub Pages.
 
