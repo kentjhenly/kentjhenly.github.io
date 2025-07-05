@@ -8,9 +8,9 @@ export const DATA = {
   location: "Hong Kong",
   locationLink: "https://www.google.com/maps/place/hongkong",
   description:
-    "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems.",
+    "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems. I am also a researcher in the field of mathematical biology and AI in biomedicine.",
   summary:
-    "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems. Proven ability to deliver high-performance solutions demonstrated through projects at Google DeepMind and in a fast-paced startup environment. Proficient in Python, PyTorch, Docker, and MLOps.",
+    "I'm a curious human who builds things at the crossroads of math, code, and biology. When I'm not deep in code or wrestling with equations, you'll find me stargazing, kayaking, or on a mission to discover the next best bowl of ramen or plate of handmade pasta (I've probably tried every spot in Hong Kong). As for boba? My forever choice is \"No.1\" at Comebuytea.",
   avatarUrl: "/me.jpeg",
   skills: [
     "Python",
@@ -120,7 +120,7 @@ export const DATA = {
     {
       school: "Pearson Edexcel International A-Levels",
       href: "https://qualifications.pearson.com",
-      degree: "3A* in Mathematics, Biology, Economics",
+      degree: "3A* in Mathematics, Biology, Economics • Received offers from HKU, CUHK, KCL and Manchester",
       logoUrl: "/pearson.jpeg",
       start: "2022",
       end: "2023",
