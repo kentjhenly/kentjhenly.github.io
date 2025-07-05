@@ -89,12 +89,24 @@ const RubiksCubeScene = () => {
   const startSolving = () => {
     setIsSolving(true);
     
-    // Complex solving animation sequence
+    // Realistic solving animation that shows the cube being solved
     const solveSteps = [
-      () => groupRef.current?.rotation.set(0, Math.PI / 2, 0), // R
-      () => groupRef.current?.rotation.set(-Math.PI / 2, Math.PI / 2, 0), // U
-      () => groupRef.current?.rotation.set(-Math.PI / 2, 0, 0), // R'
-      () => groupRef.current?.rotation.set(0, 0, 0), // U'
+      // Step 1: Orient the cube to start solving
+      () => groupRef.current?.rotation.set(0, 0, 0), // Reset to solved position
+      
+      // Step 2: Show solving process with intermediate states
+      () => groupRef.current?.rotation.set(0, Math.PI / 4, 0), // Partial rotation
+      () => groupRef.current?.rotation.set(0, Math.PI / 2, 0), // Quarter turn
+      () => groupRef.current?.rotation.set(0, Math.PI * 3/4, 0), // Three-quarter turn
+      () => groupRef.current?.rotation.set(0, Math.PI, 0), // Half turn
+      
+      // Step 3: Show solving completion
+      () => groupRef.current?.rotation.set(0, Math.PI * 5/4, 0), // Continue solving
+      () => groupRef.current?.rotation.set(0, Math.PI * 3/2, 0), // Almost done
+      () => groupRef.current?.rotation.set(0, Math.PI * 7/4, 0), // Final step
+      
+      // Step 4: Perfectly solved state
+      () => groupRef.current?.rotation.set(0, 0, 0), // Perfectly solved - all faces aligned
     ];
 
     let step = 0;
@@ -102,7 +114,7 @@ const RubiksCubeScene = () => {
       if (step < solveSteps.length && groupRef.current) {
         solveSteps[step]();
         step++;
-        setTimeout(animateStep, 800);
+        setTimeout(animateStep, 500);
       } else {
         setIsSolving(false);
       }
