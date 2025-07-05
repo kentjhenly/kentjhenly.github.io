@@ -131,7 +131,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
               My GitHub Activity.
             </h2>
             <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Here's my contribution graph showing my coding activity over the past year.
+              Here&apos;s my contribution graph showing my coding activity over the past year.
             </p>
           </div>
         </div>
