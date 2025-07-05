@@ -208,36 +208,61 @@ export const DATA = {
       video: "",
     },
   ],
-  hackathons: [
+  books: [
     {
-      title: "Hong Kong Techathon+ 2025",
-      dates: "2025",
-      location: "Hong Kong",
-      description:
-        "Achieved Merit in Hong Kong Techathon+ 2025, demonstrating excellence in innovative technology solutions.",
-      image: "",
-      win: "Merit",
-      links: [],
+      title: "The Watching Brief",
+      author: "Margaret Ng Ngoi Yee",
+      number: 1,
     },
     {
-      title: "GenAI Hackathon for SDGs",
-      dates: "2024",
-      location: "Hong Kong",
-      description:
-        "Finalist in GenAI Hackathon for SDGs, organized by HKU, CityUHK, HKBU and HKUST, focusing on sustainable development goals through AI innovation.",
-      image: "",
-      win: "Finalist",
-      links: [],
+      title: "Distinction: A Social Critique of the Judgement of Taste",
+      author: "Pierre Bourdieu",
+      number: 2,
     },
     {
-      title: "Hong Kong Techathon+ 2024",
-      dates: "2024",
-      location: "Hong Kong",
-      description:
-        "Finalist in Hong Kong Techathon+ 2024, showcasing technical skills and innovative thinking in a competitive environment.",
-      image: "",
-      win: "Finalist",
-      links: [],
+      title: "Agonie des Eros",
+      author: "Byung-Chul Han",
+      number: 3,
+    },
+    {
+      title: "The Social Contract",
+      author: "Jean-Jacques Rousseau",
+      number: 4,
+    },
+    {
+      title: "The Spirit of the Laws",
+      author: "Montesquieu",
+      number: 5,
+    },
+    {
+      title: "The Art of Invisibility",
+      author: "Kevin Mitnick",
+      number: 6,
+    },
+    {
+      title: "A Concise History of Hong Kong",
+      author: "John M. Carroll",
+      number: 7,
+    },
+    {
+      title: "Understanding Global Conflict and Cooperation",
+      author: "David A. Welch and Joseph S. Nye, Jr.",
+      number: 8,
+    },
+    {
+      title: "On Liberty",
+      author: "John Stuart Mill",
+      number: 9,
+    },
+    {
+      title: "Digital Minimalism",
+      author: "Cal Newport",
+      number: 10,
+    },
+    {
+      title: "Thus Spoke Zarathustra",
+      author: "Friedrich Nietzsche",
+      number: 11,
     },
   ],
 } as const;
