@@ -59,7 +59,7 @@ export const DATA = {
     {
       company: "Google DeepMind",
       href: "https://deepmind.com",
-      badges: ["Remote"],
+      badges: [],
       location: "Remote",
       title: "Google Summer of Code Participant",
       logoUrl: "/deepmind.jpg",
@@ -72,7 +72,7 @@ export const DATA = {
     },
     {
       company: "Coglix.ai",
-      badges: ["Co-Founder"],
+      badges: [],
       href: "https://coglix.ai",
       location: "Hong Kong",
       title: "Co-Founder & Machine Learning Engineer",
@@ -87,7 +87,7 @@ export const DATA = {
     {
       company: "City University of Hong Kong",
       href: "https://www.cityu.edu.hk",
-      badges: ["Research"],
+      badges: [],
       location: "Hong Kong",
       title: "Undergraduate Researcher",
       logoUrl: "/cityuhk.jpg",
@@ -120,7 +120,7 @@ export const DATA = {
     {
       school: "Pearson Edexcel International A-Levels",
       href: "https://qualifications.pearson.com",
-      degree: "3A* in Mathematics, Biology, Economics • Received offers from HKU, CUHK, KCL and Manchester",
+      degree: "3A* in Mathematics, Biology, Economics\nReceived offers from HKU, CUHK, KCL and Manchester",
       logoUrl: "/pearson.jpeg",
       start: "2022",
       end: "2023",
