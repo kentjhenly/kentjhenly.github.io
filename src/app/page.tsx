@@ -1,4 +1,5 @@
 import { BookCard } from "@/components/book-card";
+import { WorldMap } from "@/components/world-map";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { ProjectCard } from "@/components/project-card";
@@ -139,10 +140,11 @@ export default function Page() {
         </div>
       </section>
       <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
-      <RubiksCube delay={BLUR_FADE_DELAY * 14} />
+      <WorldMap delay={BLUR_FADE_DELAY * 14} />
+      <RubiksCube delay={BLUR_FADE_DELAY * 15} />
       <section id="books">
         <div className="space-y-12 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 15}>
+          <BlurFade delay={BLUR_FADE_DELAY * 16}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -154,11 +156,11 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 16}>
+          <BlurFade delay={BLUR_FADE_DELAY * 17}>
             <div className="space-y-8">
               {DATA.books.map((themeGroup, themeId) => (
                 <div key={themeGroup.theme} className="space-y-4">
-                  <BlurFade delay={BLUR_FADE_DELAY * 17 + themeId * 0.1}>
+                  <BlurFade delay={BLUR_FADE_DELAY * 18 + themeId * 0.1}>
                     <h3 className="text-lg font-semibold text-muted-foreground">
                       {themeGroup.theme}
                     </h3>
@@ -167,7 +169,7 @@ export default function Page() {
                     {themeGroup.books.map((book, bookId) => (
                       <BlurFade
                         key={book.title + book.author}
-                        delay={BLUR_FADE_DELAY * 18 + themeId * 0.1 + bookId * 0.05}
+                        delay={BLUR_FADE_DELAY * 19 + themeId * 0.1 + bookId * 0.05}
                       >
                         <BookCard
                           title={book.title}
@@ -185,7 +187,7 @@ export default function Page() {
       </section>
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 18}>
+          <BlurFade delay={BLUR_FADE_DELAY * 20}>
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                 Get in Touch.
