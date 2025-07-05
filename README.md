@@ -4,8 +4,14 @@ This portfolio is a modified version of [dillionverma/portfolio](https://github.
 
 Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and now optimized for GitHub Pages deployment.
 
+Includes:
+- An interactive world map to highlight countries I've visited
+- A real-time GitHub contribution graph
+- An interactive 3D Rubik's Cube
+
 ## ✨ Features
 
+- **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
 - **GitHub Contribution Graph**: Real-time GitHub activity visualization
 - **Interactive 3D Rubik's Cube**: Built with Three.js and React Three Fiber
 - **Responsive Design**: Optimized for all devices
@@ -39,6 +45,12 @@ pnpm dev
 ```
 
 ## ⚙️ Configuration
+
+### World Map
+
+- The map uses a local GeoJSON file: `public/world-countries.json`.
+- To highlight countries, edit the `visitedCountries` array in `src/components/world-map.tsx` and add the ISO A3 codes (e.g., "USA", "CHN").
+- You can update the GeoJSON file if you want to use a different map or add more features.
 
 ### GitHub Contribution Graph
 
