@@ -8,9 +8,11 @@ import BlurFade from "./magicui/blur-fade";
 interface CubeProps {
   position: [number, number, number];
   color: string;
+  id: number;
+  isAnimating?: boolean;
 }
 
-const Cube = ({ position, color }: CubeProps) => {
+const Cube = ({ position, color, id, isAnimating }: CubeProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   return (
@@ -43,6 +45,8 @@ const RubiksCubeScene = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const groupRef = useRef<THREE.Group>(null);
+  const [isSolved, setIsSolved] = useState(false);
+  const [cubeStates, setCubeStates] = useState<{ [key: string]: string }>({});
 
   // Rubik's cube colors
   const colors = {
@@ -89,24 +93,83 @@ const RubiksCubeScene = () => {
   const startSolving = () => {
     setIsSolving(true);
     
-    // Realistic solving animation that shows the cube being solved
+    // Create a scrambled state first
+    const scrambledStates: { [key: string]: string } = {};
+    cubePositions.forEach((position, index) => {
+      const key = `${position[0]},${position[1]},${position[2]}`;
+      // Randomly assign colors to create a scrambled state
+      const colorKeys = Object.keys(colors);
+      const randomColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+      scrambledStates[key] = colors[randomColor as keyof typeof colors];
+    });
+    
+    setCubeStates(scrambledStates);
+    
+    // Animation sequence that shows solving process
     const solveSteps = [
-      // Step 1: Orient the cube to start solving
-      () => groupRef.current?.rotation.set(0, 0, 0), // Reset to solved position
-      
-      // Step 2: Show solving process with intermediate states
-      () => groupRef.current?.rotation.set(0, Math.PI / 4, 0), // Partial rotation
-      () => groupRef.current?.rotation.set(0, Math.PI / 2, 0), // Quarter turn
-      () => groupRef.current?.rotation.set(0, Math.PI * 3/4, 0), // Three-quarter turn
-      () => groupRef.current?.rotation.set(0, Math.PI, 0), // Half turn
-      
-      // Step 3: Show solving completion
-      () => groupRef.current?.rotation.set(0, Math.PI * 5/4, 0), // Continue solving
-      () => groupRef.current?.rotation.set(0, Math.PI * 3/2, 0), // Almost done
-      () => groupRef.current?.rotation.set(0, Math.PI * 7/4, 0), // Final step
-      
-      // Step 4: Perfectly solved state
-      () => groupRef.current?.rotation.set(0, 0, 0), // Perfectly solved - all faces aligned
+      // Step 1: Start solving - show some pieces being corrected
+      () => {
+        groupRef.current?.rotation.set(0, Math.PI / 6, 0);
+        // Fix some edge pieces
+        const partialSolve = { ...scrambledStates };
+        cubePositions.forEach((position) => {
+          const key = `${position[0]},${position[1]},${position[2]}`;
+          const [x, y, z] = position;
+          // Start fixing the white face
+          if (y === -1) {
+            partialSolve[key] = colors.white;
+          }
+        });
+        setCubeStates(partialSolve);
+      },
+      // Step 2: Continue solving - fix more faces
+      () => {
+        groupRef.current?.rotation.set(0, Math.PI / 3, 0);
+        const moreSolved = { ...scrambledStates };
+        cubePositions.forEach((position) => {
+          const key = `${position[0]},${position[1]},${position[2]}`;
+          const [x, y, z] = position;
+          // Fix white and yellow faces
+          if (y === -1) moreSolved[key] = colors.white;
+          if (y === 1) moreSolved[key] = colors.yellow;
+        });
+        setCubeStates(moreSolved);
+      },
+      // Step 3: Almost solved - fix most faces
+      () => {
+        groupRef.current?.rotation.set(0, Math.PI / 2, 0);
+        const almostSolved = { ...scrambledStates };
+        cubePositions.forEach((position) => {
+          const key = `${position[0]},${position[1]},${position[2]}`;
+          const [x, y, z] = position;
+          // Fix all faces except one
+          if (y === -1) almostSolved[key] = colors.white;
+          if (y === 1) almostSolved[key] = colors.yellow;
+          if (x === 1) almostSolved[key] = colors.red;
+          if (x === -1) almostSolved[key] = colors.orange;
+          if (z === 1) almostSolved[key] = colors.blue;
+        });
+        setCubeStates(almostSolved);
+      },
+      // Step 4: Perfectly solved
+      () => {
+        groupRef.current?.rotation.set(0, 0, 0);
+        const perfectlySolved: { [key: string]: string } = {};
+        cubePositions.forEach((position) => {
+          const key = `${position[0]},${position[1]},${position[2]}`;
+          const [x, y, z] = position;
+          // Perfectly solved state
+          if (z === 1) perfectlySolved[key] = colors.blue;
+          else if (z === -1) perfectlySolved[key] = colors.green;
+          else if (x === 1) perfectlySolved[key] = colors.red;
+          else if (x === -1) perfectlySolved[key] = colors.orange;
+          else if (y === 1) perfectlySolved[key] = colors.yellow;
+          else if (y === -1) perfectlySolved[key] = colors.white;
+          else perfectlySolved[key] = colors.white; // Center pieces
+        });
+        setCubeStates(perfectlySolved);
+        setIsSolved(true);
+      },
     ];
 
     let step = 0;
@@ -114,7 +177,7 @@ const RubiksCubeScene = () => {
       if (step < solveSteps.length && groupRef.current) {
         solveSteps[step]();
         step++;
-        setTimeout(animateStep, 500);
+        setTimeout(animateStep, 1000);
       } else {
         setIsSolving(false);
       }
@@ -125,6 +188,8 @@ const RubiksCubeScene = () => {
 
   const resetCube = () => {
     setIsSolving(false);
+    setIsSolved(false);
+    setCubeStates({});
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
     }
@@ -146,19 +211,26 @@ const RubiksCubeScene = () => {
         <RotatingCubeGroup isSolving={isSolving} groupRef={groupRef}>
           {/* Generate all 27 cubes */}
           {cubePositions.map((position, index) => {
-            // Determine color based on position
-            let color = colors.white;
+            const key = `${position[0]},${position[1]},${position[2]}`;
             const [x, y, z] = position;
             
-            if (z === 1) color = colors.blue;
-            else if (z === -1) color = colors.green;
-            else if (x === 1) color = colors.red;
-            else if (x === -1) color = colors.orange;
-            else if (y === 1) color = colors.yellow;
-            else if (y === -1) color = colors.white;
+            // Use custom state if available, otherwise use default solved state
+            let color = colors.white;
+            if (Object.keys(cubeStates).length > 0) {
+              // Use the solving animation state
+              color = cubeStates[key] || colors.white;
+            } else {
+              // Default solved state
+              if (z === 1) color = colors.blue;
+              else if (z === -1) color = colors.green;
+              else if (x === 1) color = colors.red;
+              else if (x === -1) color = colors.orange;
+              else if (y === 1) color = colors.yellow;
+              else if (y === -1) color = colors.white;
+            }
             
             return (
-              <Cube key={index} position={position} color={color} />
+              <Cube key={index} position={position} color={color} id={index} />
             );
           })}
         </RotatingCubeGroup>
