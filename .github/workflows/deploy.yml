@@ -41,6 +41,8 @@ jobs:
       
     - name: Build
       run: pnpm build
+      env:
+        NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
