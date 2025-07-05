@@ -12,19 +12,7 @@ export const DATA = {
   summary:
     "I'm a curious human who builds things at the crossroads of math, code, and biology. When I'm not deep in code or wrestling with equations, you'll find me stargazing, kayaking, or on a mission to discover the next best bowl of ramen or plate of handmade pasta (I've probably tried every spot in Hong Kong). As for boba? My forever choice is \"No.1\" at Comebuytea.",
   avatarUrl: "/me.jpeg",
-  skills: [
-    "Python",
-    "PyTorch",
-    "Docker",
-    "MLOps",
-    "TensorFlow",
-    "Flask",
-    "Next.js",
-    "JavaScript",
-    "MySQL",
-    "Git",
-    "Linux",
-  ],
+
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
@@ -128,23 +116,22 @@ export const DATA = {
   ],
   projects: [
     {
-      title: "High-Performance Benchmarking & Evaluation Suite",
-      href: "https://github.com/your-repo",
-      dates: "May 2025 - Present",
+      title: "MEQ-Bench",
+      href: "https://github.com/heilcheng/MEQ-Bench",
+      dates: "2024 - Present",
       active: true,
       description:
-        "Engineered a scalable model evaluation platform using Python, PyTorch, and Docker, which improved benchmarking efficiency by 15% and supported parallel execution across 5+ academic test suites (e.g., MMLU, HumanEval). Designed and deployed a fully automated CI/CD pipeline with GitHub Actions to enforce 95% unit test coverage.",
+        "The first benchmark designed to evaluate an LLM's ability to generate audience-adaptive medical explanations for diverse stakeholders, including physicians, nurses, and patients.",
       technologies: [
         "Python",
-        "PyTorch",
-        "Docker",
-        "GitHub Actions",
-        "CI/CD",
+        "LLM",
+        "Medical AI",
+        "Benchmarking",
       ],
       links: [
         {
           type: "Source",
-          href: "https://github.com/your-repo",
+          href: "https://github.com/heilcheng/MEQ-Bench",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -152,23 +139,68 @@ export const DATA = {
       video: "",
     },
     {
-      title: "MEQ-Bench - Resource-Efficient Medical AI Evaluation",
-      href: "https://github.com/your-meq-repo",
+      title: "Gemma Benchmark Suite",
+      href: "https://github.com/heilcheng/gemma-benchmark",
       dates: "2024 - Present",
       active: true,
       description:
-        "Developed MEQ-Bench, the first benchmark to evaluate audience-adaptive explanation quality in medical LLMs, by engineering a novel, resource-efficient framework in Python. Built a robust, automated scoring engine using an LLM-as-a-judge paradigm and NLP libraries (scispaCy), validating its reliability through high inter-rater reliability (Krippendorff's Alpha) between models.",
+        "An evaluation suite for Google's Gemma models across academic LLM benchmarks, with quantization support and efficiency profiling.",
       technologies: [
         "Python",
-        "NLP",
-        "scispaCy",
-        "LLM-as-a-judge",
-        "Medical AI",
+        "LLM",
+        "Benchmarking",
+        "Quantization",
       ],
       links: [
         {
           type: "Source",
-          href: "https://github.com/your-meq-repo",
+          href: "https://github.com/heilcheng/gemma-benchmark",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
+    {
+      title: "DeepChem Drug Formulation Tutorial",
+      href: "https://github.com/heilcheng/deepchem-drug-formulation",
+      dates: "2024 - Present",
+      active: true,
+      description:
+        "A tutorial using DeepChem for predicting key pharmaceutical properties and visualizing molecular behaviors for drug discovery.",
+      technologies: [
+        "Python",
+        "DeepChem",
+        "Drug Discovery",
+        "Molecular Biology",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/heilcheng/deepchem-drug-formulation",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "",
+      video: "",
+    },
+    {
+      title: "Truth or Dare (Cantonese)",
+      href: "https://github.com/heilcheng/Truth-or-Dare-Canto",
+      dates: "2024 - Present",
+      active: true,
+      description:
+        "A Truth or Dare question generator web app built in Cantonese, using React for webapp and React Native for Apps.",
+      technologies: [
+        "React",
+        "React Native",
+        "JavaScript",
+        "Cantonese",
+      ],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/heilcheng/Truth-or-Dare-Canto",
           icon: <Icons.github className="size-3" />,
         },
       ],
