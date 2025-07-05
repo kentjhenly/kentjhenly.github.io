@@ -176,14 +176,21 @@ const RubiksCubeScene = () => {
         });
         setCubeStates({ ...currentState });
       },
-      // Step 4: Perfectly solved - all green
+      // Step 4: Perfectly solved - proper Rubik's cube colors
       () => {
         groupRef.current?.rotation.set(0, 0, 0);
         const perfectlySolved: { [key: string]: string } = {};
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
-          // All faces become green
-          perfectlySolved[key] = colors.green;
+          const [x, y, z] = position;
+          // Perfectly solved state with proper face colors
+          if (z === 1) perfectlySolved[key] = colors.blue;
+          else if (z === -1) perfectlySolved[key] = colors.green;
+          else if (x === 1) perfectlySolved[key] = colors.red;
+          else if (x === -1) perfectlySolved[key] = colors.orange;
+          else if (y === 1) perfectlySolved[key] = colors.yellow;
+          else if (y === -1) perfectlySolved[key] = colors.white;
+          else perfectlySolved[key] = colors.white; // Center pieces
         });
         setCubeStates(perfectlySolved);
         setIsSolved(true);
