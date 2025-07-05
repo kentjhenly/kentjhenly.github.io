@@ -1,47 +1,115 @@
-<div align="center">
-<img alt="Portfolio" src="https://github.com/dillionverma/portfolio/assets/16860528/57ffca81-3f0a-4425-b31d-094f61725455" width="90%">
-</div>
+# Hailey Cheng - Portfolio
 
-# Portfolio [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdillionverma%2Fportfolio)
+Personal portfolio website built with Next.js, showcasing my work in AI/ML, software engineering, and research experience.
 
-Built with next.js, [shadcn/ui](https://ui.shadcn.com/), and [magic ui](https://magicui.design/), deployed on Vercel.
+## 🚀 Features
 
-# Features
+- **Modern Design**: Clean, responsive design with dark/light mode
+- **AI/ML Focus**: Highlighting experience at Google DeepMind and Coglix.ai
+- **Interactive Elements**: Smooth animations and transitions
+- **Blog Support**: MDX-based blog system
+- **GitHub Pages Ready**: Optimized for static hosting
 
-- Setup only takes a few minutes by editing the [single config file](./src/data/resume.tsx)
-- Built using Next.js 14, React, Typescript, Shadcn/UI, TailwindCSS, Framer Motion, Magic UI
-- Includes a blog
-- Responsive for different devices
-- Optimized for Next.js and Vercel
+## 🛠️ Tech Stack
 
-# Getting Started Locally
+- **Framework**: Next.js 14
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Deployment**: GitHub Pages
 
-1. Clone this repository to your local machine:
+## 📦 Installation
 
-   ```bash
-   git clone https://github.com/dillionverma/portfolio
-   ```
+1. Clone the repository:
+```bash
+git clone https://github.com/heilcheng/heilcheng.github.io.git
+cd heilcheng.github.io
+```
 
-2. Move to the cloned directory
+2. Install dependencies:
+```bash
+npm install
+```
 
-   ```bash
-   cd portfolio
-   ```
+3. Run the development server:
+```bash
+npm run dev
+```
 
-3. Install dependencies:
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-   ```bash
-   pnpm install
-   ```
+## 🚀 Deployment
 
-4. Start the local Server:
+### GitHub Pages (Recommended)
 
-   ```bash
-   pnpm dev
-   ```
+This project is configured for automatic deployment to GitHub Pages:
 
-5. Open the [Config file](./src/data/resume.tsx) and make changes
+1. **Push to main branch**: The GitHub Actions workflow will automatically build and deploy your site
+2. **Enable GitHub Pages**: Go to your repository settings → Pages → Source: Deploy from a branch → gh-pages branch
+3. **Your site will be available at**: `https://heilcheng.github.io`
 
-# License
+### Manual Build
 
-Licensed under the [MIT license](https://github.com/dillionverma/portfolio/blob/main/LICENSE.md).
+```bash
+npm run build
+```
+
+The static files will be generated in the `out/` directory.
+
+## 📝 Customization
+
+### Update Personal Information
+
+Edit `src/data/resume.tsx` to update:
+- Personal details
+- Work experience
+- Education
+- Projects
+- Skills
+- Contact information
+
+### Add Blog Posts
+
+1. Create new `.mdx` files in the `content/` directory
+2. Add frontmatter with title, date, and description
+3. Write your content in Markdown/MDX format
+
+### Styling
+
+- **Colors**: Update Tailwind CSS classes in components
+- **Layout**: Modify components in `src/components/`
+- **Animations**: Adjust Framer Motion configurations
+
+## 📁 Project Structure
+
+```
+├── src/
+│   ├── app/              # Next.js app directory
+│   ├── components/       # React components
+│   ├── data/            # Resume and site data
+│   └── lib/             # Utility functions
+├── content/             # Blog posts (MDX)
+├── public/              # Static assets
+└── .github/workflows/   # GitHub Actions
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🔗 Links
+
+- **Portfolio**: [https://heilcheng.github.io](https://heilcheng.github.io)
+- **GitHub**: [https://github.com/heilcheng](https://github.com/heilcheng)
+- **LinkedIn**: [https://linkedin.com/in/hailey-cheng](https://linkedin.com/in/hailey-cheng)
+
+---
+
+Built with ❤️ by Hailey Cheng
