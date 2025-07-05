@@ -18,6 +18,7 @@ interface ResumeCardProps {
   badges?: readonly string[];
   period: string;
   description?: string;
+  bullets?: readonly string[];
 }
 export const ResumeCard = ({
   logoUrl,
@@ -28,11 +29,12 @@ export const ResumeCard = ({
   badges,
   period,
   description,
+  bullets,
 }: ResumeCardProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    if (description) {
+    if (description || bullets) {
       e.preventDefault();
       setIsExpanded(!isExpanded);
     }
@@ -86,7 +88,7 @@ export const ResumeCard = ({
             </div>
             {subtitle && <div className="font-sans text-xs">{subtitle}</div>}
           </CardHeader>
-          {description && (
+          {(description || bullets) && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{
@@ -100,7 +102,15 @@ export const ResumeCard = ({
               }}
               className="mt-2 text-xs sm:text-sm"
             >
-              {description}
+              {bullets ? (
+                <ul className="list-disc list-inside space-y-1">
+                  {bullets.map((bullet, index) => (
+                    <li key={index}>{bullet}</li>
+                  ))}
+                </ul>
+              ) : (
+                description
+              )}
             </motion.div>
           )}
         </div>
