@@ -25,7 +25,7 @@ interface RubiksCubeSceneProps {
   delay?: number;
 }
 
-export const RubiksCubeScene = ({ delay = 0 }: RubiksCubeSceneProps) => {
+const RubiksCubeScene = ({ delay = 0 }: RubiksCubeSceneProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const [isSolving, setIsSolving] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -187,4 +187,6 @@ export const RubiksCubeScene = ({ delay = 0 }: RubiksCubeSceneProps) => {
       </div>
     </div>
   );
-}; 
+};
+
+export default RubiksCubeScene; 

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import BlurFade from "./magicui/blur-fade";
 
 // Dynamically import Three.js components to avoid SSR issues
-const RubiksCubeScene = dynamic(() => import("./rubiks-cube-scene").then(mod => ({ default: mod.RubiksCubeScene })), {
+const RubiksCubeScene = dynamic(() => import("./rubiks-cube-scene"), {
   ssr: false,
   loading: () => <div className="h-96 flex items-center justify-center">Loading 3D Cube...</div>
 });
