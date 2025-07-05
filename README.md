@@ -28,12 +28,12 @@ cd heilcheng.github.io
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Run the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -51,7 +51,7 @@ This project is configured for automatic deployment to GitHub Pages:
 ### Manual Build
 
 ```bash
-npm run build
+pnpm build
 ```
 
 The static files will be generated in the `out/` directory.
