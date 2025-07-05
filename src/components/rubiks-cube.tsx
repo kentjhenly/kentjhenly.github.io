@@ -22,7 +22,11 @@ const Cube = ({ position, color }: CubeProps) => {
 };
 
 // Component that uses useFrame hook (must be inside Canvas)
-const RotatingCubeGroup = ({ isSolving, children }: { isSolving: boolean; children: React.ReactNode }) => {
+const RotatingCubeGroup = ({ isSolving, children, onGroupRef }: { 
+  isSolving: boolean; 
+  children: React.ReactNode;
+  onGroupRef: (ref: THREE.Group | null) => void;
+}) => {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
@@ -32,6 +36,11 @@ const RotatingCubeGroup = ({ isSolving, children }: { isSolving: boolean; childr
       groupRef.current.rotation.x += 0.002;
     }
   });
+
+  // Pass the ref to parent component
+  useEffect(() => {
+    onGroupRef(groupRef.current);
+  }, [onGroupRef]);
 
   return <group ref={groupRef}>{children}</group>;
 };
@@ -86,10 +95,27 @@ const RubiksCubeScene = () => {
 
   const startSolving = () => {
     setIsSolving(true);
-    // Simple solving animation
-    setTimeout(() => {
-      setIsSolving(false);
-    }, 3000);
+    
+    // Complex solving animation sequence
+    const solveSteps = [
+      () => groupRef.current?.rotation.set(0, Math.PI / 2, 0), // R
+      () => groupRef.current?.rotation.set(-Math.PI / 2, Math.PI / 2, 0), // U
+      () => groupRef.current?.rotation.set(-Math.PI / 2, 0, 0), // R'
+      () => groupRef.current?.rotation.set(0, 0, 0), // U'
+    ];
+
+    let step = 0;
+    const animateStep = () => {
+      if (step < solveSteps.length && groupRef.current) {
+        solveSteps[step]();
+        step++;
+        setTimeout(animateStep, 800);
+      } else {
+        setIsSolving(false);
+      }
+    };
+
+    animateStep();
   };
 
   const resetCube = () => {
@@ -112,7 +138,7 @@ const RubiksCubeScene = () => {
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
         
-        <RotatingCubeGroup isSolving={isSolving}>
+        <RotatingCubeGroup isSolving={isSolving} onGroupRef={(ref) => { groupRef.current = ref; }}>
           {/* Generate all 27 cubes */}
           {cubePositions.map((position, index) => {
             // Determine color based on position
@@ -138,7 +164,7 @@ const RubiksCubeScene = () => {
         <button
           onClick={startSolving}
           disabled={isSolving}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-50"
         >
           {isSolving ? "Solving..." : "Solve"}
         </button>
