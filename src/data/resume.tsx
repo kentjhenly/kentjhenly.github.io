@@ -8,7 +8,7 @@ export const DATA = {
   location: "Hong Kong",
   locationLink: "https://www.google.com/maps/place/hongkong",
   description:
-    "Software Engineer with a focus on AI/ML, with experience building, deploying, and optimizing end-to-end AI systems. I am also a researcher in the field of mathematical biology and AI in biomedicine.",
+    "Researcher in mathematical biology and AI for biomedicine. Also a software engineer focused on AI/ML, building useful tools and fun apps with React Native. On the side, I share my journey as an influencer with 10k+ followers on Threads and 25k+ on LinkedIn.",
   summary:
     "I'm a curious human who builds things at the crossroads of math, code, and biology. When I'm not deep in code or wrestling with equations, you'll find me stargazing, kayaking, or on a mission to discover the next best bowl of ramen or plate of handmade pasta (I've probably tried every spot in Hong Kong). As for boba? My forever choice is \"No.1\" at Comebuytea.",
   avatarUrl: "/me.jpeg",
