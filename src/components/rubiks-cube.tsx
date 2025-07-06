@@ -367,7 +367,6 @@ const RubiksCubeScene = () => {
   const [cubeState, setCubeState] = useState<CubeState | null>(null);
   const [currentStage, setCurrentStage] = useState<SolvingStage | null>(null);
   const [currentAlgorithm, setCurrentAlgorithm] = useState<string>("");
-  const [isColorNeutral, setIsColorNeutral] = useState(false);
   const [scrambleMoves, setScrambleMoves] = useState<Move[]>([]);
   
   const solverRef = useRef<CubeSolver | null>(null);
@@ -439,55 +438,6 @@ const RubiksCubeScene = () => {
     return { state: solver.getState(), moves: scrambleMoves };
   };
 
-  // Get the most common color on a face to determine cross color
-  const getCrossColor = (cubeState: CubeState): string => {
-    if (!isColorNeutral) {
-      return colors.white; // Default to white cross
-    }
-
-    // Count colors on each face
-    const faceColors = {
-      top: cubeState.pieces.filter(p => p.position[1] === 1).map(p => p.faceColors[0]),
-      bottom: cubeState.pieces.filter(p => p.position[1] === -1).map(p => p.faceColors[1]),
-      left: cubeState.pieces.filter(p => p.position[0] === -1).map(p => p.faceColors[2]),
-      right: cubeState.pieces.filter(p => p.position[0] === 1).map(p => p.faceColors[3]),
-      front: cubeState.pieces.filter(p => p.position[2] === 1).map(p => p.faceColors[4]),
-      back: cubeState.pieces.filter(p => p.position[2] === -1).map(p => p.faceColors[5])
-    };
-
-    // Find the most common color across all faces
-    const allColors = Object.values(faceColors).flat();
-    const colorCounts: { [key: string]: number } = {};
-    
-    allColors.forEach(color => {
-      colorCounts[color] = (colorCounts[color] || 0) + 1;
-    });
-
-    // Return the most common color
-    const mostCommonColor = Object.entries(colorCounts).reduce((a, b) => 
-      colorCounts[a[0]] > colorCounts[b[0]] ? a : b
-    )[0];
-
-    return mostCommonColor;
-  };
-
-  // Generate solve sequence with color neutrality
-  const generateColorNeutralSolve = (scrambleMoves: Move[], crossColor: string): Move[] => {
-    // For color neutrality, we might need to add setup moves to orient the cross color
-    // For now, we'll use the inverse sequence but could be enhanced with proper CFOP logic
-    const baseSolveSequence = CubeSolver.generateInverseSequence(scrambleMoves);
-    
-    if (!isColorNeutral) {
-      return baseSolveSequence;
-    }
-
-    // If color neutral, we might need to add cube rotations to orient the cross color
-    // This is a simplified implementation - in a real solver, you'd analyze the cube state
-    console.log(`Solving with ${crossColor} cross (color neutral)`);
-    
-    return baseSolveSequence;
-  };
-
   // Animation loop using requestAnimationFrame
   const animateMoves = useCallback((currentTime: number) => {
     if (!solverRef.current || !isSolving) return;
@@ -544,18 +494,14 @@ const RubiksCubeScene = () => {
     // Initialize solver with scrambled state
     solverRef.current = new CubeSolver(scrambledState);
     
-    // Determine cross color based on color neutrality setting
-    const crossColor = getCrossColor(scrambledState);
-    
-    // Generate solve sequence with color neutrality
+    // Generate solve sequence
     setCurrentStage(SolvingStage.CROSS);
-    setCurrentAlgorithm(`Generating solve sequence...`);
+    setCurrentAlgorithm("Generating solve sequence...");
     
-    const solveSequence = generateColorNeutralSolve(newScrambleMoves, crossColor);
+    const solveSequence = CubeSolver.generateInverseSequence(newScrambleMoves);
     console.log("Scramble moves:", newScrambleMoves);
     console.log("Solve sequence:", solveSequence);
     console.log("Generated solve sequence:", solveSequence.length, "moves");
-    console.log("Cross color:", crossColor, "Color neutral:", isColorNeutral);
     solverRef.current.addMoves(solveSequence);
     
     // Animation will be started by useEffect when isSolving becomes true
@@ -626,10 +572,6 @@ const RubiksCubeScene = () => {
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
     }
-  };
-
-  const toggleColorNeutrality = () => {
-    setIsColorNeutral(!isColorNeutral);
   };
 
   return (
@@ -712,11 +654,6 @@ const RubiksCubeScene = () => {
               Moves remaining: {solverRef.current.getQueueLength()}
             </div>
           )}
-          {isColorNeutral && cubeState && (
-            <div className="text-xs text-blue-300 mt-1">
-              Color Neutral: {getCrossColor(cubeState)} cross
-            </div>
-          )}
         </div>
       )}
       
@@ -734,16 +671,6 @@ const RubiksCubeScene = () => {
           className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Reset
-        </button>
-        <button
-          onClick={toggleColorNeutrality}
-          className={`px-4 py-2 rounded ${
-            isColorNeutral 
-              ? "bg-green-600 text-white" 
-              : "bg-gray-300 text-gray-700"
-          }`}
-        >
-          Color Neutral
         </button>
       </div>
     </div>
