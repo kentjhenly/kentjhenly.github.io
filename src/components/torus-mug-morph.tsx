@@ -3,11 +3,18 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState, useMemo } from "react";
 import * as THREE from "three";
-import { Html } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 
 // Utility to interpolate between two arrays
 function lerpArray(a: number[], b: number[], t: number) {
   return a.map((v, i) => v + (b[i] - v) * t);
+}
+
+// Utility to interpolate colors
+function lerpColor(color1: string, color2: string, t: number) {
+  const c1 = new THREE.Color(color1);
+  const c2 = new THREE.Color(color2);
+  return c1.clone().lerp(c2, t);
 }
 
 function generateTorusVertices(radialSegments = 64, tubularSegments = 32, R = 2, r = 0.7) {
@@ -36,21 +43,45 @@ function generateMugVertices(radialSegments = 64, tubularSegments = 32, R = 2, r
       let x = (R - r) * Math.cos(u);
       let y = (R - r) * Math.sin(u);
       let z = r * Math.sin(v);
+      
       // Stretch the body vertically for the mug
       if (v < Math.PI) {
         z = -r + (2 * r * v) / Math.PI;
       }
-      // Handle: keep a torus-like arc for a portion
-      if (u > Math.PI * 1.2 && u < Math.PI * 1.8 && v > Math.PI * 0.7 && v < Math.PI * 1.3) {
-        // Place handle on the side
-        const handleAngle = (u - Math.PI * 1.2) / (Math.PI * 0.6);
-        const handleX = (R + r * Math.cos(v)) * Math.cos(Math.PI * 1.5);
-        const handleY = (R + r * Math.cos(v)) * Math.sin(Math.PI * 1.5);
-        const handleZ = r * Math.sin(v);
-        x = lerpArray([x], [handleX], handleAngle)[0];
-        y = lerpArray([y], [handleY], handleAngle)[0];
-        z = lerpArray([z], [handleZ], handleAngle)[0];
+      
+      // Handle: create a smoother, more gradual transition
+      const handleStart = Math.PI * 1.1;
+      const handleEnd = Math.PI * 1.9;
+      const handleWidth = handleEnd - handleStart;
+      
+      if (u > handleStart && u < handleEnd) {
+        // Calculate handle influence with smooth falloff
+        const handleProgress = (u - handleStart) / handleWidth;
+        const handleInfluence = Math.sin(handleProgress * Math.PI); // Smooth bell curve
+        
+        // Handle vertical range
+        const handleVStart = Math.PI * 0.6;
+        const handleVEnd = Math.PI * 1.4;
+        
+        if (v > handleVStart && v < handleVEnd) {
+          const vProgress = (v - handleVStart) / (handleVEnd - handleVStart);
+          const vInfluence = Math.sin(vProgress * Math.PI); // Smooth vertical falloff
+          
+          // Calculate handle position
+          const handleRadius = R + r * 0.3;
+          const handleAngle = Math.PI * 1.5;
+          const handleX = handleRadius * Math.cos(handleAngle);
+          const handleY = handleRadius * Math.sin(handleAngle);
+          const handleZ = r * Math.sin(v);
+          
+          // Apply smooth interpolation
+          const totalInfluence = handleInfluence * vInfluence;
+          x = x + (handleX - x) * totalInfluence;
+          y = y + (handleY - y) * totalInfluence;
+          z = z + (handleZ - z) * totalInfluence;
+        }
       }
+      
       positions.push([x, y, z]);
     }
   }
@@ -140,13 +171,25 @@ export default function TorusMugMorph() {
   // Compute normals for smooth shading
   const normals = useMemo(() => computeNormals(flatVerts, indices), [flatVerts, indices]);
 
+  // Calculate interpolated color
+  const materialColor = useMemo(() => {
+    return lerpColor("#fbbf24", "#ffffff", morph);
+  }, [morph]);
+
   // Move useFrame into a child component
-  function MorphingMesh({ meshRef, flatVerts, indices, normals }: { meshRef: React.RefObject<THREE.Mesh>, flatVerts: number[], indices: number[], normals: Float32Array }) {
+  function MorphingMesh({ meshRef, flatVerts, indices, normals, color }: { 
+    meshRef: React.RefObject<THREE.Mesh>, 
+    flatVerts: number[], 
+    indices: number[], 
+    normals: Float32Array,
+    color: THREE.Color
+  }) {
     useFrame(() => {
       if (meshRef.current) {
-        meshRef.current.rotation.y += 0.005;
+        meshRef.current.rotation.y += 0.003; // Slower rotation for better viewing
       }
     });
+    
     return (
       <mesh ref={meshRef} castShadow receiveShadow>
         <bufferGeometry attach="geometry">
@@ -154,20 +197,81 @@ export default function TorusMugMorph() {
           <bufferAttribute attach="attributes-normal" args={[normals, 3]} />
           <bufferAttribute attach="index" args={[new Uint16Array(indices), 1]} />
         </bufferGeometry>
-        <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.4} flatShading={false} />
+        <meshStandardMaterial 
+          color={color} 
+          metalness={0.1} 
+          roughness={0.3} 
+          flatShading={false}
+          envMapIntensity={0.5}
+        />
       </mesh>
     );
   }
 
   return (
     <div style={{ width: "100%", maxWidth: 600, height: 500, margin: "0 auto" }}>
-      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[5, 5, 5]} intensity={0.7} />
-        <MorphingMesh meshRef={meshRef} flatVerts={flatVerts} indices={indices} normals={normals} />
+      <Canvas 
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        shadows
+        gl={{ antialias: true, shadowMap: true }}
+      >
+        {/* Enhanced lighting setup */}
+        <ambientLight intensity={0.4} />
+        <directionalLight 
+          position={[5, 5, 5]} 
+          intensity={0.8}
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+        />
+        <pointLight position={[-5, 5, 5]} intensity={0.3} />
+        <pointLight position={[0, -5, 0]} intensity={0.2} />
+        
+        {/* Ground plane for shadows */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
+          <planeGeometry args={[20, 20]} />
+          <meshStandardMaterial color="#f0f0f0" transparent opacity={0.3} />
+        </mesh>
+        
+        <MorphingMesh 
+          meshRef={meshRef} 
+          flatVerts={flatVerts} 
+          indices={indices} 
+          normals={normals}
+          color={materialColor}
+        />
+        
+        {/* Orbit controls for interactive viewing */}
+        <OrbitControls 
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={3}
+          maxDistance={15}
+          autoRotate={false}
+        />
+        
+        {/* Transparent UI overlay */}
         <Html center>
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 300, background: "rgba(255,255,255,0.9)", borderRadius: 12, padding: 16, boxShadow: "0 4px 16px rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
-            <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center" }}>
+          <div style={{ 
+            position: "absolute", 
+            top: "50%", 
+            left: "50%", 
+            transform: "translate(-50%, -50%)", 
+            width: 300, 
+            background: "rgba(255,255,255,0.1)", 
+            borderRadius: 12, 
+            padding: 16, 
+            boxShadow: "0 4px 16px rgba(0,0,0,0.1)", 
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.2)"
+          }}>
+            <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center", color: "#374151" }}>
               <div style={{ marginBottom: 8 }}>Morph: {morph.toFixed(2)}</div>
               <input
                 type="range"
@@ -176,7 +280,16 @@ export default function TorusMugMorph() {
                 step={0.01}
                 value={morph}
                 onChange={e => setMorph(Number(e.target.value))}
-                style={{ width: "100%", height: "8px", borderRadius: "4px", background: "linear-gradient(to right, #fbbf24 0%, #fbbf24 50%, #e5e7eb 50%, #e5e7eb 100%)", outline: "none", cursor: "pointer" }}
+                style={{ 
+                  width: "100%", 
+                  height: "8px", 
+                  borderRadius: "4px", 
+                  background: `linear-gradient(to right, #fbbf24 0%, ${lerpColor("#fbbf24", "#ffffff", 0.5).getHexString()} 50%, #ffffff 100%)`, 
+                  outline: "none", 
+                  cursor: "pointer",
+                  WebkitAppearance: "none",
+                  appearance: "none"
+                }}
               />
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 8, color: "#6b7280" }}>
                 <span>Torus</span>
