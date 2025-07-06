@@ -182,15 +182,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (x === 1) {
-          // Rotate the piece position
-          piece.position = [x, -z, y];
+          // Rotate the piece position around +X axis
+          piece.position = [x, z, -y];
           
           // Rotate face colors: [top, bottom, left, right, front, back]
-          const temp = piece.faceColors[0];
-          piece.faceColors[0] = piece.faceColors[4]; // front -&gt; top
-          piece.faceColors[4] = piece.faceColors[1]; // bottom -&gt; front
-          piece.faceColors[1] = piece.faceColors[5]; // back -&gt; bottom
-          piece.faceColors[5] = temp; // top -&gt; back
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[5]; // back -> top
+          piece.faceColors[5] = piece.faceColors[1]; // bottom -> back
+          piece.faceColors[1] = piece.faceColors[4]; // front -> bottom
+          piece.faceColors[4] = temp; // top -> front
         }
       });
     }
@@ -202,15 +202,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (x === -1) {
-          // Rotate the piece position
-          piece.position = [x, z, -y];
+          // Rotate the piece position around -X axis
+          piece.position = [x, -z, y];
           
           // Rotate face colors
-          const temp = piece.faceColors[0];
-          piece.faceColors[0] = piece.faceColors[5]; // back -&gt; top
-          piece.faceColors[5] = piece.faceColors[1]; // bottom -&gt; back
-          piece.faceColors[1] = piece.faceColors[4]; // front -&gt; bottom
-          piece.faceColors[4] = temp; // top -&gt; front
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[4]; // front -> top
+          piece.faceColors[4] = piece.faceColors[1]; // bottom -> front
+          piece.faceColors[1] = piece.faceColors[5]; // back -> bottom
+          piece.faceColors[5] = temp; // top -> back
         }
       });
     }
@@ -222,15 +222,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (y === 1) {
-          // Rotate the piece position
-          piece.position = [z, y, -x];
+          // Rotate the piece position around +Y axis
+          piece.position = [-z, y, x];
           
           // Rotate face colors
           const temp = piece.faceColors[2]; // left
-          piece.faceColors[2] = piece.faceColors[4]; // front -&gt; left
-          piece.faceColors[4] = piece.faceColors[3]; // right -&gt; front
-          piece.faceColors[3] = piece.faceColors[5]; // back -&gt; right
-          piece.faceColors[5] = temp; // left -&gt; back
+          piece.faceColors[2] = piece.faceColors[4]; // front -> left
+          piece.faceColors[4] = piece.faceColors[3]; // right -> front
+          piece.faceColors[3] = piece.faceColors[5]; // back -> right
+          piece.faceColors[5] = temp; // left -> back
         }
       });
     }
@@ -242,15 +242,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (y === -1) {
-          // Rotate the piece position
-          piece.position = [-z, y, x];
+          // Rotate the piece position around -Y axis
+          piece.position = [z, y, -x];
           
           // Rotate face colors
           const temp = piece.faceColors[2]; // left
-          piece.faceColors[2] = piece.faceColors[5]; // back -&gt; left
-          piece.faceColors[5] = piece.faceColors[3]; // right -&gt; back
-          piece.faceColors[3] = piece.faceColors[4]; // front -&gt; right
-          piece.faceColors[4] = temp; // left -&gt; front
+          piece.faceColors[2] = piece.faceColors[5]; // back -> left
+          piece.faceColors[5] = piece.faceColors[3]; // right -> back
+          piece.faceColors[3] = piece.faceColors[4]; // front -> right
+          piece.faceColors[4] = temp; // left -> front
         }
       });
     }
@@ -262,15 +262,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (z === 1) {
-          // Rotate the piece position
-          piece.position = [-y, x, z];
+          // Rotate the piece position around +Z axis
+          piece.position = [y, -x, z];
           
           // Rotate face colors
           const temp = piece.faceColors[0]; // top
-          piece.faceColors[0] = piece.faceColors[2]; // left -&gt; top
-          piece.faceColors[2] = piece.faceColors[1]; // bottom -&gt; left
-          piece.faceColors[1] = piece.faceColors[3]; // right -&gt; bottom
-          piece.faceColors[3] = temp; // top -&gt; right
+          piece.faceColors[0] = piece.faceColors[2]; // left -> top
+          piece.faceColors[2] = piece.faceColors[1]; // bottom -> left
+          piece.faceColors[1] = piece.faceColors[3]; // right -> bottom
+          piece.faceColors[3] = temp; // top -> right
         }
       });
     }
@@ -282,15 +282,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (z === -1) {
-          // Rotate the piece position
-          piece.position = [y, -x, z];
+          // Rotate the piece position around -Z axis
+          piece.position = [-y, x, z];
           
           // Rotate face colors
           const temp = piece.faceColors[0]; // top
-          piece.faceColors[0] = piece.faceColors[3]; // right -&gt; top
-          piece.faceColors[3] = piece.faceColors[1]; // bottom -&gt; right
-          piece.faceColors[1] = piece.faceColors[2]; // left -&gt; bottom
-          piece.faceColors[2] = temp; // top -&gt; left
+          piece.faceColors[0] = piece.faceColors[3]; // right -> top
+          piece.faceColors[3] = piece.faceColors[1]; // bottom -> right
+          piece.faceColors[1] = piece.faceColors[2]; // left -> bottom
+          piece.faceColors[2] = temp; // top -> left
         }
       });
     }
