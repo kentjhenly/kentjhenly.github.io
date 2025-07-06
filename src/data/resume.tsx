@@ -68,8 +68,8 @@ export const DATA = {
       start: "November 2024",
       end: "Present",
       bullets: [
-        "Engineered an end-to-end speech analysis platform using Python, PyTorch, and NLP libraries (Transformers, Librosa) to extract 15+ acoustic and prosodic features for generating personalized therapeutic metrics",
-        "Trained a custom deep learning model to over 90% accuracy for phoneme-level error detection and deployed the system as a low-latency REST API (Flask, Docker), achieving a sub-300ms response time for real-time feedback"
+        "Built an end-to-end AI platform using Python, PyTorch, and NLP libraries (Transformers, Librosa) to extract and analyze complex features from audio data",
+        "Developed and deployed custom deep learning models achieving over 90% accuracy, with a low-latency REST API (Flask, Docker) delivering sub-300ms response times for real-time processing"
       ],
     },
     {
