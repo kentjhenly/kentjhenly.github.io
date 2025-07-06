@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import BlurFade from "./magicui/blur-fade";
 
@@ -113,6 +113,16 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
     );
   }
 
+  // Fix for Leaflet marker icons in Next.js
+  useEffect(() => {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+  }, []);
+
   return (
     <BlurFade delay={delay}>
       <div className="flex justify-center">
@@ -135,11 +145,11 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                     position={location.coordinates as [number, number]}
                     icon={location.type === 'nature' ? natureIcon : urbanIcon}
                   >
-                    <Tooltip>
+                    <Popup>
                       <span className="font-semibold">{location.name}</span>
                       <br />
                       {location.description}
-                    </Tooltip>
+                    </Popup>
                   </Marker>
                 ))}
               </MapContainer>
