@@ -10,6 +10,149 @@ Includes:
 - An interactive 3D Rubik's Cube
 - A floating aquarium mode with animated fish and shrimp
 
+## 🎯 How to Use This Template
+
+Want to create your own portfolio using this optimized version? Here's how to get started:
+
+### 1. Fork and Clone
+```bash
+# Fork this repository to your GitHub account
+# Then clone your fork
+git clone https://github.com/YOUR_USERNAME/heilcheng.github.io.git
+cd heilcheng.github.io
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+# or
+pnpm install
+```
+
+### 3. Personalize Your Information
+
+**Update Personal Data** (`src/data/resume.tsx`):
+```typescript
+export const DATA = {
+  name: "Your Name",
+  initials: "YN",
+  url: "https://your-username.github.io",
+  location: "Your Location",
+  locationLink: "https://www.google.com/maps/place/your-location",
+  description: "Your personal description",
+  summary: "Your summary",
+  avatarUrl: "/your-photo.jpg",
+  // ... update contact info, experience, education, projects
+}
+```
+
+**Key Sections to Customize:**
+- **Contact Information**: Update email, phone, social links
+- **Technical Experience**: Add your work history
+- **Education**: Update your academic background
+- **Projects**: Showcase your best work
+- **Books**: Replace with your own reading list (or remove this section)
+
+### 4. Update Images and Assets
+- Replace `/me.jpeg` with your profile photo
+- Update company logos in `public/` folder
+- Add your own project screenshots
+
+### 5. Configure GitHub Pages
+
+**Repository Setup:**
+1. Go to your repository Settings → Pages
+2. Set Source to "GitHub Actions"
+3. Enable GitHub Pages
+
+**GitHub Actions** (`.github/workflows/deploy.yml`):
+- The workflow is already configured
+- It will automatically deploy when you push to main
+
+### 6. Customize Features
+
+**World Map** (`src/components/world-map.tsx`):
+```typescript
+const visitedCountries = [
+  "USA", // Add your visited countries
+  "CHN", // Use ISO A3 codes
+  // ... more countries
+];
+```
+
+**GitHub Contributions** (`src/app/page.tsx`):
+```typescript
+<GitHubContributions username="your-github-username" />
+```
+
+**Aquarium Mode**: 
+- Already included, just toggle on/off
+- Customize colors in `src/components/aquarium.tsx`
+
+### 7. Add Your Content
+
+**Blog Posts** (`content/` folder):
+```bash
+# Create new blog posts
+touch content/your-post.mdx
+```
+
+**Example blog post structure:**
+```markdown
+---
+title: "Your Blog Post Title"
+publishedAt: "2024-01-01"
+summary: "Brief description of your post"
+---
+
+Your blog content here...
+```
+
+### 8. Customize Styling
+
+**Theme Colors** (`tailwind.config.ts`):
+```typescript
+// Update your brand colors
+colors: {
+  primary: {
+    // Your primary color
+  }
+}
+```
+
+**Components** (`src/components/`):
+- Modify existing components
+- Add new components as needed
+- Update animations and transitions
+
+### 9. Test and Deploy
+
+**Local Development:**
+```bash
+npm run dev
+# Visit http://localhost:3000
+```
+
+**Deploy:**
+```bash
+git add .
+git commit -m "Personalize portfolio"
+git push origin main
+# GitHub Actions will automatically deploy to GitHub Pages
+```
+
+### 10. Optional Customizations
+
+**Remove Features You Don't Want:**
+- Delete aquarium component if not needed
+- Remove world map section
+- Simplify the layout
+
+**Add New Features:**
+- Create new interactive components
+- Add more sections (skills, testimonials, etc.)
+- Integrate with external APIs
+
 ## ✨ Features
 
 - **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
@@ -100,6 +243,10 @@ pnpm dev
 - Click the "Show Aquarium" button (with fish icon) in the bottom-right to enable
 - Click "Hide Aquarium" to disable
 - The aquarium overlay is purely visual and does not affect site functionality
+
+## 🤝 Contributing
+
+Feel free to fork this project and customize it for your own portfolio. If you make improvements that could benefit others, consider opening a pull request!
 
 ## 📝 License
 
