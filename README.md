@@ -1,18 +1,18 @@
-# My Digital Playground & Personal Portfolio
+# My Personal Website
 
-Hey there! Welcome to the codebase for my personal portfolio. What started as a fork of the awesome [dillionverma/portfolio](https://github.com/dillionverma/portfolio) has grown into something I like to call my digital playground. It's more than just a resume; it's a living space where I get to blend my love for biology, math, and code into interactive, and hopefully, fun experiences.
+Hey there! Welcome to the codebase for my personal website. What started as a fork of the awesome [dillionverma/portfolio](https://github.com/dillionverma/portfolio) has grown into something I like to call my digital playground.
 
 This portfolio is built with Next.js, styled with Tailwind CSS, and brought to life with Three.js and Framer Motion. It's automatically deployed to GitHub Pages, so it's always up-to-date with my latest experiments.
 
 ## Table of Contents
 
-- [Features: The Fun Stuff](#features-the-fun-stuff-)
+- [Features: The Fun Stuff](#features-the-fun-stuff)
 - [Tech Stack: What's Under the Hood?](#tech-stack-whats-under-the-hood-)
-- [How to Make This Your Own](#how-to-make-this-your-own-)
-- [Quick Start](#quick-start-)
-- [Deployment Magic](#deployment-magic-)
+- [How to Make This Your Own](#how-to-make-this-your-own)
+- [Quick Start](#quick-start)
+- [Deployment Magic](#deployment-magic)
 
-## Features: The Fun Stuff ✨
+## Features: The Fun Stuff
 
 I wanted this site to be a reflection of my personality and passions. Here are some of the key features I've built:
 
@@ -34,9 +34,9 @@ I wanted this site to be a reflection of my personality and passions. Here are s
 
 - **GitHub Contribution Graph** (`/src/components/github-contributions.tsx`): This is a live look at my coding activity, pulled directly from the GitHub GraphQL API. It's fully responsive, with a neat horizontal scroll on mobile.
 
-- **Aquarium Mode** (`/src/components/aquarium.tsx`): Because why not? A toggleable, full-screen overlay that fills the page with animated fish and shrimp, built with a custom animation loop using requestAnimationFrame.
+- **Aquarium Mode** (`/src/components/aquarium.tsx`): Because why not? A toggleable, full-screen overlay that fills the page with animated fish and shrimp.
 
-- **Smooth Animations** (`/src/components/magicui/`): I use Framer Motion and components from Magic UI like BlurFade to create a staggered, animated entrance for elements as they scroll into view.
+- **Smooth Animations** (`/src/components/magicui/`): The beautiful, fluid animations are powered by Magic UI. These are not installed as a package but are included directly in the `src/components/magicui` directory, allowing for full customization. This includes the Dock navigation and the BlurFade effects.
 
 - **MDX Blog** (`/src/app/blog/`): The blog is powered by MDX, which lets me write in Markdown and embed React components right into my posts.
 
@@ -52,7 +52,7 @@ I chose a modern, performant, and enjoyable tech stack to build this portfolio.
 - **Deployment**: GitHub Pages with GitHub Actions
 - **Package Manager**: pnpm
 
-## How to Make This Your Own 🎨
+## How to Make This Your Own
 
 If you like what you see and want to build your own version, feel free to use this as a template!
 
@@ -87,14 +87,10 @@ pnpm install
 
 To get the GitHub contribution graph working, you'll need a Personal Access Token (PAT).
 
-1. Create a `.env.local` file in the root of the project.
-2. Add your token to the file:
+1. Create a `.env.local` file in the root of your project.
+2. Add your token like this: `NEXT_PUBLIC_GITHUB_TOKEN=your_github_token_here`
 
-```
-NEXT_PUBLIC_GITHUB_TOKEN=your_github_pat_here
-```
-
-## Quick Start 🚀
+## Quick Start
 
 Ready to run it locally?
 
@@ -104,7 +100,7 @@ pnpm dev
 
 This will start the development server at http://localhost:3000.
 
-## Deployment Magic 📦
+## Deployment Magic
 
 This portfolio is set up for automatic deployment to GitHub Pages. The workflow in `.github/workflows/deploy.yml` handles everything. Once you've set up your repository, every push to the main branch will automatically trigger the GitHub Action, which will build the site and deploy it to your GitHub Pages URL. Just make sure to add your GitHub PAT as a repository secret named `PERSONAL_ACCESS_TOKEN`.
 
