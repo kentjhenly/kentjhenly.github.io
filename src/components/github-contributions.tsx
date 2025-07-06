@@ -134,76 +134,38 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
   return (
     <BlurFade delay={delay}>
       <div className="space-y-8 w-full py-8 md:py-12">
-        {/* Mobile-first layout: description + graph first, then title */}
-        <div className="md:hidden">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-6">
-            <p className="text-muted-foreground text-base">
+        {/* Title first for both mobile and desktop */}
+        <div className="flex flex-col items-center justify-center space-y-4 text-center">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-5xl">
+              My GitHub Activity.
+            </h2>
+            <p className="text-muted-foreground text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               Here&apos;s my contribution graph showing my coding activity over the past year.
             </p>
           </div>
-          
-          <div className="flex justify-center">
-            <div className="bg-card border rounded-lg p-4">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
-                  <span className="text-sm text-muted-foreground">Less</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
-                    <div
-                      key={index}
-                      className="w-3 h-3 rounded-sm"
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-muted-foreground">More</span>
-              </div>
-              {renderContributionGraph()}
-            </div>
-          </div>
-          
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mt-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold tracking-tighter">
-                My GitHub Activity.
-              </h2>
-            </div>
-          </div>
         </div>
-
-        {/* Desktop layout: title first, then description + graph */}
-        <div className="hidden md:block">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                My GitHub Activity.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Here&apos;s my contribution graph showing my coding activity over the past year.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex justify-center">
-            <div className="bg-card border rounded-lg p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
-                  <span className="text-sm text-muted-foreground">Less</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
-                    <div
-                      key={index}
-                      className="w-3 h-3 rounded-sm"
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-muted-foreground">More</span>
+        
+        {/* Graph centered for both mobile and desktop */}
+        <div className="flex justify-center">
+          <div className="bg-card border rounded-lg p-4 md:p-6 w-full max-w-4xl overflow-x-auto">
+            <div className="flex items-center gap-4 mb-4 justify-center">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
+                <span className="text-sm text-muted-foreground">Less</span>
               </div>
+              <div className="flex items-center gap-1">
+                {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
+                  <div
+                    key={index}
+                    className="w-3 h-3 rounded-sm"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground">More</span>
+            </div>
+            <div className="flex justify-center">
               {renderContributionGraph()}
             </div>
           </div>

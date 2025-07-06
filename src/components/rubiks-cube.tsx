@@ -695,7 +695,7 @@ export const RubiksCube = ({ delay }: RubiksCubeProps) => {
               Rubik&apos;s Cube Solver.
             </h2>
             <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Interactive 3D visualization of the CFOP method in Rubik&apos;s cube solving, featuring Cross, F2L, OLL, and PLL stages with a monochromatic blue color scheme.
+              Interactive 3D visualization of the CFOP method in Rubik&apos;s cube solving, featuring Cross, F2L, OLL, and PLL stages.
             </p>
           </div>
         </div>
