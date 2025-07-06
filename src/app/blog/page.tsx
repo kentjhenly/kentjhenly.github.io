@@ -3,7 +3,7 @@ import { getBlogPosts } from "@/data/blog";
 import { getMediumPosts } from "@/data/medium-posts";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
-import { ExternalLink, Code, Globe, BookOpen, MessageSquare } from "lucide-react";
+import { ExternalLink, Search, Filter } from "lucide-react";
 
 export const metadata = {
   title: "Blog",
@@ -12,26 +12,12 @@ export const metadata = {
 
 const BLUR_FADE_DELAY = 0.04;
 
-// Define category configurations with Apple-style design
+// Define category configurations
 const CATEGORIES = {
-  "Website Development": {
-    icon: Code,
-    description: "Technical tutorials and implementation guides",
-    color: "text-blue-600 dark:text-blue-400",
-    bgColor: "bg-blue-50 dark:bg-blue-950/30"
-  },
-  "Life & Thoughts": {
-    icon: MessageSquare,
-    description: "Personal reflections and experiences",
-    color: "text-green-600 dark:text-green-400",
-    bgColor: "bg-green-50 dark:bg-green-950/30"
-  },
-  "Medium Articles": {
-    icon: Globe,
-    description: "External articles and publications",
-    color: "text-orange-600 dark:text-orange-400",
-    bgColor: "bg-orange-50 dark:bg-orange-950/30"
-  }
+  "all": "All Posts",
+  "website-development": "Website Development",
+  "life-thoughts": "Life & Thoughts", 
+  "medium-articles": "Medium Articles"
 };
 
 // Function to categorize posts
@@ -41,18 +27,18 @@ function categorizePost(post: any) {
   
   // Check for Medium posts first
   if (post.type === 'medium') {
-    return "Medium Articles";
+    return "medium-articles";
   }
   
   // Check for website development related posts
   if (tags.some((tag: string) => 
     ['Web Development', 'React', 'Next.js', 'TypeScript', 'Three.js', '3D Graphics', 'Maps', 'GitHub', 'API', 'Tutorial'].includes(tag)
   ) || title.includes('rubik') || title.includes('github') || title.includes('map') || title.includes('technical') || title.includes('architecture')) {
-    return "Website Development";
+    return "website-development";
   }
   
   // Default to Life & Thoughts
-  return "Life & Thoughts";
+  return "life-thoughts";
 }
 
 export default async function BlogPage() {
@@ -79,24 +65,18 @@ export default async function BlogPage() {
     }))
   ];
 
-  // Group posts by category
-  const postsByCategory = allPosts.reduce((acc, post) => {
-    const category = categorizePost(post);
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(post);
-    return acc;
-  }, {} as Record<string, typeof allPosts>);
+  // Add category to each post
+  const postsWithCategory = allPosts.map(post => ({
+    ...post,
+    category: categorizePost(post)
+  }));
 
-  // Sort posts within each category by date
-  Object.keys(postsByCategory).forEach(category => {
-    postsByCategory[category].sort((a, b) => {
-      if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
-        return -1;
-      }
-      return 1;
-    });
+  // Sort posts by date
+  const sortedPosts = postsWithCategory.sort((a, b) => {
+    if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
+      return -1;
+    }
+    return 1;
   });
 
   return (
@@ -109,95 +89,148 @@ export default async function BlogPage() {
           </p>
         </div>
       </BlurFade>
+
+      {/* Filter Bar */}
+      <BlurFade delay={BLUR_FADE_DELAY * 2}>
+        <div className="mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            {/* Search Bar */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search posts..."
+                className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all duration-200"
+                id="search-input"
+              />
+            </div>
+            
+            {/* Category Filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="size-4 text-muted-foreground" />
+              <select 
+                className="px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all duration-200 appearance-none cursor-pointer"
+                id="category-filter"
+              >
+                {Object.entries(CATEGORIES).map(([key, label]) => (
+                  <option key={key} value={key}>{label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </BlurFade>
       
-      <div className="space-y-16">
-        {Object.entries(postsByCategory).map(([category, posts], categoryIndex) => {
-          const categoryConfig = CATEGORIES[category as keyof typeof CATEGORIES];
-          const IconComponent = categoryConfig?.icon || BookOpen;
-          
-          return (
-            <BlurFade key={category} delay={BLUR_FADE_DELAY * 2 + categoryIndex * 0.1}>
-              <div className="space-y-8">
-                {/* Category Header */}
-                <div className="text-center space-y-2">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${categoryConfig?.bgColor} ${categoryConfig?.color} mb-4`}>
-                    <IconComponent className="size-6" />
+      {/* Posts Grid */}
+      <BlurFade delay={BLUR_FADE_DELAY * 3}>
+        <div className="space-y-6" id="posts-container">
+          {sortedPosts.map((post, index) => (
+            <BlurFade 
+              key={post.type === 'local' ? post.slug : post.url} 
+              delay={BLUR_FADE_DELAY * 4 + index * 0.05}
+            >
+              <Link
+                className="group block"
+                href={post.url}
+                target={post.isExternal ? "_blank" : undefined}
+                rel={post.isExternal ? "noopener noreferrer" : undefined}
+                data-category={post.category}
+                data-title={post.title.toLowerCase()}
+                data-summary={post.summary.toLowerCase()}
+                data-tags={post.tags?.join(' ').toLowerCase() || ''}
+              >
+                <article className="p-8 rounded-2xl border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm hover:shadow-border/20">
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <h3 className="text-xl font-medium tracking-tight group-hover:text-foreground transition-colors duration-200 flex-1 leading-relaxed">
+                          {post.title}
+                        </h3>
+                        {post.isExternal && (
+                          <ExternalLink className="size-4 text-muted-foreground mt-1 ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        )}
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {post.summary}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-2">
+                      <time className="text-sm text-muted-foreground font-medium">
+                        {formatDate(post.publishedAt)}
+                      </time>
+                      <div className="flex items-center space-x-2">
+                        {post.tags && post.tags.slice(0, 2).map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="text-xs px-3 py-1 rounded-full bg-muted/50 text-muted-foreground font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {post.isExternal && (
+                          <span className="text-xs px-3 py-1 rounded-full bg-muted/50 text-muted-foreground font-medium">
+                            Medium
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <h2 className="text-2xl font-semibold tracking-tight">{category}</h2>
-                  <p className="text-muted-foreground text-base">{categoryConfig?.description}</p>
-                </div>
-                
-                {/* Posts in this category */}
-                <div className="space-y-6">
-                  {posts.map((post, postIndex) => (
-                    <BlurFade 
-                      key={post.type === 'local' ? post.slug : post.url} 
-                      delay={BLUR_FADE_DELAY * 3 + categoryIndex * 0.1 + postIndex * 0.05}
-                    >
-                      <Link
-                        className="group block"
-                        href={post.url}
-                        target={post.isExternal ? "_blank" : undefined}
-                        rel={post.isExternal ? "noopener noreferrer" : undefined}
-                      >
-                        <article className="p-8 rounded-2xl border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm hover:shadow-border/20">
-                          <div className="space-y-4">
-                            <div className="space-y-3">
-                              <div className="flex items-start justify-between">
-                                <h3 className="text-xl font-medium tracking-tight group-hover:text-foreground transition-colors duration-200 flex-1 leading-relaxed">
-                                  {post.title}
-                                </h3>
-                                {post.isExternal && (
-                                  <ExternalLink className="size-4 text-muted-foreground mt-1 ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                                )}
-                              </div>
-                              <p className="text-muted-foreground leading-relaxed">
-                                {post.summary}
-                              </p>
-                            </div>
-                            
-                            <div className="flex items-center justify-between pt-2">
-                              <time className="text-sm text-muted-foreground font-medium">
-                                {formatDate(post.publishedAt)}
-                              </time>
-                              <div className="flex items-center space-x-2">
-                                {post.tags && post.tags.slice(0, 2).map((tag: string) => (
-                                  <span
-                                    key={tag}
-                                    className="text-xs px-3 py-1 rounded-full bg-muted/50 text-muted-foreground font-medium"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                                {post.isExternal && (
-                                  <span className="text-xs px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-medium">
-                                    Medium
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </article>
-                      </Link>
-                    </BlurFade>
-                  ))}
-                </div>
-              </div>
+                </article>
+              </Link>
             </BlurFade>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      </BlurFade>
       
-      {allPosts.length === 0 && (
+      {sortedPosts.length === 0 && (
         <BlurFade delay={BLUR_FADE_DELAY * 2}>
           <div className="text-center py-16">
             <div className="w-16 h-16 rounded-full bg-muted/50 mx-auto mb-4 flex items-center justify-center">
-              <BookOpen className="size-8 text-muted-foreground" />
+              <Search className="size-8 text-muted-foreground" />
             </div>
-            <p className="text-muted-foreground text-lg">No blog posts yet. Check back soon!</p>
+            <p className="text-muted-foreground text-lg">No blog posts found.</p>
           </div>
         </BlurFade>
       )}
+
+      {/* JavaScript for filtering functionality */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const categoryFilter = document.getElementById('category-filter');
+            const postsContainer = document.getElementById('posts-container');
+            const posts = postsContainer.querySelectorAll('[data-category]');
+            
+            function filterPosts() {
+              const searchTerm = searchInput.value.toLowerCase();
+              const selectedCategory = categoryFilter.value;
+              
+              posts.forEach(post => {
+                const title = post.getAttribute('data-title') || '';
+                const summary = post.getAttribute('data-summary') || '';
+                const tags = post.getAttribute('data-tags') || '';
+                const category = post.getAttribute('data-category') || '';
+                
+                const matchesSearch = title.includes(searchTerm) || 
+                                    summary.includes(searchTerm) || 
+                                    tags.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+                
+                if (matchesSearch && matchesCategory) {
+                  post.style.display = 'block';
+                } else {
+                  post.style.display = 'none';
+                }
+              });
+            }
+            
+            searchInput.addEventListener('input', filterPosts);
+            categoryFilter.addEventListener('change', filterPosts);
+          });
+        `
+      }} />
     </section>
   );
 }
