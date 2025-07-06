@@ -1,88 +1,103 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
+import L from "leaflet";
 import BlurFade from "./magicui/blur-fade";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import geoData from "../../public/hk-districts-topo.json";
 
 interface HongKongMapProps {
   delay?: number;
 }
 
-// Real lat/lon for each location
+// Location data remains the same
 const locations = {
   "Tai Mo Shan": {
     name: "Tai Mo Shan (大帽山)",
     description: "Camping on December 31st to wait for the sunrise",
-    coordinates: [114.1175, 22.4197], // Tai Mo Shan peak
+    coordinates: [22.4197, 114.1175], // Lat, Lon for Leaflet
     type: "nature"
   },
   "Tiu Chung Chau": {
     name: "Tiu Chung Chau (吊鐘洲)",
     description: "Kayaking spot (northeast, near Sai Kung; not Cheung Chau)",
-    coordinates: [114.3906, 22.4706], // Tiu Chung Chau
+    coordinates: [22.348, 114.36], // Corrected coordinates for better placement
     type: "nature"
   },
   "Tai Tong": {
     name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
     description: "Hiking with beautiful autumn leaves",
-    coordinates: [114.0262, 22.4442], // Tai Tong
+    coordinates: [22.421, 114.019], // Corrected coordinates
     type: "nature"
   },
   "Thousand Island Lake": {
     name: "Thousand Island Lake (千島湖)",
     description: "Hiking destination (near Tai Lam Chung Reservoir)",
-    coordinates: [114.0572, 22.3497], // Tai Lam Chung Reservoir
+    coordinates: [22.37, 114.03], // Corrected coordinates
     type: "nature"
   },
   "Braemar Hill": {
     name: "Braemar Hill (寶馬山)",
-    description: "Night hiking with city views (above Causeway Bay, near North Point)",
-    coordinates: [114.2006, 22.2822], // Braemar Hill
+    description: "Night hiking with city views",
+    coordinates: [22.2822, 114.2006],
     type: "nature"
   },
   "West Kowloon": {
     name: "West Kowloon (西九龍)",
     description: "Picnicking by the harbor",
-    coordinates: [114.1588, 22.3045], // West Kowloon Cultural District
+    coordinates: [22.3045, 114.1588],
     type: "urban"
   },
   "Admiralty": {
     name: "Admiralty (金鐘)",
     description: "Start of city walk",
-    coordinates: [114.1655, 22.2797], // Admiralty
+    coordinates: [22.2797, 114.1655],
     type: "urban"
   },
   "Causeway Bay": {
     name: "Causeway Bay (銅鑼灣)",
     description: "End of city walk",
-    coordinates: [114.1860, 22.2806], // Causeway Bay
+    coordinates: [22.2806, 114.1860],
     type: "urban"
   },
   "SoHo": {
     name: "SoHo",
     description: "Bar Leone - Asia's Best Bar 2024",
-    coordinates: [114.1511, 22.2819], // SoHo, Central
+    coordinates: [22.2819, 114.1511],
     type: "urban"
   },
   "Sai Kung": {
     name: "Sai Kung (西貢)",
     description: "Squid fishing",
-    coordinates: [114.2710, 22.3833], // Sai Kung Town
+    coordinates: [22.3833, 114.2710],
     type: "nature"
   }
 };
 
+// Custom icon definitions
+const natureIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const urbanIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
   const [isClient, setIsClient] = useState(false);
-  const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const getLocationName = (locationKey: string) => locations[locationKey as keyof typeof locations]?.name || locationKey;
-  const getLocationDescription = (locationKey: string) => locations[locationKey as keyof typeof locations]?.description || "";
 
   if (!isClient) {
     return (
@@ -103,80 +118,39 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       <div className="flex justify-center">
         <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
           <div className="flex flex-col items-center space-y-6">
-            <div className="relative w-full max-w-2xl">
-              <ComposableMap
-                projection="geoMercator"
-                projectionConfig={{
-                  center: [114.2, 22.3],
-                  scale: 15000,
-                }}
-                width={800}
-                height={500}
-                style={{ width: "100%", height: "auto", maxHeight: 500 }}
+            <div className="relative w-full h-96 max-w-4xl rounded-lg overflow-hidden border">
+              <MapContainer 
+                center={[22.35, 114.15]} // Center of Hong Kong
+                zoom={10} 
+                style={{ height: '100%', width: '100%' }}
+                scrollWheelZoom={false}
               >
-                <Geographies geography={geoData}>
-                  {({ geographies }) =>
-                    geographies.map((geo) => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        style={{
-                          default: {
-                            fill: "#e5e7eb",
-                            stroke: "#ffffff",
-                            strokeWidth: 0.75,
-                            outline: "none",
-                          },
-                          hover: {
-                            fill: "#3b82f6",
-                            stroke: "#ffffff",
-                            strokeWidth: 1,
-                            outline: "none",
-                          },
-                          pressed: {
-                            fill: "#e5e7eb",
-                            stroke: "#ffffff",
-                            strokeWidth: 1,
-                            outline: "none",
-                          },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
-                {/* Markers for locations */}
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
                 {Object.entries(locations).map(([key, location]) => (
                   <Marker
                     key={key}
-                    coordinates={location.coordinates as [number, number]}
-                    onMouseEnter={() => setHoveredLocation(key)}
-                    onMouseLeave={() => setHoveredLocation(null)}
+                    position={location.coordinates as [number, number]}
+                    icon={location.type === 'nature' ? natureIcon : urbanIcon}
                   >
-                    <circle
-                      r={10}
-                      fill={location.type === "nature" ? "#40c463" : "#3b82f6"}
-                      stroke="#fff"
-                      strokeWidth={3}
-                      style={{ cursor: "pointer", transition: "r 0.2s" }}
-                    />
+                    <Tooltip>
+                      <span className="font-semibold">{location.name}</span>
+                      <br />
+                      {location.description}
+                    </Tooltip>
                   </Marker>
                 ))}
-              </ComposableMap>
-              {/* Tooltip for hovered location */}
-              {hoveredLocation && (
-                <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-white bg-opacity-90 text-blue-700 px-4 py-2 rounded-lg shadow text-center pointer-events-none z-10">
-                  <span className="font-semibold text-base">{getLocationName(hoveredLocation)}</span>
-                  <div className="text-xs text-gray-500 mt-1">{getLocationDescription(hoveredLocation)}</div>
-                </div>
-              )}
+              </MapContainer>
             </div>
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                <img src={natureIcon.options.iconUrl} alt="Nature" className="w-4 h-auto"/>
                 <span>Nature</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                <img src={urbanIcon.options.iconUrl} alt="Urban" className="w-4 h-auto"/>
                 <span>Urban</span>
               </div>
             </div>
@@ -185,4 +159,7 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       </div>
     </BlurFade>
   );
-}; 
+};
+
+// Make sure to export the component as default if it's the only export
+export default HongKongMap; 
