@@ -22,22 +22,22 @@ const visitedCountries = [
   "FIN", // Finland
 ];
 
-// Map of country codes to full names for the word list
-const countryNames: { [key: string]: string } = {
-  "USA": "United States",
-  "CHN": "China",
-  "TWN": "Taiwan",
-  "JPN": "Japan",
-  "KOR": "South Korea",
-  "MYS": "Malaysia",
-  "THA": "Thailand",
-  "FRA": "France",
-  "ESP": "Spain",
-  "CHE": "Switzerland",
-  "ITA": "Italy",
-  "QAT": "Qatar",
-  "GBR": "United Kingdom",
-  "FIN": "Finland",
+// Map of country codes to full names and categories for the word list
+const countryData: { [key: string]: { name: string; category: string } } = {
+  "USA": { name: "United States", category: "North America" },
+  "CHN": { name: "China", category: "Asia" },
+  "TWN": { name: "Taiwan", category: "Asia" },
+  "JPN": { name: "Japan", category: "Asia" },
+  "KOR": { name: "South Korea", category: "Asia" },
+  "MYS": { name: "Malaysia", category: "Asia" },
+  "THA": { name: "Thailand", category: "Asia" },
+  "FRA": { name: "France", category: "Europe" },
+  "ESP": { name: "Spain", category: "Europe" },
+  "CHE": { name: "Switzerland", category: "Europe" },
+  "ITA": { name: "Italy", category: "Europe" },
+  "QAT": { name: "Qatar", category: "Middle East" },
+  "GBR": { name: "United Kingdom", category: "Europe" },
+  "FIN": { name: "Finland", category: "Europe" },
 };
 
 interface WorldMapProps {
@@ -196,15 +196,27 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
               {/* Visited Countries Word List */}
               <div className="w-full max-w-2xl">
                 <h3 className="text-lg font-semibold text-center mb-4">Countries Visited</h3>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {visitedCountries.map((countryCode) => (
-                    <span
-                      key={countryCode}
-                      className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium border border-green-200"
-                    >
-                      {countryNames[countryCode]}
-                    </span>
-                  ))}
+                <div className="text-center space-y-3">
+                  {(() => {
+                    // Group countries by category
+                    const categories: { [key: string]: string[] } = {};
+                    visitedCountries.forEach(countryCode => {
+                      const category = countryData[countryCode]?.category || "Other";
+                      if (!categories[category]) {
+                        categories[category] = [];
+                      }
+                      categories[category].push(countryData[countryCode]?.name || countryCode);
+                    });
+                    
+                    return Object.entries(categories).map(([category, countries]) => (
+                      <div key={category} className="space-y-1">
+                        <div className="text-sm font-medium text-muted-foreground">{category}</div>
+                        <div className="text-sm text-foreground">
+                          {countries.join(", ")}
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
             </div>
