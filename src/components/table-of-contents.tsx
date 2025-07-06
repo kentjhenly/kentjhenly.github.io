@@ -151,7 +151,7 @@ export function TableOfContents() {
       </div>
 
       {/* Show Aquarium Button (light blue, circular, fish icon only) */}
-      <div className="fixed top-4 left-4 z-50">
+      <div className="fixed top-4 right-4 z-50">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
