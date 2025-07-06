@@ -256,13 +256,13 @@ export default function TorusMugMorph() {
           autoRotate={false}
         />
         
-        {/* Transparent UI overlay */}
-        <Html center>
+        {/* Transparent UI overlay at bottom */}
+        <Html position={[0, -2, 0]}>
           <div style={{ 
             position: "absolute", 
-            top: "50%", 
+            bottom: "20px", 
             left: "50%", 
-            transform: "translate(-50%, -50%)", 
+            transform: "translateX(-50%)", 
             width: 300, 
             background: "rgba(255,255,255,0.1)", 
             borderRadius: 12, 
