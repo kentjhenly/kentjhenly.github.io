@@ -11,6 +11,16 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 - Interactive 3D Rubik's Cube: Built with Three.js and React Three Fiber
 - Aquarium Mode: Toggle a floating aquarium overlay with animated fish
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [How to Use This Template](#how-to-use-this-template)
+- [Remove Unwanted Features](#remove-unwanted-features)
+- [Quick Start](#quick-start)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
 - **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
