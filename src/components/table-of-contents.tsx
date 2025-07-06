@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 
 // Define the sections of your page
 const SECTIONS = [
@@ -22,7 +22,29 @@ const SECTIONS = [
 export function TableOfContents() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [hasViewedAllSections, setHasViewedAllSections] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
+
+  const handleNextSection = () => {
+    if (hasViewedAllSections) {
+      // Redirect to GitHub
+      window.open('https://github.com/heilcheng', '_blank');
+      return;
+    }
+
+    const nextIndex = currentSectionIndex + 1;
+    if (nextIndex < SECTIONS.length) {
+      setCurrentSectionIndex(nextIndex);
+      const nextSection = document.getElementById(SECTIONS[nextIndex].id);
+      if (nextSection) {
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // All sections viewed, next click will go to GitHub
+      setHasViewedAllSections(true);
+    }
+  };
 
   useEffect(() => {
     // Set up the Intersection Observer to watch for sections entering the viewport
@@ -31,6 +53,12 @@ export function TableOfContents() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id);
+            // Update current section index
+            const sectionIndex = SECTIONS.findIndex(s => s.id === entry.target.id);
+            if (sectionIndex !== -1) {
+              setCurrentSectionIndex(sectionIndex);
+              setHasViewedAllSections(false);
+            }
           }
         });
       },
@@ -102,7 +130,22 @@ export function TableOfContents() {
       </motion.nav>
 
       {/* Mobile Navigation - Navbar Style */}
-      <div className="md:hidden fixed top-4 right-4 z-50">
+      <div className="md:hidden fixed top-4 right-4 z-50 flex gap-2">
+        {/* Next Section Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleNextSection}
+          className={cn(
+            "size-12 bg-background backdrop-blur-lg border rounded-full flex items-center justify-center shadow-lg [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
+            hasViewedAllSections && "bg-green-100 dark:bg-green-900"
+          )}
+          title={hasViewedAllSections ? "Go to GitHub" : "Next Section"}
+        >
+          <ChevronDown className="size-4 text-foreground" />
+        </motion.button>
+
+        {/* Content Page Dot */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
