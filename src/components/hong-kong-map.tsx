@@ -44,6 +44,13 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       y: 45,
       type: "nature"
     },
+    "Braemar Hill": {
+      name: "Braemar Hill",
+      description: "Night hiking with city views",
+      x: 65,
+      y: 65,
+      type: "nature"
+    },
     "West Kowloon": {
       name: "West Kowloon (西九龍)",
       description: "Picnicking by the harbor",
@@ -63,6 +70,13 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       description: "End of city walk",
       x: 70,
       y: 75,
+      type: "urban"
+    },
+    "SoHo": {
+      name: "SoHo",
+      description: "Bar Leone - Asia's Best Bar 2024",
+      x: 58,
+      y: 78,
       type: "urban"
     },
     "Sai Kung": {

@@ -15,6 +15,7 @@ export const HongKongSpots = ({ delay = 0 }: HongKongSpotsProps) => {
         "Kayaking at Tiu Chung Chau (吊鐘洲)",
         "Hiking at Tai Tong Sweet Gum Woods (大棠紅葉楓香林) & Thousand Island Lake (千島湖)",
         "Squid fishing in Sai Kung (西貢)",
+        "Night hike to Braemar Hill",
       ],
     },
     {
@@ -23,6 +24,7 @@ export const HongKongSpots = ({ delay = 0 }: HongKongSpotsProps) => {
         "Picnicking at West Kowloon (西九龍)",
         "City walk on Hong Kong Island (from Admiralty 金鐘 to Causeway Bay 銅鑼灣)",
         "Browsing local bookstores",
+        "Drinking in SoHo (Bar Leone is Asia's Best Bar 2024)",
       ],
     },
   ];
