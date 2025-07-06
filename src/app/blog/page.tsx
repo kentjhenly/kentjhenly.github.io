@@ -22,7 +22,11 @@ export default async function BlogPage() {
       ...post,
       type: 'local' as const,
       url: `/blog/${post.slug}`,
-      isExternal: false
+      isExternal: false,
+      publishedAt: post.metadata.publishedAt,
+      title: post.metadata.title,
+      summary: post.metadata.summary,
+      tags: post.metadata.tags
     })),
     ...mediumPosts.map(post => ({
       ...post,
