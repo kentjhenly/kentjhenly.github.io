@@ -1,51 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // PAE Plot Component (Predicted Aligned Error)
 function PAEPlot({ morph }: { morph: number }) {
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
     const size = 200;
     canvas.width = size;
     canvas.height = size;
-    
-    // Clear canvas
     ctx.fillStyle = '#1e293b';
     ctx.fillRect(0, 0, size, size);
-    
-    // Generate mock PAE data
     const resolution = 20;
     const cellSize = size / resolution;
-    
     for (let i = 0; i < resolution; i++) {
       for (let j = 0; j < resolution; j++) {
-        // Base error decreases as protein folds
         let baseError = 15 - morph * 10;
-        
-        // Add some noise
         const noise = (Math.random() - 0.5) * 3;
         const error = Math.max(0, Math.min(30, baseError + noise));
-        
-        // Color based on error (green = low error, red = high error)
         const intensity = 1 - (error / 30);
         const r = Math.round(255 * (1 - intensity));
         const g = Math.round(255 * intensity);
         const b = 0;
-        
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
       }
     }
   }, [morph]);
-  
   return (
     <div style={{ textAlign: 'center' }}>
       <canvas 
@@ -64,15 +49,11 @@ function PAEPlot({ morph }: { morph: number }) {
   );
 }
 
-// Main component
 export default function ProteinFolding() {
   const [morph, setMorph] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Auto-play animation
   useEffect(() => {
     if (!isPlaying) return;
-    
     const interval = setInterval(() => {
       setMorph(prev => {
         if (prev >= 1) {
@@ -82,13 +63,10 @@ export default function ProteinFolding() {
         return prev + 0.01;
       });
     }, 50);
-    
     return () => clearInterval(interval);
   }, [isPlaying]);
-  
   return (
     <div style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
-      {/* Enhanced morph control at the top */}
       <div style={{ 
         width: "100%", 
         background: "rgba(255,255,255,0.1)", 
@@ -142,21 +120,14 @@ export default function ProteinFolding() {
           </div>
         </label>
       </div>
-      
-      {/* Main content area with PAE plot */}
       <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
-        {/* Placeholder for 3D model */}
         <div style={{ flex: 1, height: 400, borderRadius: "12px", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <p style={{ color: "#6b7280" }}>3D Protein Model (Coming Soon)</p>
         </div>
-        
-        {/* PAE Plot */}
         <div style={{ width: 220 }}>
           <PAEPlot morph={morph} />
         </div>
       </div>
-      
-      {/* AlphaFold pLDDT Confidence Legend */}
       <div style={{ 
         marginTop: 20, 
         padding: 16, 
@@ -168,14 +139,12 @@ export default function ProteinFolding() {
           AlphaFold-Inspired Protein Folding Visualization
         </h3>
         <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
-          This visualization demonstrates protein folding inspired by Google DeepMind's AlphaFold, using their confidence metrics to color the structure.
+          This visualization demonstrates protein folding inspired by Google DeepMind&apos;s AlphaFold, using their confidence metrics to color the structure.
         </p>
-        
-        {/* pLDDT Confidence Legend */}
         <div style={{ margin: "12px 0", display: "flex", flexWrap: "wrap", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ width: "16px", height: "16px", backgroundColor: "#0053D6", borderRadius: "2px" }}></div>
-            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very High (>90)</span>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very High (&gt;90)</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ width: "16px", height: "16px", backgroundColor: "#65CBF3", borderRadius: "2px" }}></div>
@@ -187,12 +156,11 @@ export default function ProteinFolding() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ width: "16px", height: "16px", backgroundColor: "#FF7D45", borderRadius: "2px" }}></div>
-            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very Low (<50)</span>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very Low (&lt;50)</span>
           </div>
         </div>
-        
         <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
-          <strong>pLDDT Score:</strong> The color of each amino acid indicates AlphaFold's confidence in its predicted position. Dark blue shows very high confidence, while orange indicates low confidence often found in flexible regions.
+          <strong>pLDDT Score:</strong> The color of each amino acid indicates AlphaFold&apos;s confidence in its predicted position. Dark blue shows very high confidence, while orange indicates low confidence often found in flexible regions.
         </p>
         <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
           <strong>PAE Plot:</strong> Shows the Predicted Aligned Error between different parts of the protein. Green squares indicate well-predicted relative positions, while red shows higher uncertainty.
