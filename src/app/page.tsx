@@ -191,8 +191,20 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      <HongKongSpots delay={BLUR_FADE_DELAY * 20} />
-      <HongKongMap delay={BLUR_FADE_DELAY * 21} />
+      <section id="hong-kong-map">
+        <div className="space-y-12 w-full py-12">
+          <BlurFade delay={BLUR_FADE_DELAY * 20}>
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Best parts of Hong Kong.
+                </h2>
+              </div>
+            </div>
+          </BlurFade>
+          <HongKongMap delay={BLUR_FADE_DELAY * 21} />
+        </div>
+      </section>
       <WorldMap delay={BLUR_FADE_DELAY * 22} />
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
