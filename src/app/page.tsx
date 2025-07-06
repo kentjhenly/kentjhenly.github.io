@@ -199,6 +199,9 @@ export default function Page() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                   Best parts of Hong Kong.
                 </h2>
+                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  A collection of my favorite spots and activities in the city I call home.
+                </p>
               </div>
             </div>
           </BlurFade>
