@@ -1,82 +1,91 @@
-# Personal Portfolio & Showcase
+# My Digital Playground & Personal Portfolio
 
-This is a highly customized and feature-rich personal portfolio built with a modern tech stack. It's designed not just to be a resume, but an interactive playground showcasing a passion for software engineering, 3D visualization, and data representation.
+Hey there! Welcome to the codebase for my personal portfolio. What started as a fork of the awesome [dillionverma/portfolio](https://github.com/dillionverma/portfolio) has grown into something I like to call my digital playground. It's more than just a resume; it's a living space where I get to blend my love for biology, math, and code into interactive, and hopefully, fun experiences.
 
-This portfolio is a modified version of the [dillionverma/portfolio](https://github.com/dillionverma/portfolio) template, optimized for deployment on GitHub Pages and extended with numerous custom interactive features.
+This portfolio is built with Next.js, styled with Tailwind CSS, and brought to life with Three.js and Framer Motion. It's automatically deployed to GitHub Pages, so it's always up-to-date with my latest experiments.
 
-## Features
+## Table of Contents
 
-This portfolio is packed with interactive and visually engaging components that demonstrate a wide range of web development skills.
+- [Features: The Fun Stuff](#features-the-fun-stuff-)
+- [Tech Stack: What's Under the Hood?](#tech-stack-whats-under-the-hood-)
+- [How to Make This Your Own](#how-to-make-this-your-own-)
+- [Quick Start](#quick-start-)
+- [Deployment Magic](#deployment-magic-)
+
+## Features: The Fun Stuff ✨
+
+I wanted this site to be a reflection of my personality and passions. Here are some of the key features I've built:
 
 ### Interactive 3D Visualizations:
 
-- **Rubik's Cube Solver**: An interactive 3D Rubik's Cube that visualizes the CFOP solving method, breaking it down into Cross, F2L, OLL, and PLL stages.
+- **Rubik's Cube Solver** (`/src/components/rubiks-cube.tsx`): A fully interactive 3D Rubik's Cube that visualizes the CFOP solving method. It's a nod to my love for algorithms and puzzles, breaking down the solution into the Cross, F2L, OLL, and PLL stages.
 
-- **Protein Folding**: An AlphaFold-inspired 3D visualization of a polypeptide chain folding into its functional structure, with colors representing pLDDT confidence scores.
+- **Protein Folding Viewer** (`/src/components/protein-folding.tsx`): Inspired by AlphaFold, this visualizer shows how a protein chain folds into its complex 3D structure. The colors represent pLDDT confidence scores, and it even includes a Predicted Aligned Error (PAE) plot.
 
-- **Torus-Mug Morph**: A beautiful demonstration of topological equivalence, allowing users to seamlessly morph a 3D torus into a coffee mug using a slider.
+- **Torus-Mug Morph** (`/src/components/torus-mug-morph.tsx`): A fun, interactive demo of topological equivalence. A slider lets you seamlessly morph a 3D torus (a doughnut) into a coffee mug and back again.
 
 ### Data-Driven Maps:
 
-- **World Map**: A global map built with react-simple-maps that highlights visited countries and provides tooltips for interactivity.
+- **World Map** (`/src/components/world-map.tsx`): A map of my travels, built with react-simple-maps. It highlights the countries I've visited and gives you a little tooltip on hover.
 
-- **Hong Kong Map**: A detailed, interactive map of Hong Kong created with react-leaflet, featuring custom markers for points of interest categorized by type (e.g., Nature, Urban).
+- **Hong Kong Map** (`/src/components/hong-kong-map.tsx`): A more personal map of my favorite spots in my home city, built with react-leaflet. I've added custom markers for my go-to nature and urban spots.
 
-### Dynamic Content & UI:
+### Dynamic & UI Features:
 
-- **GitHub Contribution Graph**: A real-time visualization of your GitHub activity, fetched directly from the GitHub GraphQL API. It's fully responsive, with a scrollable view on mobile.
+- **GitHub Contribution Graph** (`/src/components/github-contributions.tsx`): This is a live look at my coding activity, pulled directly from the GitHub GraphQL API. It's fully responsive, with a neat horizontal scroll on mobile.
 
-- **Aquarium Mode**: A whimsical, toggleable overlay that fills the screen with animated fish and shrimp, built with a custom animation loop using requestAnimationFrame.
+- **Aquarium Mode** (`/src/components/aquarium.tsx`): Because why not? A toggleable, full-screen overlay that fills the page with animated fish and shrimp, built with a custom animation loop using requestAnimationFrame.
 
-- **Fluid Animations**: Smooth, staggered animations on page load and scroll, powered by Framer Motion and Magic UI components like BlurFade and BlurFadeText.
+- **Smooth Animations** (`/src/components/magicui/`): I use Framer Motion and components from Magic UI like BlurFade to create a staggered, animated entrance for elements as they scroll into view.
 
-- **Dock Navigation**: A macOS-style dock with a magnification effect on hover for intuitive and aesthetically pleasing navigation.
+- **MDX Blog** (`/src/app/blog/`): The blog is powered by MDX, which lets me write in Markdown and embed React components right into my posts.
 
-- **MDX Blog**: A fully-featured blog with support for Markdown and embedded React components, with syntax highlighting provided by rehype-pretty-code.
+## Tech Stack: What's Under the Hood? 🛠️
 
-## Tech Stack
-
-This project leverages a modern, robust, and performant tech stack.
+I chose a modern, performant, and enjoyable tech stack to build this portfolio.
 
 - **Framework**: Next.js 14 (with App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with tailwindcss-animate
-- **UI**: shadcn/ui
-- **Animations**: Framer Motion & Magic UI
-- **3D Graphics**: Three.js & React Three Fiber
+- **Styling**: Tailwind CSS & shadcn/ui
+- **3D & Animation**: Three.js, React Three Fiber, & Framer Motion
 - **Maps**: React Leaflet & react-simple-maps
-- **Content**: MDX
 - **Deployment**: GitHub Pages with GitHub Actions
 - **Package Manager**: pnpm
 
-## Getting Started
+## How to Make This Your Own 🎨
 
-To get this portfolio up and running on your local machine, follow these steps.
+If you like what you see and want to build your own version, feel free to use this as a template!
 
-### Fork and Clone the Repository
+### 1. Get the Code
+
+Fork the repository and clone it to your local machine.
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/heilcheng.github.io.git
 cd heilcheng.github.io
 ```
 
-### Install Dependencies
+### 2. Install Dependencies
 
-This project uses pnpm. Install it if you haven't already:
-
-```bash
-npm install -g pnpm
-```
-
-Then, install the project dependencies:
+I use pnpm, but you can use npm or yarn as well.
 
 ```bash
 pnpm install
 ```
 
-### Set Up Environment Variables
+### 3. Personalize It
 
-To fetch your GitHub contribution data, you'll need a GitHub Personal Access Token (PAT).
+**Your Info**: All the personal data (name, description, experience, projects, etc.) is in one place: `src/data/resume.tsx`. Just open it up and replace my info with yours.
+
+**Your Maps**:
+- For the world map, edit the `visitedCountries` array in `src/components/world-map.tsx`.
+- For the Hong Kong map, update the `locations` object in `src/components/hong-kong-map.tsx` with your own favorite spots.
+
+**Your GitHub Graph**: In `src/app/page.tsx`, find the `<GitHubContributions />` component and change the `username` prop to your GitHub username.
+
+### 4. Set Up Your Environment
+
+To get the GitHub contribution graph working, you'll need a Personal Access Token (PAT).
 
 1. Create a `.env.local` file in the root of the project.
 2. Add your token to the file:
@@ -85,41 +94,21 @@ To fetch your GitHub contribution data, you'll need a GitHub Personal Access Tok
 NEXT_PUBLIC_GITHUB_TOKEN=your_github_pat_here
 ```
 
-### Run the Development Server
+## Quick Start 🚀
+
+Ready to run it locally?
 
 ```bash
 pnpm dev
 ```
 
-Open http://localhost:3000 in your browser to see the result.
+This will start the development server at http://localhost:3000.
 
-## Customization Guide
+## Deployment Magic 📦
 
-To make this portfolio your own, you'll need to update the content and assets.
+This portfolio is set up for automatic deployment to GitHub Pages. The workflow in `.github/workflows/deploy.yml` handles everything. Once you've set up your repository, every push to the main branch will automatically trigger the GitHub Action, which will build the site and deploy it to your GitHub Pages URL. Just make sure to add your GitHub PAT as a repository secret named `PERSONAL_ACCESS_TOKEN`.
 
-### Personal Information
+---
 
-All personal data, including your name, description, work experience, and social links, is centralized in `src/data/resume.tsx`. Modify this file to reflect your own information.
-
-### Maps and Visualizations
-
-- **World Map**: Update the `visitedCountries` array in `src/components/world-map.tsx` with the ISO A3 codes of the countries you've visited.
-
-- **Hong Kong Map**: Modify the `locations` object in `src/components/hong-kong-map.tsx` to add your own points of interest, including their coordinates and descriptions.
-
-- **GitHub Contributions**: Change the `username` prop passed to the `GitHubContributions` component in `src/app/page.tsx` to your GitHub username.
-
-### Blog Posts
-
-To add your own blog posts, create new `.mdx` files in the `content` directory. The frontmatter of each file should include a `title`, `publishedAt`, and `summary`.
-
-## Deployment
-
-This project is configured for seamless deployment to GitHub Pages using the workflow in `.github/workflows/deploy.yml`.
-
-1. **Set Up GitHub Pages**: In your repository settings, navigate to "Pages" and set the build and deployment source to "GitHub Actions."
-
-2. **Add Your PAT as a Secret**: In your repository settings, go to "Secrets and variables" > "Actions" and create a new repository secret named `PERSONAL_ACCESS_TOKEN` with the value of your GitHub PAT.
-
-3. **Push to main**: Any push to the main branch will automatically trigger the GitHub Action, which will build the site and deploy it to your GitHub Pages URL.
+I hope this gives you a good look into how I built my digital playground. Feel free to explore the code, and I'd love to see what you create with it!
 
