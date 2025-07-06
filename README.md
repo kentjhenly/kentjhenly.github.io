@@ -4,7 +4,14 @@ This portfolio is a modified version of [dillionverma/portfolio](https://github.
 
 Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and now optimized for GitHub Pages deployment.
 
-## ✨ Features
+**Optimized:**
+- For GitHub Pages deployment
+- Interactive World Map: Highlights countries visited, with zoom, pan, and hover effects
+- GitHub Contribution Graph: Real-time GitHub activity visualization
+- Interactive 3D Rubik's Cube: Built with Three.js and React Three Fiber
+- Aquarium Mode: Toggle a floating aquarium overlay with animated fish
+
+## Features
 
 - **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
 - **GitHub Contribution Graph**: Real-time GitHub activity visualization
@@ -15,7 +22,7 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 - **Blog Support**: MDX-based blog with markdown support
 - **Smooth Animations**: Powered by Framer Motion and Magic UI
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: Next.js 14, React 18
 - **Language**: TypeScript
@@ -26,7 +33,7 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 - **Deployment**: GitHub Actions
 - **Package Manager**: pnpm
 
-## 🎯 How to Use This Template
+## How to Use This Template
 
 Want to create your own portfolio using this optimized version? Here's how to get started:
 
@@ -126,7 +133,7 @@ colors: {
 }
 ```
 
-## 🗑️ Remove Unwanted Features
+## Remove Unwanted Features
 
 Don't want all the features? Here's how to remove them:
 
@@ -188,7 +195,7 @@ Want a minimal version? Keep only:
 - Education section
 - Projects section
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/your-username/your-repo.git
@@ -198,11 +205,11 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to fork this project and customize it for your own portfolio. If you make improvements that could benefit others, consider opening a pull request!
 
-## 📝 License
+## License
 
 This project is based on [dillionverma/portfolio](https://github.com/dillionverma/portfolio) and modified for personal use.
 
