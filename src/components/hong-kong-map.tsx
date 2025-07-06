@@ -103,23 +103,10 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
   if (!isClient) {
     return (
       <BlurFade delay={delay}>
-        <div className="space-y-12 w-full py-12">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Hong Kong Map.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Interactive map of my favorite spots in Hong Kong.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex justify-center">
-            <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
-              <div className="h-96 flex items-center justify-center">
-                Loading Hong Kong Map...
-              </div>
+        <div className="flex justify-center">
+          <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
+            <div className="h-96 flex items-center justify-center">
+              Loading Hong Kong Map...
             </div>
           </div>
         </div>
@@ -129,30 +116,18 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
 
   return (
     <BlurFade delay={delay}>
-      <div className="space-y-12 w-full py-12">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Hong Kong Map.
-            </h2>
-            <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Interactive map of my favorite spots in Hong Kong.
-            </p>
-          </div>
-        </div>
-        
-        <div className="flex justify-center">
-          <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
-            <div className="flex flex-col items-center space-y-6">
-              {/* Hong Kong Map Visualization */}
-              <div className="relative w-full max-w-2xl">
-                <svg
-                  viewBox="0 0 100 100"
-                  className="w-full h-auto"
-                  style={{ maxHeight: "400px" }}
-                >
-                  {/* Background */}
-                  <rect width="100" height="100" fill="#f8fafc" />
+      <div className="flex justify-center">
+        <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Hong Kong Map Visualization */}
+            <div className="relative w-full max-w-2xl">
+              <svg
+                viewBox="0 0 100 100"
+                className="w-full h-auto"
+                style={{ maxHeight: "400px" }}
+              >
+                {/* Background */}
+                <rect width="100" height="100" fill="#f8fafc" />
                   
                   {/* New Territories - Top and left, largest area */}
                   <path
