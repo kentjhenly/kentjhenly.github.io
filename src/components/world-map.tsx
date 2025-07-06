@@ -26,7 +26,6 @@ interface WorldMapProps {
 export const WorldMap = ({ delay }: WorldMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [clickedCountry, setClickedCountry] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -50,10 +49,15 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
     return countryNames[countryCode] || countryCode;
   };
 
-  const handleCountryClick = (countryCode: string) => {
-    if (visitedCountries.includes(countryCode)) {
-      setClickedCountry(clickedCountry === countryCode ? null : countryCode);
+  const getHoverText = (region: string) => {
+    if (region === "Europe") {
+      return "France, Spain, Switzerland, Italy";
+    } else if (region === "Asia") {
+      return "China, Taiwan, Japan, South Korea, Malaysia, Thailand";
+    } else if (visitedCountries.includes(region)) {
+      return getCountryName(region);
     }
+    return null;
   };
 
   if (!isClient) {
@@ -120,7 +124,6 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("USA")}
                     onMouseLeave={() => setHoveredCountry(null)}
-                    onClick={() => handleCountryClick("USA")}
                   />
                   
                   {/* South America */}
@@ -140,7 +143,6 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("Europe")}
                     onMouseLeave={() => setHoveredCountry(null)}
-                    onClick={() => handleCountryClick("Europe")}
                   />
                   
                   {/* Africa */}
@@ -160,7 +162,6 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("Asia")}
                     onMouseLeave={() => setHoveredCountry(null)}
-                    onClick={() => handleCountryClick("Asia")}
                   />
                   
                   {/* Australia */}
@@ -180,7 +181,6 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("QAT")}
                     onMouseLeave={() => setHoveredCountry(null)}
-                    onClick={() => handleCountryClick("QAT")}
                   />
                 </svg>
               </div>
@@ -197,28 +197,11 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 </div>
               </div>
               
-              {/* Click tooltip */}
-              {clickedCountry && (
+              {/* Hover tooltip */}
+              {hoveredCountry && (
                 <div className="text-center">
                   <p className="text-lg font-semibold text-green-700">
-                    {clickedCountry === "Europe" 
-                      ? "Europe: France, Spain, Switzerland, Italy"
-                      : clickedCountry === "Asia"
-                      ? "Asia: China, Taiwan, Japan, South Korea, Malaysia, Thailand"
-                      : getCountryName(clickedCountry)
-                    }
-                  </p>
-                </div>
-              )}
-              
-              {/* Hover tooltip */}
-              {hoveredCountry && !clickedCountry && (
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground">
-                    {visitedCountries.includes(hoveredCountry) || 
-                     (hoveredCountry === "Europe" && (visitedCountries.includes("FRA") || visitedCountries.includes("ESP") || visitedCountries.includes("CHE") || visitedCountries.includes("ITA"))) ||
-                     (hoveredCountry === "Asia" && (visitedCountries.includes("CHN") || visitedCountries.includes("TWN") || visitedCountries.includes("JPN") || visitedCountries.includes("KOR") || visitedCountries.includes("MYS") || visitedCountries.includes("THA")))
-                     ? "✅ Visited - Click to see details" : "⏳ Not yet visited"}
+                    {getHoverText(hoveredCountry)}
                   </p>
                 </div>
               )}
