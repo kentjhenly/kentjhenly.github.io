@@ -91,8 +91,8 @@ export function TableOfContents() {
                   className={cn(
                     "w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-gray-600 transition-all duration-300",
                     activeSection === section.id
-                      ? "bg-blue-500 scale-125"
-                      : "group-hover:bg-blue-400"
+                      ? "bg-blue-400 scale-125"
+                      : "group-hover:bg-blue-300"
                   )}
                 />
               </a>
@@ -123,7 +123,7 @@ export function TableOfContents() {
                       className={cn(
                         "text-sm",
                         activeSection === section.id
-                          ? "text-blue-500 font-bold"
+                          ? "text-blue-400 font-bold"
                           : "text-gray-700 dark:text-gray-300"
                       )}
                     >
@@ -150,7 +150,7 @@ export function TableOfContents() {
         </motion.button>
       </div>
 
-      {/* Show Aquarium Button (always visible, circular, fish icon only) */}
+      {/* Show Aquarium Button (light blue, circular, fish icon only) */}
       <div className="fixed top-4 left-4 z-50">
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -159,7 +159,7 @@ export function TableOfContents() {
             // TODO: Add aquarium functionality
             console.log("Show aquarium clicked");
           }}
-          className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg"
+          className="w-12 h-12 bg-blue-400 text-white rounded-full flex items-center justify-center shadow-lg"
         >
           <Fish className="w-5 h-5" />
         </motion.button>
