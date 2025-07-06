@@ -45,7 +45,7 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       type: "nature"
     },
     "Braemar Hill": {
-      name: "Braemar Hill",
+      name: "Braemar Hill (寶馬山)",
       description: "Night hiking with city views",
       x: 65,
       y: 65,
@@ -154,44 +154,53 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   {/* Background */}
                   <rect width="100" height="100" fill="#f8fafc" />
                   
-                  {/* Hong Kong Island */}
+                  {/* Hong Kong Island - More detailed shape */}
                   <path
-                    d="M55 70 Q60 65 65 70 Q70 75 65 80 Q60 85 55 80 Q50 75 55 70"
+                    d="M55 75 Q60 70 65 72 Q70 75 68 80 Q65 85 60 83 Q55 80 55 75"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Kowloon Peninsula */}
+                  {/* Kowloon Peninsula - More detailed shape */}
                   <path
-                    d="M40 70 Q45 65 50 70 Q55 75 50 80 Q45 85 40 80 Q35 75 40 70"
+                    d="M35 75 Q40 70 50 72 Q55 75 52 80 Q48 85 40 82 Q35 78 35 75"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* New Territories */}
+                  {/* New Territories - Larger, more detailed */}
                   <path
-                    d="M20 30 Q30 20 40 30 Q50 40 40 50 Q30 60 20 50 Q10 40 20 30"
+                    d="M15 25 Q25 15 40 25 Q50 35 45 50 Q35 65 20 55 Q10 40 15 25"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Lantau Island */}
+                  {/* Lantau Island - More detailed shape */}
                   <path
-                    d="M70 40 Q80 35 85 40 Q90 45 85 50 Q80 55 70 50 Q65 45 70 40"
+                    d="M65 35 Q75 30 85 35 Q90 40 88 50 Q80 60 70 55 Q65 45 65 35"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Sai Kung Peninsula */}
+                  {/* Sai Kung Peninsula - More detailed */}
                   <path
-                    d="M80 45 Q90 40 95 45 Q100 50 95 55 Q90 60 80 55 Q75 50 80 45"
+                    d="M75 40 Q85 35 95 40 Q100 45 98 55 Q90 65 80 60 Q75 50 75 40"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
+                  />
+                  
+                  {/* Victoria Harbour */}
+                  <path
+                    d="M50 70 Q55 72 60 70"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="0.5"
+                    strokeDasharray="2,2"
                   />
                   
                   {/* Location Markers */}
