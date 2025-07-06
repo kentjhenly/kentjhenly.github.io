@@ -65,7 +65,7 @@ export const DATA = {
       href: "#",
       location: "Hong Kong",
       title: "Co-Founder & Machine Learning Engineer",
-      logoUrl: "/stealth.jpeg",
+      logoUrl: "/Stealth.jpeg",
       start: "November 2024",
       end: "Present",
       bullets: [
