@@ -21,6 +21,7 @@ const visitedCountries = [
   "QAT", // Qatar
   "GBR", // United Kingdom
   "FIN", // Finland
+  "VAT", // Vatican City
 ];
 
 // Map of country codes to full names and categories for the word list
@@ -39,6 +40,7 @@ const countryData: { [key: string]: { name: string; category: string } } = {
   "QAT": { name: "Qatar", category: "Middle East" },
   "GBR": { name: "United Kingdom", category: "Europe" },
   "FIN": { name: "Finland", category: "Europe" },
+  "VAT": { name: "Vatican City", category: "Europe" },
 };
 
 interface WorldMapProps {
