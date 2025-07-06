@@ -343,32 +343,19 @@ class CubeSolver {
     );
   }
 
-  // Generate CFOP solve sequence based on current state
-  public generateCFOPSolve(): Move[] {
-    const moves: Move[] = [];
-    
-    // Simple CFOP sequence - in a real implementation, this would analyze the current state
-    // For now, we'll use a basic sequence that should work for most scrambles
-    
-    // Cross
-    moves.push(...CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
-    moves.push(...CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
-    
-    // F2L
-    for (let i = 0; i < 4; i++) {
-      moves.push(...CFOP_ALGORITHMS.F2L_PAIR_INSERT as Move[]);
-      moves.push(...CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT as Move[]);
-    }
-    
-    // OLL
-    moves.push(...CFOP_ALGORITHMS.OLL_T as Move[]);
-    moves.push(...CFOP_ALGORITHMS.OLL_U as Move[]);
-    
-    // PLL
-    moves.push(...CFOP_ALGORITHMS.PLL_T as Move[]);
-    moves.push(...CFOP_ALGORITHMS.PLL_U as Move[]);
-    
-    return moves;
+  // Generate inverse of a move sequence
+  public static generateInverseSequence(moves: Move[]): Move[] {
+    const inverseMap: { [key in Move]: Move } = {
+      'R': 'R\'', 'R\'': 'R', 'R2': 'R2',
+      'L': 'L\'', 'L\'': 'L', 'L2': 'L2',
+      'U': 'U\'', 'U\'': 'U', 'U2': 'U2',
+      'D': 'D\'', 'D\'': 'D', 'D2': 'D2',
+      'F': 'F\'', 'F\'': 'F', 'F2': 'F2',
+      'B': 'B\'', 'B\'': 'B', 'B2': 'B2'
+    };
+
+    // Reverse the sequence and invert each move
+    return moves.slice().reverse().map(move => inverseMap[move]);
   }
 }
 
@@ -381,6 +368,7 @@ const RubiksCubeScene = () => {
   const [currentStage, setCurrentStage] = useState<SolvingStage | null>(null);
   const [currentAlgorithm, setCurrentAlgorithm] = useState<string>("");
   const [isColorNeutral, setIsColorNeutral] = useState(false);
+  const [scrambleMoves, setScrambleMoves] = useState<Move[]>([]);
   
   const solverRef = useRef<CubeSolver | null>(null);
   const animationRef = useRef<number | null>(null);
@@ -433,20 +421,22 @@ const RubiksCubeScene = () => {
     return { pieces };
   };
 
-  // Create scrambled state
-  const createScrambledState = (): CubeState => {
+  // Create scrambled state and store the scramble moves
+  const createScrambledState = (): { state: CubeState; moves: Move[] } => {
     const solvedState = createSolvedState();
     const solver = new CubeSolver(solvedState);
+    const scrambleMoves: Move[] = [];
     
     // Apply random moves to scramble
     const moves: Move[] = ['R', 'L', 'U', 'D', 'F', 'B', 'R\'', 'L\'', 'U\'', 'D\'', 'F\'', 'B\''];
     for (let i = 0; i < 20; i++) {
       const randomMove = moves[Math.floor(Math.random() * moves.length)];
+      scrambleMoves.push(randomMove);
       solver.addMoves([randomMove]);
       solver.executeNextMove();
     }
     
-    return solver.getState();
+    return { state: solver.getState(), moves: scrambleMoves };
   };
 
   // Animation loop using requestAnimationFrame
@@ -469,11 +459,11 @@ const RubiksCubeScene = () => {
         const remainingMoves = solverRef.current.getQueueLength();
         console.log("Executed move:", move, "Remaining:", remainingMoves);
         
-        if (remainingMoves > 60) {
+        if (remainingMoves > 15) {
           setCurrentStage(SolvingStage.CROSS);
-        } else if (remainingMoves > 40) {
+        } else if (remainingMoves > 10) {
           setCurrentStage(SolvingStage.F2L);
-        } else if (remainingMoves > 20) {
+        } else if (remainingMoves > 5) {
           setCurrentStage(SolvingStage.OLL);
         } else if (remainingMoves > 0) {
           setCurrentStage(SolvingStage.PLL);
@@ -491,24 +481,27 @@ const RubiksCubeScene = () => {
     animationRef.current = requestAnimationFrame(animateMoves);
   }, [isSolving]);
 
-  // Start solving with CFOP method
+  // Start solving with inverse of scramble moves
   const startSolving = async () => {
     setIsSolving(true);
     setCurrentStage(null);
     setCurrentAlgorithm("");
     
-    // Create scrambled state
-    const scrambledState = createScrambledState();
+    // Create scrambled state and store scramble moves
+    const { state: scrambledState, moves: newScrambleMoves } = createScrambledState();
     setCubeState(scrambledState);
+    setScrambleMoves(newScrambleMoves);
     
-    // Initialize solver
+    // Initialize solver with scrambled state
     solverRef.current = new CubeSolver(scrambledState);
     
-    // Generate CFOP solve sequence based on current state
+    // Generate inverse sequence to solve the cube
     setCurrentStage(SolvingStage.CROSS);
-    setCurrentAlgorithm("Generating CFOP sequence...");
+    setCurrentAlgorithm("Generating solve sequence...");
     
-    const solveSequence = solverRef.current.generateCFOPSolve();
+    const solveSequence = CubeSolver.generateInverseSequence(newScrambleMoves);
+    console.log("Scramble moves:", newScrambleMoves);
+    console.log("Solve sequence:", solveSequence);
     console.log("Generated solve sequence:", solveSequence.length, "moves");
     solverRef.current.addMoves(solveSequence);
     
@@ -572,8 +565,10 @@ const RubiksCubeScene = () => {
     setCubeState(null);
     setCurrentStage(null);
     setCurrentAlgorithm("");
+    setScrambleMoves([]);
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
     }
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
