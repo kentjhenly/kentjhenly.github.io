@@ -14,6 +14,15 @@ interface GitHubContributionsProps {
   delay?: number;
 }
 
+// Blue theme color function
+const getBlueColor = (count: number): string => {
+  if (count === 0) return '#f1f5f9'; // Light gray for no contributions
+  if (count <= 3) return '#dbeafe'; // Very light blue
+  if (count <= 6) return '#93c5fd'; // Light blue
+  if (count <= 9) return '#3b82f6'; // Medium blue
+  return '#1d4ed8'; // Dark blue for high activity
+};
+
 export const GitHubContributions = ({ username, delay = 0 }: GitHubContributionsProps) => {
   const [contributions, setContributions] = useState<ContributionDay[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +120,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
                 key={dayIndex}
                 className="w-3 h-3 rounded-sm"
                 style={{
-                  backgroundColor: day.contributionCount > 0 ? day.color : '#ebedf0',
+                  backgroundColor: day.contributionCount > 0 ? getBlueColor(day.contributionCount) : '#f1f5f9',
                 }}
                 title={`${day.date}: ${day.contributionCount} contributions`}
               />
@@ -140,11 +149,11 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
           <div className="bg-card border rounded-lg p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
+                <div className="w-3 h-3 rounded-sm bg-[#f1f5f9]"></div>
                 <span className="text-sm text-muted-foreground">Less</span>
               </div>
               <div className="flex items-center gap-1">
-                {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
+                {['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8'].map((color, index) => (
                   <div
                     key={index}
                     className="w-3 h-3 rounded-sm"
