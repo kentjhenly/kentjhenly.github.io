@@ -15,7 +15,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
-const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -24,7 +23,7 @@ export default function Page() {
     <main className="flex flex-col min-h-[100dvh] space-y-10">
       <section id="hero">
         <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="gap-2 flex justify-between">
+          <div className="gap-2 flex justify-between items-center">
             <div className="flex-col flex flex-1 space-y-1.5">
               <BlurFadeText
                 delay={BLUR_FADE_DELAY}
@@ -33,12 +32,12 @@ export default function Page() {
                 text={`Hi, I'm ${DATA.name.split(" ")[0]}.`}
               />
               <BlurFadeText
-                className="max-w-[600px] md:text-xl"
-                delay={BLUR_FADE_DELAY}
+                className="max-w-[600px] text-muted-foreground md:text-xl"
+                delay={BLUR_FADE_DELAY * 2}
                 text={DATA.description}
               />
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY}>
+            <BlurFade delay={BLUR_FADE_DELAY * 3}>
               <Avatar className="size-28 border">
                 <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
                 <AvatarFallback>{DATA.initials}</AvatarFallback>
@@ -48,30 +47,50 @@ export default function Page() {
         </div>
       </section>
       <section id="about">
-        <BlurFade delay={BLUR_FADE_DELAY * 3}>
+        <BlurFade delay={BLUR_FADE_DELAY * 4}>
           <h2 className="text-xl font-bold">About</h2>
         </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 4}>
-          <Markdown className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-            {DATA.summary}
-          </Markdown>
+        <BlurFade delay={BLUR_FADE_DELAY * 5}>
+          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+            I'm a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
+          </p>
+        </BlurFade>
+        <BlurFade delay={BLUR_FADE_DELAY * 6}>
+          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
+            Before university, I was that kid obsessed with biology and completely hooked on the Olympiad. I loved exploring the mysteries of life. But after countless hours pipetting in the lab, I started to feel burnt out. I realized I loved biology, just not the endless wet lab work.
+          </p>
+        </BlurFade>
+        <BlurFade delay={BLUR_FADE_DELAY * 7}>
+          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
+            At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: "What if I could use math and code to solve big biology questions instead?" That idea completely changed my path.
+          </p>
+        </BlurFade>
+        <BlurFade delay={BLUR_FADE_DELAY * 8}>
+          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
+            And so, here I am, merging my love for biology with the power of math and computation.
+          </p>
+        </BlurFade>
+        <BlurFade delay={BLUR_FADE_DELAY * 9}>
+          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
+            When I'm not coding or solving equations, you'll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it's always "No.1" at Comebuytea.
+          </p>
         </BlurFade>
       </section>
 
       {/* 3D Rubik's Cube Solver Section */}
       <section id="rubiks-cube">
-        <RubiksCube delay={BLUR_FADE_DELAY * 4.5} />
+        <RubiksCube delay={BLUR_FADE_DELAY * 10} />
       </section>
 
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 5}>
+          <BlurFade delay={BLUR_FADE_DELAY * 11}>
             <h2 className="text-xl font-bold">Technical Experience</h2>
           </BlurFade>
           {DATA.technicalExperience.map((work, id) => (
             <BlurFade
               key={work.company}
-              delay={BLUR_FADE_DELAY * 6 + id * 0.05}
+              delay={BLUR_FADE_DELAY * 12 + id * 0.05}
             >
               <ResumeCard
                 key={work.company}
@@ -90,13 +109,13 @@ export default function Page() {
       </section>
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
+          <BlurFade delay={BLUR_FADE_DELAY * 13}>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
           {DATA.education.map((education, id) => (
             <BlurFade
               key={education.school}
-              delay={BLUR_FADE_DELAY * 8 + id * 0.05}
+              delay={BLUR_FADE_DELAY * 14 + id * 0.05}
             >
               <ResumeCard
                 key={education.school}
@@ -114,7 +133,7 @@ export default function Page() {
 
       <section id="projects">
         <div className="space-y-12 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 11}>
+          <BlurFade delay={BLUR_FADE_DELAY * 15}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -132,7 +151,7 @@ export default function Page() {
             {DATA.projects.map((project, id) => (
               <BlurFade
                 key={project.title}
-                delay={BLUR_FADE_DELAY * 12 + id * 0.05}
+                delay={BLUR_FADE_DELAY * 16 + id * 0.05}
               >
                 <ProjectCard
                   href={project.href}
@@ -153,12 +172,12 @@ export default function Page() {
       {/* Responsive GitHub Contributions Graph */}
       <div className="overflow-x-auto max-w-full pb-2 sm:overflow-visible sm:max-w-none sm:pb-0">
         <div className="min-w-[600px] sm:min-w-0">
-          <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
+          <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 17} />
         </div>
       </div>
       <section id="books">
         <div className="space-y-12 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 16}>
+          <BlurFade delay={BLUR_FADE_DELAY * 18}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -170,11 +189,11 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 17}>
+          <BlurFade delay={BLUR_FADE_DELAY * 19}>
             <div className="space-y-8">
               {DATA.books.map((themeGroup, themeId) => (
                 <div key={themeGroup.theme} className="space-y-4">
-                  <BlurFade delay={BLUR_FADE_DELAY * 18 + themeId * 0.1}>
+                  <BlurFade delay={BLUR_FADE_DELAY * 20 + themeId * 0.1}>
                     <h3 className="text-lg font-semibold text-muted-foreground">
                       {themeGroup.theme}
                     </h3>
@@ -183,7 +202,7 @@ export default function Page() {
                     {themeGroup.books.map((book, bookId) => (
                       <BlurFade
                         key={book.title + book.author}
-                        delay={BLUR_FADE_DELAY * 19 + themeId * 0.1 + bookId * 0.05}
+                        delay={BLUR_FADE_DELAY * 21 + themeId * 0.1 + bookId * 0.05}
                       >
                         <BookCard
                           title={book.title}
