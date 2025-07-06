@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls, Text, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Enhanced pLDDT scoring that's more realistic to AlphaFold
@@ -71,7 +71,7 @@ const AnimationController = ({
   return null; // This component doesn't render anything
 };
 
-// Protein backbone component with enhanced AlphaFold features
+// Enhanced protein backbone component with smooth curves
 const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
@@ -130,27 +130,58 @@ const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
     return { positions, colors, plddtScores };
   }, [morphFactor]);
   
+  // Create smooth curve from positions
+  const curve = useMemo(() => {
+    const points = [];
+    for (let i = 0; i < positions.length; i += 3) {
+      points.push(new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2]));
+    }
+    return new THREE.CatmullRomCurve3(points);
+  }, [positions]);
+  
+  // Create tube geometry from curve
+  const tubeGeometry = useMemo(() => {
+    return new THREE.TubeGeometry(curve, 64, 0.15, 8, false);
+  }, [curve]);
+  
+  // Create vertex colors for the tube
+  const tubeColors = useMemo(() => {
+    const tubeColors = [];
+    const segments = 64;
+    
+    for (let i = 0; i < segments; i++) {
+      const t = i / (segments - 1);
+      const colorIndex = Math.floor(t * (colors.length / 3 - 1));
+      const baseIndex = colorIndex * 3;
+      
+      tubeColors.push(colors[baseIndex], colors[baseIndex + 1], colors[baseIndex + 2]);
+    }
+    
+    return tubeColors;
+  }, [colors]);
+  
   const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    const geo = tubeGeometry.clone();
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(tubeColors, 3));
     return geo;
-  }, [positions, colors]);
+  }, [tubeGeometry, tubeColors]);
   
   return (
-    <mesh ref={meshRef} geometry={geometry}>
+    <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
       <meshPhysicalMaterial
         vertexColors
         transparent
-        opacity={0.8}
-        roughness={0.3}
+        opacity={0.9}
+        roughness={0.2}
         metalness={0.1}
+        clearcoat={0.3}
+        clearcoatRoughness={0.1}
       />
     </mesh>
   );
 };
 
-// Side chains component with enhanced AlphaFold features
+// Enhanced side chains component with better materials
 const SideChains = ({ morphFactor }: { morphFactor: number }) => {
   const groupRef = useRef<THREE.Group>(null);
   
@@ -205,14 +236,16 @@ const SideChains = ({ morphFactor }: { morphFactor: number }) => {
   return (
     <group ref={groupRef}>
       {sideChains.map((chain, index) => (
-        <mesh key={index} position={[chain.x, chain.y, chain.z]}>
-          <sphereGeometry args={[0.15, 8, 8]} />
+        <mesh key={index} position={[chain.x, chain.y, chain.z]} castShadow>
+          <sphereGeometry args={[0.12, 12, 12]} />
           <meshPhysicalMaterial
             color={chain.color}
             transparent
-            opacity={0.7}
-            roughness={0.2}
-            metalness={0.1}
+            opacity={0.8}
+            roughness={0.1}
+            metalness={0.2}
+            clearcoat={0.5}
+            clearcoatRoughness={0.1}
           />
         </mesh>
       ))}
@@ -349,24 +382,26 @@ const ProteinFolding = () => {
           This interactive 3D model shows how a protein chain twists and folds into its unique shape. The color tells you how confident the AI is: <span className="font-semibold text-blue-700 dark:text-blue-300">blue</span> means very confident, <span className="font-semibold text-yellow-600">yellow</span> and <span className="font-semibold text-orange-600">orange</span> mean less certain.
         </p>
       </div>
-      {/* Controls */}
+      
+      {/* Enhanced Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePlayPause}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            {isPlaying ? 'Pause' : 'Play'}
+            {isPlaying ? '⏸️ Pause' : '▶️ Play'}
           </button>
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            Reset
+            🔄 Reset
           </button>
         </div>
+        
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600 dark:text-gray-300">Unfolded</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Unfolded</span>
           <input
             type="range"
             min="0"
@@ -374,73 +409,120 @@ const ProteinFolding = () => {
             step="0.01"
             value={morphFactor}
             onChange={(e) => setMorphFactor(parseFloat(e.target.value))}
-            className="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-40 h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg appearance-none cursor-pointer shadow-inner"
+            style={{
+              background: `linear-gradient(to right, #e5e7eb 0%, #d1d5db 50%, #9ca3af 100%)`
+            }}
           />
-          <span className="text-sm text-gray-600 dark:text-gray-300">Folded</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Folded</span>
         </div>
       </div>
-      {/* Public-friendly Legend */}
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          What do the colors mean?
+      
+      {/* Enhanced Legend */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 mb-8 shadow-lg">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+          🎨 What do the colors mean?
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#0053D6] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Very Confident (Blue)</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <div className="w-8 h-8 bg-[#0053D6] rounded-full shadow-lg"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Very Confident</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">(Blue)</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#65CBF3] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Confident (Light Blue)</span>
+          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <div className="w-8 h-8 bg-[#65CBF3] rounded-full shadow-lg"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Confident</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">(Light Blue)</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#FFDB13] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Somewhat Confident (Yellow)</span>
+          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <div className="w-8 h-8 bg-[#FFDB13] rounded-full shadow-lg"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Somewhat Confident</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">(Yellow)</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#FF7D45] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Less Confident (Orange)</span>
+          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+            <div className="w-8 h-8 bg-[#FF7D45] rounded-full shadow-lg"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Less Confident</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">(Orange)</span>
           </div>
         </div>
       </div>
-      {/* 3D Visualization */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      {/* Enhanced 3D Visualization */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <div className="bg-gray-900 rounded-lg h-96">
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl h-96 shadow-2xl overflow-hidden">
             <Canvas
-              camera={{ position: [0, 0, 8], fov: 60 }}
-              style={{ background: 'linear-gradient(to bottom, #1a1a2e, #16213e)' }}
+              camera={{ position: [0, 0, 15], fov: 50 }}
+              style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+              shadows
             >
+              {/* Enhanced lighting setup */}
               <ambientLight intensity={0.4} />
-              <directionalLight position={[10, 10, 5]} intensity={1} />
-              <hemisphereLight intensity={0.3} />
+              <spotLight 
+                position={[10, 10, 10]} 
+                angle={0.15} 
+                penumbra={1} 
+                intensity={1}
+                castShadow
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+              />
+              <pointLight position={[-10, -10, -10]} intensity={0.3} />
+              <pointLight position={[0, 10, 0]} intensity={0.2} />
+              
+              {/* Environment for better reflections */}
+              <Environment preset="city" />
+              
               <ProteinBackbone morphFactor={morphFactor} />
               <SideChains morphFactor={morphFactor} />
+              
               <AnimationController 
                 isPlaying={isPlaying}
                 onMorphFactorChange={handleMorphFactorChange}
                 onAnimationComplete={handleAnimationComplete}
               />
-              <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+              
+              <OrbitControls 
+                enablePan={true} 
+                enableZoom={true} 
+                enableRotate={true}
+                minDistance={5}
+                maxDistance={25}
+                autoRotate={false}
+              />
             </Canvas>
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Quick Stats
+        
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 shadow-lg">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+              📊 Quick Stats
             </h3>
-            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <div>Protein Length: 50 pieces</div>
-              <div>Folding Progress: {Math.round(morphFactor * 100)}%</div>
-              <div>High Confidence (Blue/Light Blue): {highConfidenceCount}/50</div>
-              <div>Average Confidence: {averagePLDDT}/100</div>
+            <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                <span>Protein Length:</span>
+                <span className="font-semibold">50 pieces</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                <span>Folding Progress:</span>
+                <span className="font-semibold text-blue-600">{Math.round(morphFactor * 100)}%</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                <span>High Confidence:</span>
+                <span className="font-semibold text-green-600">{highConfidenceCount}/50</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                <span>Average Confidence:</span>
+                <span className="font-semibold text-purple-600">{averagePLDDT}/100</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      
       {/* PAE plot moved to a new section below */}
-      <div className="mt-12">
+      <div className="mt-16">
         <PAEPlot morphFactor={morphFactor} />
       </div>
     </div>
