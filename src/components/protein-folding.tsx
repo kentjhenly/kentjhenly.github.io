@@ -278,10 +278,10 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
     
     // Add labels
     ctx.fillStyle = 'white';
-    ctx.font = '12px Arial';
-    ctx.fillText('Residue i', canvas.width / 2, canvas.height - 10);
+    ctx.font = '16px Arial';
+    ctx.fillText('Residue i', canvas.width / 2 - 40, canvas.height - 10);
     ctx.save();
-    ctx.translate(10, canvas.height / 2);
+    ctx.translate(20, canvas.height / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('Residue j', 0, 0);
     ctx.restore();
@@ -289,22 +289,25 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
   }, [morphFactor]);
   
   return (
-    <div className="bg-gray-900 rounded-lg p-4">
-      <h3 className="text-white text-sm font-semibold mb-2">Predicted Aligned Error (PAE)</h3>
+    <div className="bg-gray-900 rounded-lg p-6 flex flex-col items-center max-w-xl mx-auto">
+      <h3 className="text-white text-lg font-semibold mb-2">Predicted Aligned Error (PAE)</h3>
       <canvas
         ref={canvasRef}
-        width={200}
-        height={200}
+        width={350}
+        height={350}
         className="border border-gray-600 rounded"
       />
-      <div className="flex justify-between text-xs text-gray-400 mt-2">
+      <div className="flex justify-between text-xs text-gray-400 mt-2 w-full">
         <span>0 Å</span>
         <span>20 Å</span>
       </div>
-      <div className="flex justify-between text-xs text-gray-400 mt-1">
+      <div className="flex justify-between text-xs text-gray-400 mt-1 w-full">
         <span className="text-green-400">Low Error</span>
         <span className="text-red-400">High Error</span>
       </div>
+      <p className="text-xs text-gray-300 mt-4 text-center max-w-md">
+        The PAE plot shows how confident the model is about the relative positions of different parts of the protein. Green means the model is very sure, red means less certain.
+      </p>
     </div>
   );
 };
@@ -340,13 +343,12 @@ const ProteinFolding = () => {
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          AlphaFold-Inspired Protein Folding
+          Protein Folding: How Does a Protein Find Its Shape?
         </h2>
-        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Interactive 3D visualization of protein folding with pLDDT confidence scoring and PAE analysis, inspired by Google DeepMind&apos;s AlphaFold.
+        <p className="text-gray-700 dark:text-gray-200 max-w-2xl mx-auto text-lg">
+          This interactive 3D model shows how a protein chain twists and folds into its unique shape. The color tells you how confident the AI is: <span className="font-semibold text-blue-700 dark:text-blue-300">blue</span> means very confident, <span className="font-semibold text-yellow-600">yellow</span> and <span className="font-semibold text-orange-600">orange</span> mean less certain.
         </p>
       </div>
-      
       {/* Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
         <div className="flex items-center gap-2">
@@ -363,7 +365,6 @@ const ProteinFolding = () => {
             Reset
           </button>
         </div>
-        
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600 dark:text-gray-300">Unfolded</span>
           <input
@@ -378,36 +379,30 @@ const ProteinFolding = () => {
           <span className="text-sm text-gray-600 dark:text-gray-300">Folded</span>
         </div>
       </div>
-      
-      {/* Enhanced Legend */}
+      {/* Public-friendly Legend */}
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          AlphaFold pLDDT Confidence Legend
+          What do the colors mean?
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-          The color of each amino acid indicates AlphaFold&apos;s confidence in its predicted position. 
-          Dark blue shows very high confidence, while orange indicates low confidence often found in flexible regions.
-        </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#0053D6] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Very High (90-100)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Very Confident (Blue)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#65CBF3] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Confident (70-90)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Confident (Light Blue)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#FFDB13] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Low (50-70)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Somewhat Confident (Yellow)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#FF7D45] rounded"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Very Low (0-50)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Less Confident (Orange)</span>
           </div>
         </div>
       </div>
-      
       {/* 3D Visualization */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -419,44 +414,34 @@ const ProteinFolding = () => {
               <ambientLight intensity={0.4} />
               <directionalLight position={[10, 10, 5]} intensity={1} />
               <hemisphereLight intensity={0.3} />
-              
               <ProteinBackbone morphFactor={morphFactor} />
               <SideChains morphFactor={morphFactor} />
-              
               <AnimationController 
                 isPlaying={isPlaying}
                 onMorphFactorChange={handleMorphFactorChange}
                 onAnimationComplete={handleAnimationComplete}
               />
-              
               <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
             </Canvas>
           </div>
         </div>
-        
         <div className="space-y-4">
-          <PAEPlot morphFactor={morphFactor} />
-          
           <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              AlphaFold Structure Analysis
+              Quick Stats
             </h3>
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <div>Length: 50 residues</div>
+              <div>Protein Length: 50 pieces</div>
               <div>Folding Progress: {Math.round(morphFactor * 100)}%</div>
-              <div>Average pLDDT: {averagePLDDT}</div>
-              <div>High Confidence: {highConfidenceCount}/50 residues</div>
-              <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  <strong>pLDDT Score:</strong> Predicted Local Distance Difference Test
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  <strong>PAE Plot:</strong> Shows confidence in relative residue positions
-                </div>
-              </div>
+              <div>High Confidence (Blue/Light Blue): {highConfidenceCount}/50</div>
+              <div>Average Confidence: {averagePLDDT}/100</div>
             </div>
           </div>
         </div>
+      </div>
+      {/* PAE plot moved to a new section below */}
+      <div className="mt-12">
+        <PAEPlot morphFactor={morphFactor} />
       </div>
     </div>
   );
