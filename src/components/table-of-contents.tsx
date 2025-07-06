@@ -99,14 +99,14 @@ export function TableOfContents() {
       </motion.nav>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden fixed bottom-4 right-4 z-50">
+      <div className="md:hidden fixed top-4 right-4 z-50">
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-14 right-0 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border dark:border-gray-700"
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-14 right-0 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border dark:border-gray-700"
             >
               <ul className="flex flex-col space-y-3">
                 {SECTIONS.map((section) => (
@@ -144,6 +144,21 @@ export function TableOfContents() {
           >
             <ChevronRight />
           </motion.div>
+        </motion.button>
+      </div>
+
+      {/* Mobile Show Aquarium Button */}
+      <div className="md:hidden fixed top-4 left-4 z-50">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => {
+            // TODO: Add aquarium functionality
+            console.log("Show aquarium clicked");
+          }}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg text-sm font-medium"
+        >
+          Show Aquarium
         </motion.button>
       </div>
     </>
