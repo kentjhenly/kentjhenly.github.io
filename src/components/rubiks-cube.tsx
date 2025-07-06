@@ -512,16 +512,35 @@ const RubiksCubeScene = () => {
     console.log("Generated solve sequence:", solveSequence.length, "moves");
     solverRef.current.addMoves(solveSequence);
     
-    // Reset animation timing and start animation loop
-    lastMoveTimeRef.current = 0;
-    animationRef.current = requestAnimationFrame(animateMoves);
+    // Animation will be started by useEffect when isSolving becomes true
   };
+
+  // Use useEffect to manage animation loop based on isSolving state
+  useEffect(() => {
+    if (isSolving) {
+      lastMoveTimeRef.current = 0;
+      animationRef.current = requestAnimationFrame(animateMoves);
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [isSolving, animateMoves]);
 
   // Cleanup animation on unmount
   useEffect(() => {
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
     };
   }, []);
