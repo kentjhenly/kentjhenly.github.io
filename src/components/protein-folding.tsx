@@ -43,6 +43,34 @@ const getAlphaFoldColor = (plddt: number) => {
   return '#FF7D45'; // Very low (orange)
 };
 
+// Animation controller component (inside Canvas)
+const AnimationController = ({ 
+  isPlaying, 
+  onMorphFactorChange, 
+  onAnimationComplete 
+}: { 
+  isPlaying: boolean;
+  onMorphFactorChange: (factor: number) => void;
+  onAnimationComplete: () => void;
+}) => {
+  const currentMorphFactor = useRef(0);
+  
+  useFrame(() => {
+    if (isPlaying) {
+      const next = currentMorphFactor.current + 0.01;
+      if (next >= 1) {
+        onMorphFactorChange(1);
+        onAnimationComplete();
+      } else {
+        currentMorphFactor.current = next;
+        onMorphFactorChange(next);
+      }
+    }
+  });
+  
+  return null; // This component doesn't render anything
+};
+
 // Protein backbone component with enhanced AlphaFold features
 const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -285,7 +313,6 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
 const ProteinFolding = () => {
   const [morphFactor, setMorphFactor] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const animationRef = useRef<number>();
   
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -296,19 +323,13 @@ const ProteinFolding = () => {
     setIsPlaying(false);
   };
   
-  // Animation loop
-  useFrame(() => {
-    if (isPlaying) {
-      setMorphFactor((prev) => {
-        const next = prev + 0.01;
-        if (next >= 1) {
-          setIsPlaying(false);
-          return 1;
-        }
-        return next;
-      });
-    }
-  });
+  const handleMorphFactorChange = (newFactor: number) => {
+    setMorphFactor(newFactor);
+  };
+  
+  const handleAnimationComplete = () => {
+    setIsPlaying(false);
+  };
   
   // Calculate current pLDDT statistics
   const currentPLDDTScores = generateRealisticPLDDTScores(morphFactor);
@@ -401,6 +422,12 @@ const ProteinFolding = () => {
               
               <ProteinBackbone morphFactor={morphFactor} />
               <SideChains morphFactor={morphFactor} />
+              
+              <AnimationController 
+                isPlaying={isPlaying}
+                onMorphFactorChange={handleMorphFactorChange}
+                onAnimationComplete={handleAnimationComplete}
+              />
               
               <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
             </Canvas>
