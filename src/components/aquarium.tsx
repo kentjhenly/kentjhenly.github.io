@@ -170,19 +170,10 @@ export const Aquarium = () => {
           onClick={() => setIsActive(!isActive)}
           variant={isActive ? "default" : "outline"}
           size="sm"
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+          className="flex items-center gap-2 bg-sky-400 hover:bg-sky-500 text-white border-none shadow-md"
         >
-          {isActive ? (
-            <>
-              <Fish className="w-4 h-4" />
-              Hide Aquarium
-            </>
-          ) : (
-            <>
-              <span className="text-lg">🌊</span>
-              Show Aquarium
-            </>
-          )}
+          <Fish className="w-4 h-4" />
+          {isActive ? "Hide Aquarium" : "Show Aquarium"}
         </Button>
       </div>
 

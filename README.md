@@ -8,12 +8,14 @@ Includes:
 - An interactive world map to highlight countries I've visited
 - A real-time GitHub contribution graph
 - An interactive 3D Rubik's Cube
+- A floating aquarium mode with animated fish and shrimp
 
 ## ✨ Features
 
 - **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
 - **GitHub Contribution Graph**: Real-time GitHub activity visualization
 - **Interactive 3D Rubik's Cube**: Built with Three.js and React Three Fiber
+- **Aquarium Mode**: Toggle a floating aquarium overlay with animated fish and shrimp swimming across your site. Fun, non-intrusive, and can be enabled/disabled with a button in the bottom-right corner.
 - **Responsive Design**: Optimized for all devices
 - **Dark/Light Mode**: Built-in theme switching
 - **Blog Support**: MDX-based blog with markdown support
@@ -84,6 +86,20 @@ pnpm dev
 - Modify solving steps in `src/components/rubiks-cube.tsx`
 - Adjust colors and animation timing
 - Add complex solving algorithms
+
+### Aquarium Mode
+
+**Features:**
+- Toggle button in the bottom-right corner (light blue, with a fish icon)
+- Animated SVG fish and shrimp swim across the site
+- Creatures bounce off edges and change direction for a natural effect
+- Overlay is non-intrusive and pointer-events are disabled
+- Works on all pages and screen sizes
+
+**How to Use:**
+- Click the "Show Aquarium" button (with fish icon) in the bottom-right to enable
+- Click "Hide Aquarium" to disable
+- The aquarium overlay is purely visual and does not affect site functionality
 
 ## 📝 License
 
