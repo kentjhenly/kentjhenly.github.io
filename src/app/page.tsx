@@ -1,5 +1,6 @@
 import { BookCard } from "@/components/book-card";
 import { WorldMap } from "@/components/world-map";
+import { HongKongSpots } from "@/components/hong-kong-spots";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { ProjectCard } from "@/components/project-card";
@@ -183,8 +184,9 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      <WorldMap delay={BLUR_FADE_DELAY * 14} />
-      <RubiksCube delay={BLUR_FADE_DELAY * 15} />
+      <HongKongSpots delay={BLUR_FADE_DELAY * 20} />
+      <WorldMap delay={BLUR_FADE_DELAY * 21} />
+      <RubiksCube delay={BLUR_FADE_DELAY * 22} />
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 20}>
