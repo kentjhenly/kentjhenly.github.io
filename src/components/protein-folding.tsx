@@ -35,12 +35,12 @@ const generateRealisticPLDDTScores = (morphFactor: number) => {
   return scores;
 };
 
-// AlphaFold color scheme based on pLDDT (exact AlphaFold colors)
+// AlphaFold color scheme based on pLDDT (Apple-style monochromatic blue)
 const getAlphaFoldColor = (plddt: number) => {
-  if (plddt >= 90) return '#0053D6'; // Very high (blue)
-  if (plddt >= 70) return '#65CBF3'; // Confident (light blue)
-  if (plddt >= 50) return '#FFDB13'; // Low (yellow)
-  return '#FF7D45'; // Very low (orange)
+  if (plddt >= 90) return '#007AFF'; // Apple Blue
+  if (plddt >= 70) return '#5AC8FA'; // Light Blue
+  if (plddt >= 50) return '#BCE3F7'; // Lighter Blue
+  return '#EBF7FF'; // Very Light Blue
 };
 
 // Animation controller component (inside Canvas)
@@ -389,19 +389,19 @@ const ProteinFolding = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handlePlayPause}
-            className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 font-medium"
+            className="px-6 py-2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 rounded-full hover:bg-gray-700 dark:hover:bg-gray-200 transition-all duration-200 font-medium text-sm"
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
           <button
             onClick={handleReset}
-            className="px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
+            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 font-medium text-sm"
           >
             Reset
           </button>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-full sm:w-auto">
           <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Unfolded</span>
           <input
             type="range"
@@ -410,7 +410,7 @@ const ProteinFolding = () => {
             step="0.01"
             value={morphFactor}
             onChange={(e) => setMorphFactor(parseFloat(e.target.value))}
-            className="w-40 h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
+            className="w-full sm:w-40 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-blue-600"
           />
           <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Folded</span>
         </div>
@@ -423,19 +423,19 @@ const ProteinFolding = () => {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="flex flex-col items-center gap-2">
-            <div className="w-6 h-6 bg-[#0053D6] rounded-full"></div>
+            <div className="w-6 h-6 bg-[#007AFF] rounded-full"></div>
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Very High</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <div className="w-6 h-6 bg-[#65CBF3] rounded-full"></div>
+            <div className="w-6 h-6 bg-[#5AC8FA] rounded-full"></div>
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">High</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <div className="w-6 h-6 bg-[#FFDB13] rounded-full"></div>
+            <div className="w-6 h-6 bg-[#BCE3F7] rounded-full"></div>
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Medium</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <div className="w-6 h-6 bg-[#FF7D45] rounded-full"></div>
+            <div className="w-6 h-6 bg-[#EBF7FF] rounded-full"></div>
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Low</span>
           </div>
         </div>
@@ -446,7 +446,7 @@ const ProteinFolding = () => {
         <div className="h-96">
           <Canvas
             camera={{ position: [0, 0, 15], fov: 50 }}
-            style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)' }}
+            style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%)' }}
             shadows
           >
             {/* Clean lighting setup */}
