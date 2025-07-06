@@ -374,34 +374,35 @@ const ProteinFolding = () => {
   
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Protein Folding: How Does a Protein Find Its Shape?
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          Protein Folding Visualization
         </h2>
-        <p className="text-gray-700 dark:text-gray-200 max-w-2xl mx-auto text-lg">
-          This interactive 3D model shows how a protein chain twists and folds into its unique shape. The color tells you how confident the AI is: <span className="font-semibold text-blue-700 dark:text-blue-300">blue</span> means very confident, <span className="font-semibold text-yellow-600">yellow</span> and <span className="font-semibold text-orange-600">orange</span> mean less certain.
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-lg leading-relaxed">
+          Interactive 3D model showing how a protein chain folds into its functional structure. 
+          Colors indicate confidence levels in the prediction.
         </p>
       </div>
       
-      {/* Enhanced Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
+      {/* Clean Controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+        <div className="flex items-center gap-3">
           <button
             onClick={handlePlayPause}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 font-medium"
           >
-            {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+            {isPlaying ? 'Pause' : 'Play'}
           </button>
           <button
             onClick={handleReset}
-            className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
           >
-            🔄 Reset
+            Reset
           </button>
         </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Unfolded</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Unfolded</span>
           <input
             type="range"
             min="0"
@@ -409,113 +410,98 @@ const ProteinFolding = () => {
             step="0.01"
             value={morphFactor}
             onChange={(e) => setMorphFactor(parseFloat(e.target.value))}
-            className="w-40 h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg appearance-none cursor-pointer shadow-inner"
-            style={{
-              background: `linear-gradient(to right, #e5e7eb 0%, #d1d5db 50%, #9ca3af 100%)`
-            }}
+            className="w-40 h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
           />
-          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Folded</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Folded</span>
         </div>
       </div>
       
-      {/* Enhanced Legend */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 mb-8 shadow-lg">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-          🎨 What do the colors mean?
+      {/* Clean Legend */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 mb-8 shadow-sm border border-gray-100 dark:border-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Confidence Levels
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
-            <div className="w-8 h-8 bg-[#0053D6] rounded-full shadow-lg"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Very Confident</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">(Blue)</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 bg-[#0053D6] rounded-full"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Very High</span>
           </div>
-          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
-            <div className="w-8 h-8 bg-[#65CBF3] rounded-full shadow-lg"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Confident</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">(Light Blue)</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 bg-[#65CBF3] rounded-full"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">High</span>
           </div>
-          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
-            <div className="w-8 h-8 bg-[#FFDB13] rounded-full shadow-lg"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Somewhat Confident</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">(Yellow)</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 bg-[#FFDB13] rounded-full"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Medium</span>
           </div>
-          <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md">
-            <div className="w-8 h-8 bg-[#FF7D45] rounded-full shadow-lg"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium text-center">Less Confident</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">(Orange)</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 bg-[#FF7D45] rounded-full"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Low</span>
           </div>
         </div>
       </div>
       
-      {/* Enhanced 3D Visualization */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl h-96 shadow-2xl overflow-hidden">
-            <Canvas
-              camera={{ position: [0, 0, 15], fov: 50 }}
-              style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
-              shadows
-            >
-              {/* Enhanced lighting setup */}
-              <ambientLight intensity={0.4} />
-              <spotLight 
-                position={[10, 10, 10]} 
-                angle={0.15} 
-                penumbra={1} 
-                intensity={1}
-                castShadow
-                shadow-mapSize-width={2048}
-                shadow-mapSize-height={2048}
-              />
-              <pointLight position={[-10, -10, -10]} intensity={0.3} />
-              <pointLight position={[0, 10, 0]} intensity={0.2} />
-              
-              {/* Remove Environment component that causes HDR loading errors */}
-              
-              <ProteinBackbone morphFactor={morphFactor} />
-              <SideChains morphFactor={morphFactor} />
-              
-              <AnimationController 
-                isPlaying={isPlaying}
-                onMorphFactorChange={handleMorphFactorChange}
-                onAnimationComplete={handleAnimationComplete}
-              />
-              
-              <OrbitControls 
-                enablePan={true} 
-                enableZoom={true} 
-                enableRotate={true}
-                minDistance={5}
-                maxDistance={25}
-                autoRotate={false}
-              />
-            </Canvas>
-          </div>
+      {/* 3D Visualization with Light Background */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-8">
+        <div className="h-96">
+          <Canvas
+            camera={{ position: [0, 0, 15], fov: 50 }}
+            style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)' }}
+            shadows
+          >
+            {/* Clean lighting setup */}
+            <ambientLight intensity={0.6} />
+            <directionalLight 
+              position={[10, 10, 10]} 
+              intensity={0.8}
+              castShadow
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+            />
+            <pointLight position={[-10, -10, -10]} intensity={0.3} />
+            
+            <ProteinBackbone morphFactor={morphFactor} />
+            <SideChains morphFactor={morphFactor} />
+            
+            <AnimationController 
+              isPlaying={isPlaying}
+              onMorphFactorChange={handleMorphFactorChange}
+              onAnimationComplete={handleAnimationComplete}
+            />
+            
+            <OrbitControls 
+              enablePan={true} 
+              enableZoom={true} 
+              enableRotate={true}
+              minDistance={5}
+              maxDistance={25}
+              autoRotate={false}
+            />
+          </Canvas>
         </div>
-        
-        <div className="space-y-6">
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 shadow-lg">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-              📊 Quick Stats
-            </h3>
-            <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
-              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-                <span>Protein Length:</span>
-                <span className="font-semibold">50 pieces</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-                <span>Folding Progress:</span>
-                <span className="font-semibold text-blue-600">{Math.round(morphFactor * 100)}%</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-                <span>High Confidence:</span>
-                <span className="font-semibold text-green-600">{highConfidenceCount}/50</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-                <span>Average Confidence:</span>
-                <span className="font-semibold text-purple-600">{averagePLDDT}/100</span>
-              </div>
-            </div>
+      </div>
+      
+      {/* Quick Stats Below Visualization */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 mb-12">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Structure Analysis
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{50}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Residues</div>
+          </div>
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="text-2xl font-bold text-blue-600">{Math.round(morphFactor * 100)}%</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Progress</div>
+          </div>
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="text-2xl font-bold text-green-600">{highConfidenceCount}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">High Confidence</div>
+          </div>
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="text-2xl font-bold text-purple-600">{averagePLDDT}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Avg Score</div>
           </div>
         </div>
       </div>
