@@ -83,8 +83,16 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
 
   useEffect(() => {
     fetch("/hk-districts-topo.json")
-      .then((res) => res.json())
-      .then((data) => setGeoData(data));
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => setGeoData(data))
+      .catch((error) => {
+        console.error("Error loading Hong Kong map data:", error);
+      });
   }, []);
 
   const getLocationName = (locationKey: string) => locations[locationKey as keyof typeof locations]?.name || locationKey;
@@ -113,12 +121,12 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
               <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{
-                  center: [114.15, 22.35],
-                  scale: 35000,
+                  center: [114.2, 22.3],
+                  scale: 15000,
                 }}
                 width={800}
-                height={400}
-                style={{ width: "100%", height: "auto", maxHeight: 400 }}
+                height={500}
+                style={{ width: "100%", height: "auto", maxHeight: 500 }}
               >
                 <Geographies geography={geoData}>
                   {({ geographies }) =>
@@ -159,10 +167,10 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                     onMouseLeave={() => setHoveredLocation(null)}
                   >
                     <circle
-                      r={7}
+                      r={10}
                       fill={location.type === "nature" ? "#40c463" : "#3b82f6"}
                       stroke="#fff"
-                      strokeWidth={2}
+                      strokeWidth={3}
                       style={{ cursor: "pointer", transition: "r 0.2s" }}
                     />
                   </Marker>
