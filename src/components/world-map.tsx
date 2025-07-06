@@ -72,22 +72,10 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
   if (!isClient) {
     return (
       <BlurFade delay={delay}>
-        <div className="space-y-12 w-full py-12">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                World Map.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Countries I&apos;ve had the privilege to explore.
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
-              <div className="h-96 flex items-center justify-center">
-                Loading World Map...
-              </div>
+        <div className="flex justify-center">
+          <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
+            <div className="h-96 flex items-center justify-center">
+              Loading World Map...
             </div>
           </div>
         </div>
@@ -97,22 +85,11 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
 
   return (
     <BlurFade delay={delay}>
-      <div className="space-y-12 w-full py-12">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              World Map.
-            </h2>
-            <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Countries I&apos;ve had the privilege to explore.
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-center">
-          <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
-            <div className="flex flex-col items-center space-y-6">
-              <div className="relative w-full max-w-2xl">
-                              <ComposableMap
+      <div className="flex justify-center">
+        <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative w-full max-w-2xl">
+              <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{
                   rotate: [-10, 0, 0],
@@ -127,96 +104,95 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   center={position.coordinates as [number, number]}
                   onMoveEnd={({ coordinates, zoom }) => setPosition({ coordinates, zoom })}
                 >
-                    <Geographies geography={geoData}>
-                      {({ geographies }) =>
-                        geographies.map((geo) => {
-                          const code = getCountryCode(geo);
-                          const isVisited = visitedSet.has(code);
-                          return (
-                            <Geography
-                              key={geo.rsmKey}
-                              geography={geo}
-                              onMouseEnter={() => setHoveredCountry(getCountryName(geo))}
-                              onMouseLeave={() => setHoveredCountry(null)}
-                              style={{
-                                default: {
-                                  fill: isVisited ? "#5AC8FA" : "#e5e7eb",
-                                  stroke: "#ffffff",
-                                  strokeWidth: 0.75,
-                                  outline: "none",
-                                  transition: "fill 0.2s",
-                                  cursor: "pointer",
-                                },
-                                hover: {
-                                  fill: "#3b82f6",
-                                  stroke: "#ffffff",
-                                  strokeWidth: 1,
-                                  outline: "none",
-                                  cursor: "pointer",
-                                },
-                                pressed: {
-                                  fill: isVisited ? "#5AC8FA" : "#e5e7eb",
-                                  stroke: "#ffffff",
-                                  strokeWidth: 1,
-                                  outline: "none",
-                                  cursor: "pointer",
-                                },
-                              }}
-                            />
-                          );
-                        })
-                      }
-                    </Geographies>
-                  </ZoomableGroup>
-                </ComposableMap>
-                {/* Tooltip for hovered country */}
-                {hoveredCountry && (
-                  <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-white bg-opacity-90 text-blue-700 px-4 py-2 rounded-lg shadow text-center pointer-events-none z-10">
-                    <span className="font-semibold text-base">{hoveredCountry}</span>
-                  </div>
-                )}
+                  <Geographies geography={geoData}>
+                    {({ geographies }) =>
+                      geographies.map((geo) => {
+                        const code = getCountryCode(geo);
+                        const isVisited = visitedSet.has(code);
+                        return (
+                          <Geography
+                            key={geo.rsmKey}
+                            geography={geo}
+                            onMouseEnter={() => setHoveredCountry(getCountryName(geo))}
+                            onMouseLeave={() => setHoveredCountry(null)}
+                            style={{
+                              default: {
+                                fill: isVisited ? "#5AC8FA" : "#e5e7eb",
+                                stroke: "#ffffff",
+                                strokeWidth: 0.75,
+                                outline: "none",
+                                transition: "fill 0.2s",
+                                cursor: "pointer",
+                              },
+                              hover: {
+                                fill: "#3b82f6",
+                                stroke: "#ffffff",
+                                strokeWidth: 1,
+                                outline: "none",
+                                cursor: "pointer",
+                              },
+                              pressed: {
+                                fill: isVisited ? "#5AC8FA" : "#e5e7eb",
+                                stroke: "#ffffff",
+                                strokeWidth: 1,
+                                outline: "none",
+                                cursor: "pointer",
+                              },
+                            }}
+                          />
+                        );
+                      })
+                    }
+                  </Geographies>
+                </ZoomableGroup>
+              </ComposableMap>
+              {/* Tooltip for hovered country */}
+              {hoveredCountry && (
+                <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-white bg-opacity-90 text-blue-700 px-4 py-2 rounded-lg shadow text-center pointer-events-none z-10">
+                  <span className="font-semibold text-base">{hoveredCountry}</span>
+                </div>
+              )}
+            </div>
+            {/* Legend */}
+            <div className="flex items-center space-x-6 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#5AC8FA' }}></div>
+                <span>Visited</span>
               </div>
-              {/* Legend */}
-              <div className="flex items-center space-x-6 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#5AC8FA' }}></div>
-                  <span>Visited</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-gray-300 rounded"></div>
-                  <span>Not Yet Visited</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#007AFF' }}></div>
-                  <span>Hover</span>
-                </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                <span>Not Yet Visited</span>
               </div>
-              
-              {/* Visited Countries Word List */}
-              <div className="w-full max-w-2xl">
-                <h3 className="text-lg font-semibold text-center mb-4">Countries Visited</h3>
-                <div className="text-center space-y-3">
-                  {(() => {
-                    // Group countries by category
-                    const categories: { [key: string]: string[] } = {};
-                    visitedCountries.forEach(countryCode => {
-                      const category = countryData[countryCode]?.category || "Other";
-                      if (!categories[category]) {
-                        categories[category] = [];
-                      }
-                      categories[category].push(countryData[countryCode]?.name || countryCode);
-                    });
-                    
-                    return Object.entries(categories).map(([category, countries]) => (
-                      <div key={category} className="space-y-1">
-                        <div className="text-sm font-medium text-muted-foreground">{category}</div>
-                        <div className="text-sm text-foreground">
-                          {countries.join(", ")}
-                        </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#007AFF' }}></div>
+                <span>Hover</span>
+              </div>
+            </div>
+            
+            {/* Visited Countries Word List */}
+            <div className="w-full max-w-2xl">
+              <h3 className="text-lg font-semibold text-center mb-4">Countries Visited</h3>
+              <div className="text-center space-y-3">
+                {(() => {
+                  // Group countries by category
+                  const categories: { [key: string]: string[] } = {};
+                  visitedCountries.forEach(countryCode => {
+                    const category = countryData[countryCode]?.category || "Other";
+                    if (!categories[category]) {
+                      categories[category] = [];
+                    }
+                    categories[category].push(countryData[countryCode]?.name || countryCode);
+                  });
+                  
+                  return Object.entries(categories).map(([category, countries]) => (
+                    <div key={category} className="space-y-1">
+                      <div className="text-sm font-medium text-muted-foreground">{category}</div>
+                      <div className="text-sm text-foreground">
+                        {countries.join(", ")}
                       </div>
-                    ));
-                  })()}
-                </div>
+                    </div>
+                  ));
+                })()}
               </div>
             </div>
           </div>
