@@ -298,11 +298,11 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
       for (let j = 0; j < size; j++) {
         const pae = paeData[i][j];
         
-        // AlphaFold PAE color scheme: green (low error) to red (high error)
-        const normalizedError = pae / 20;
-        const r = Math.round(255 * normalizedError);
-        const g = Math.round(255 * (1 - normalizedError));
-        const b = 0;
+            // Apple-style PAE color scheme: light blue (low error) to darker blue (high error)
+    const normalizedError = pae / 20;
+    const r = Math.round(235 * (1 - normalizedError) + 0 * normalizedError); // EB to 00
+    const g = Math.round(247 * (1 - normalizedError) + 122 * normalizedError); // F7 to 7A
+    const b = Math.round(255 * (1 - normalizedError) + 255 * normalizedError); // FF to FF
         
         ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
@@ -310,8 +310,8 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
     }
     
     // Add labels
-    ctx.fillStyle = 'white';
-    ctx.font = '16px Arial';
+    ctx.fillStyle = '#6B7280';
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillText('Residue i', canvas.width / 2 - 40, canvas.height - 10);
     ctx.save();
     ctx.translate(20, canvas.height / 2);
@@ -322,24 +322,24 @@ const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
   }, [morphFactor]);
   
   return (
-    <div className="bg-gray-900 rounded-lg p-6 flex flex-col items-center max-w-xl mx-auto">
-      <h3 className="text-white text-lg font-semibold mb-2">Predicted Aligned Error (PAE)</h3>
+    <div className="bg-white rounded-2xl p-8 flex flex-col items-center max-w-xl mx-auto shadow-sm border border-gray-100">
+      <h3 className="text-gray-900 text-xl font-semibold mb-4 text-center">Predicted Aligned Error (PAE)</h3>
       <canvas
         ref={canvasRef}
         width={350}
         height={350}
-        className="border border-gray-600 rounded"
+        className="border border-gray-200 rounded-xl shadow-sm"
       />
-      <div className="flex justify-between text-xs text-gray-400 mt-2 w-full">
+      <div className="flex justify-between text-sm text-gray-500 mt-3 w-full">
         <span>0 Å</span>
         <span>20 Å</span>
       </div>
-      <div className="flex justify-between text-xs text-gray-400 mt-1 w-full">
-        <span className="text-green-400">Low Error</span>
-        <span className="text-red-400">High Error</span>
+      <div className="flex justify-between text-sm text-gray-500 mt-1 w-full">
+        <span className="text-blue-400">Low Error</span>
+        <span className="text-blue-600">High Error</span>
       </div>
-      <p className="text-xs text-gray-300 mt-4 text-center max-w-md">
-        The PAE plot shows how confident the model is about the relative positions of different parts of the protein. Green means the model is very sure, red means less certain.
+      <p className="text-sm text-gray-600 mt-6 text-center max-w-md leading-relaxed">
+        The PAE plot shows how confident the model is about the relative positions of different parts of the protein. Light blue means the model is very sure, darker blue means less certain.
       </p>
     </div>
   );
@@ -482,26 +482,26 @@ const ProteinFolding = () => {
       </div>
       
       {/* Quick Stats Below Visualization */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 mb-12">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mb-12">
+        <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">
           Structure Analysis
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{50}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Residues</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="text-center p-6 bg-gray-50 rounded-2xl">
+            <div className="text-3xl font-bold text-gray-900">{50}</div>
+            <div className="text-sm text-gray-600 font-medium">Residues</div>
           </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-            <div className="text-2xl font-bold text-blue-600">{Math.round(morphFactor * 100)}%</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Progress</div>
+          <div className="text-center p-6 bg-gray-50 rounded-2xl">
+            <div className="text-3xl font-bold text-blue-600">{Math.round(morphFactor * 100)}%</div>
+            <div className="text-sm text-gray-600 font-medium">Progress</div>
           </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-            <div className="text-2xl font-bold text-green-600">{highConfidenceCount}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">High Confidence</div>
+          <div className="text-center p-6 bg-gray-50 rounded-2xl">
+            <div className="text-3xl font-bold text-blue-500">{highConfidenceCount}</div>
+            <div className="text-sm text-gray-600 font-medium">High Confidence</div>
           </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-            <div className="text-2xl font-bold text-purple-600">{averagePLDDT}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Avg Score</div>
+          <div className="text-center p-6 bg-gray-50 rounded-2xl">
+            <div className="text-3xl font-bold text-blue-700">{averagePLDDT}</div>
+            <div className="text-sm text-gray-600 font-medium">Avg Score</div>
           </div>
         </div>
       </div>
