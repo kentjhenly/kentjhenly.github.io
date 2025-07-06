@@ -72,6 +72,54 @@ function generateIndices(radialSegments = 64, tubularSegments = 32) {
   return indices;
 }
 
+function computeNormals(vertices: number[], indices: number[]) {
+  const normals = new Float32Array(vertices.length);
+  
+  // Initialize normals to zero
+  for (let i = 0; i < normals.length; i++) {
+    normals[i] = 0;
+  }
+  
+  // Compute face normals and accumulate vertex normals
+  for (let i = 0; i < indices.length; i += 3) {
+    const a = indices[i] * 3;
+    const b = indices[i + 1] * 3;
+    const c = indices[i + 2] * 3;
+    
+    const v1 = new THREE.Vector3(vertices[a], vertices[a + 1], vertices[a + 2]);
+    const v2 = new THREE.Vector3(vertices[b], vertices[b + 1], vertices[b + 2]);
+    const v3 = new THREE.Vector3(vertices[c], vertices[c + 1], vertices[c + 2]);
+    
+    const edge1 = v2.clone().sub(v1);
+    const edge2 = v3.clone().sub(v1);
+    const faceNormal = edge1.cross(edge2).normalize();
+    
+    // Accumulate face normal to each vertex
+    normals[a] += faceNormal.x;
+    normals[a + 1] += faceNormal.y;
+    normals[a + 2] += faceNormal.z;
+    
+    normals[b] += faceNormal.x;
+    normals[b + 1] += faceNormal.y;
+    normals[b + 2] += faceNormal.z;
+    
+    normals[c] += faceNormal.x;
+    normals[c + 1] += faceNormal.y;
+    normals[c + 2] += faceNormal.z;
+  }
+  
+  // Normalize accumulated normals
+  for (let i = 0; i < normals.length; i += 3) {
+    const normal = new THREE.Vector3(normals[i], normals[i + 1], normals[i + 2]);
+    normal.normalize();
+    normals[i] = normal.x;
+    normals[i + 1] = normal.y;
+    normals[i + 2] = normal.z;
+  }
+  
+  return normals;
+}
+
 export default function TorusMugMorph() {
   const [morph, setMorph] = useState(0);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -88,9 +136,12 @@ export default function TorusMugMorph() {
 
   // Flatten for BufferGeometry
   const flatVerts = useMemo(() => morphedVerts.flat(), [morphedVerts]);
+  
+  // Compute normals for smooth shading
+  const normals = useMemo(() => computeNormals(flatVerts, indices), [flatVerts, indices]);
 
   // Move useFrame into a child component
-  function MorphingMesh({ meshRef, flatVerts, indices }: { meshRef: React.RefObject<THREE.Mesh>, flatVerts: number[], indices: number[] }) {
+  function MorphingMesh({ meshRef, flatVerts, indices, normals }: { meshRef: React.RefObject<THREE.Mesh>, flatVerts: number[], indices: number[], normals: Float32Array }) {
     useFrame(() => {
       if (meshRef.current) {
         meshRef.current.rotation.y += 0.005;
@@ -100,7 +151,7 @@ export default function TorusMugMorph() {
       <mesh ref={meshRef} castShadow receiveShadow>
         <bufferGeometry attach="geometry">
           <bufferAttribute attach="attributes-position" args={[new Float32Array(flatVerts), 3]} />
-          {/* Optionally, recalculate normals or remove the normals attribute for smooth shading */}
+          <bufferAttribute attach="attributes-normal" args={[normals, 3]} />
           <bufferAttribute attach="index" args={[new Uint16Array(indices), 1]} />
         </bufferGeometry>
         <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.4} flatShading={false} />
@@ -113,7 +164,7 @@ export default function TorusMugMorph() {
       <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
         <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={0.7} />
-        <MorphingMesh meshRef={meshRef} flatVerts={flatVerts} indices={indices} />
+        <MorphingMesh meshRef={meshRef} flatVerts={flatVerts} indices={indices} normals={normals} />
         <Html center>
           <div style={{ position: "absolute", top: 20, left: 0, right: 0, width: 300, margin: "0 auto", background: "rgba(255,255,255,0.8)", borderRadius: 8, padding: 8, boxShadow: "0 2px 8px #0001" }}>
             <label style={{ fontWeight: 500, fontSize: 16 }}>
