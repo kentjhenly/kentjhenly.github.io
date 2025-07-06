@@ -180,10 +180,10 @@ class CubeSolver {
         const faceColors = [...state[key]];
         // Rotate face colors: [top, bottom, left, right, front, back]
         const temp = faceColors[0];
-        faceColors[0] = faceColors[4]; // front -> top
-        faceColors[4] = faceColors[1]; // bottom -> front
-        faceColors[1] = faceColors[5]; // back -> bottom
-        faceColors[5] = temp; // top -> back
+        faceColors[0] = faceColors[4]; // front -&gt; top
+        faceColors[4] = faceColors[1]; // bottom -&gt; front
+        faceColors[1] = faceColors[5]; // back -&gt; bottom
+        faceColors[5] = temp; // top -&gt; back
         state[key] = faceColors;
       });
 
@@ -214,10 +214,10 @@ class CubeSolver {
       leftFacePieces.forEach(key => {
         const faceColors = [...state[key]];
         const temp = faceColors[0];
-        faceColors[0] = faceColors[5]; // back -> top
-        faceColors[5] = faceColors[1]; // bottom -> back
-        faceColors[1] = faceColors[4]; // front -> bottom
-        faceColors[4] = temp; // top -> front
+        faceColors[0] = faceColors[5]; // back -&gt; top
+        faceColors[5] = faceColors[1]; // bottom -&gt; back
+        faceColors[1] = faceColors[4]; // front -&gt; bottom
+        faceColors[4] = temp; // top -&gt; front
         state[key] = faceColors;
       });
     }
@@ -230,10 +230,10 @@ class CubeSolver {
       upFacePieces.forEach(key => {
         const faceColors = [...state[key]];
         const temp = faceColors[2]; // left
-        faceColors[2] = faceColors[4]; // front -> left
-        faceColors[4] = faceColors[3]; // right -> front
-        faceColors[3] = faceColors[5]; // back -> right
-        faceColors[5] = temp; // left -> back
+        faceColors[2] = faceColors[4]; // front -&gt; left
+        faceColors[4] = faceColors[3]; // right -&gt; front
+        faceColors[3] = faceColors[5]; // back -&gt; right
+        faceColors[5] = temp; // left -&gt; back
         state[key] = faceColors;
       });
     }
@@ -246,10 +246,10 @@ class CubeSolver {
       downFacePieces.forEach(key => {
         const faceColors = [...state[key]];
         const temp = faceColors[2]; // left
-        faceColors[2] = faceColors[5]; // back -> left
-        faceColors[5] = faceColors[3]; // right -> back
-        faceColors[3] = faceColors[4]; // front -> right
-        faceColors[4] = temp; // left -> front
+        faceColors[2] = faceColors[5]; // back -&gt; left
+        faceColors[5] = faceColors[3]; // right -&gt; back
+        faceColors[3] = faceColors[4]; // front -&gt; right
+        faceColors[4] = temp; // left -&gt; front
         state[key] = faceColors;
       });
     }
@@ -262,10 +262,10 @@ class CubeSolver {
       frontFacePieces.forEach(key => {
         const faceColors = [...state[key]];
         const temp = faceColors[0]; // top
-        faceColors[0] = faceColors[2]; // left -> top
-        faceColors[2] = faceColors[1]; // bottom -> left
-        faceColors[1] = faceColors[3]; // right -> bottom
-        faceColors[3] = temp; // top -> right
+        faceColors[0] = faceColors[2]; // left -&gt; top
+        faceColors[2] = faceColors[1]; // bottom -&gt; left
+        faceColors[1] = faceColors[3]; // right -&gt; bottom
+        faceColors[3] = temp; // top -&gt; right
         state[key] = faceColors;
       });
     }
@@ -278,10 +278,10 @@ class CubeSolver {
       backFacePieces.forEach(key => {
         const faceColors = [...state[key]];
         const temp = faceColors[0]; // top
-        faceColors[0] = faceColors[3]; // right -> top
-        faceColors[3] = faceColors[1]; // bottom -> right
-        faceColors[1] = faceColors[2]; // left -> bottom
-        faceColors[2] = temp; // top -> left
+        faceColors[0] = faceColors[3]; // right -&gt; top
+        faceColors[3] = faceColors[1]; // bottom -&gt; right
+        faceColors[1] = faceColors[2]; // left -&gt; bottom
+        faceColors[2] = temp; // top -&gt; left
         state[key] = faceColors;
       });
     }
@@ -441,32 +441,32 @@ const RubiksCubeScene = () => {
     setCurrentAlgorithm("Cross Formation");
     
     // Add cross moves
-    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
     
     // Add F2L moves
     setCurrentStage(SolvingStage.F2L);
     setCurrentAlgorithm("F2L Pairing");
     for (let i = 0; i < 4; i++) {
-      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT);
-      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT);
+      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT as Move[]);
+      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT as Move[]);
     }
     
     // Add trigger moves
-    solverRef.current.addMoves(CFOP_ALGORITHMS.SEXY_MOVE);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.SUNE);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.SEXY_MOVE as Move[]);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.SUNE as Move[]);
     
     // Add OLL moves
     setCurrentStage(SolvingStage.OLL);
     setCurrentAlgorithm("OLL: T-Perm");
-    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_T);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_U);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_T as Move[]);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_U as Move[]);
     
     // Add PLL moves
     setCurrentStage(SolvingStage.PLL);
     setCurrentAlgorithm("PLL: T-Perm");
-    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_T);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_U);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_T as Move[]);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
     
     // Start animation loop
     lastMoveTimeRef.current = performance.now();
@@ -642,10 +642,10 @@ export const RubiksCube = ({ delay }: RubiksCubeProps) => {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Rubik's Cube Solver.
+              Rubik&apos;s Cube Solver.
             </h2>
             <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Interactive 3D visualization of the CFOP method in Rubik's cube solving, featuring Cross, F2L, OLL, and PLL stages.
+              Interactive 3D visualization of the CFOP method in Rubik&apos;s cube solving, featuring Cross, F2L, OLL, and PLL stages.
             </p>
           </div>
         </div>
