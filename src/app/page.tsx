@@ -54,6 +54,12 @@ export default function Page() {
           </Markdown>
         </BlurFade>
       </section>
+
+      {/* 3D Rubik's Cube Solver Section */}
+      <section id="rubiks-cube">
+        <RubiksCube delay={BLUR_FADE_DELAY * 4.5} />
+      </section>
+
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-3">
           <BlurFade delay={BLUR_FADE_DELAY * 5}>
