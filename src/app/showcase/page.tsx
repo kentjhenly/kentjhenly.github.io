@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 
 const TorusMugMorph = dynamic(() => import("@/components/torus-mug-morph"), { ssr: false });
 const ProteinFolding = dynamic(() => import("@/components/protein-folding").then(mod => mod.default), { ssr: false });
+const RubiksCube = dynamic(() => import("@/components/rubiks-cube").then(mod => mod.default), { ssr: false });
 
 export default function ShowcasePage() {
   return (
@@ -21,6 +22,14 @@ export default function ShowcasePage() {
         </p>
       </div>
       <ProteinFolding />
+      
+      <div className="text-center space-y-2 mt-16">
+        <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Rubik&apos;s Cube</h1>
+        <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          Interactive 3D Rubik&apos;s cube with a monochromatic blue color scheme.
+        </p>
+      </div>
+      <RubiksCube />
     </main>
   );
 } 
