@@ -31,9 +31,9 @@ import geoData from "../../public/world-countries.json"; // Your map data
 const WorldMap = () => (
   <ComposableMap
     projection="geoMercator"
-    projectionConfig={{
+    projectionConfig={% raw %}{{
       scale: 150, // Adjust the scale to zoom in/out
-    }}
+    }}{% endraw %}
   >
     <Geographies geography={geoData}>
       {({ geographies }) =>
@@ -64,7 +64,7 @@ return (
   <Geography
     key={geo.rsmKey}
     geography={geo}
-    style={{
+    style={% raw %}{{
       default: {
         fill: isVisited ? "#5AC8FA" : "#E5E7EB", // Visited color vs. default
         outline: "none",
@@ -73,7 +73,7 @@ return (
         fill: "#007AFF", // Hover color
         outline: "none",
       },
-    }}
+    }}{% endraw %}
   />
 );
 ```
@@ -121,7 +121,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Don't forget to import the CSS
 
 const HongKongMap = () => (
-  <MapContainer center={[22.35, 114.15]} zoom={10} style={{ height: '400px', width: '100%' }}>
+  <MapContainer center={[22.35, 114.15]} zoom={10} style={% raw %}{{ height: '400px', width: '100%' }}{% endraw %}>
     <TileLayer
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       attribution='&copy; OpenStreetMap contributors'
