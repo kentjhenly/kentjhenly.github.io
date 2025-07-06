@@ -8,9 +8,9 @@ export const DATA = {
   location: "Hong Kong",
   locationLink: "https://www.google.com/maps/place/hongkong",
   description:
-    "Researcher in mathematical biology and AI for biomedicine. Also a software engineer focused on AI/ML, building useful tools and fun apps with React Native. On the side, I share my journey as an influencer with 10k+ followers on Threads and 25k+ on LinkedIn.",
+    "A rising junior with research interests in Mathematical Biology and AI for biomedicine. I'm also a software engineer specializing in AI/ML, and I love building fun, meaningful apps with React Native. On the side, I share my journey with over 10,000 followers on Threads and 25,000 on LinkedIn.",
   summary:
-    "I'm a Homo sapiens from Hong Kong exploring the crossroads of math, code, and biology. When I'm not coding or solving equations, you'll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it's always \"No.1\" at Comebuytea.",
+    "I'm a Homo sapiens born and raised in Hong Kong. Before university, I was a Biology Olympiad student, but a sudden spark led me to pursue math instead: I thought, \"What if I use math and code to tackle big biology questions?\" And so, here I am. When I'm not coding or solving equations, you'll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it's always \"No.1\" at Comebuytea.",
   avatarUrl: "/me.jpeg",
 
   navbar: [
