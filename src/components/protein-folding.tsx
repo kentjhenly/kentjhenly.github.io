@@ -5,10 +5,37 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Mock pLDDT scores for demonstration (0-100 scale)
-const mockPLDDTScores = Array.from({ length: 50 }, () => Math.random() * 100);
+// Enhanced pLDDT scoring that's more realistic to AlphaFold
+const generateRealisticPLDDTScores = (morphFactor: number) => {
+  const scores = [];
+  
+  for (let i = 0; i < 50; i++) {
+    const t = i / 49;
+    
+    // Base confidence increases as protein folds
+    let baseScore = 30 + morphFactor * 60;
+    
+    // Add structural confidence based on position
+    // Helices and sheets get higher confidence
+    const structuralConfidence = Math.sin(t * 4 * Math.PI) * 0.3 + 
+                                Math.cos(t * 3 * Math.PI) * 0.2;
+    
+    // Loop regions (unstructured) have lower confidence
+    const loopPenalty = Math.sin(t * 8 * Math.PI) * 0.4;
+    
+    // Terminal regions often have lower confidence
+    const terminalPenalty = (t < 0.1 || t > 0.9) ? 0.3 : 0;
+    
+    let finalScore = baseScore + structuralConfidence * 20 - loopPenalty * 15 - terminalPenalty * 20;
+    finalScore = Math.max(0, Math.min(100, finalScore));
+    
+    scores.push(finalScore);
+  }
+  
+  return scores;
+};
 
-// AlphaFold color scheme based on pLDDT
+// AlphaFold color scheme based on pLDDT (exact AlphaFold colors)
 const getAlphaFoldColor = (plddt: number) => {
   if (plddt >= 90) return '#0053D6'; // Very high (blue)
   if (plddt >= 70) return '#65CBF3'; // Confident (light blue)
@@ -16,16 +43,17 @@ const getAlphaFoldColor = (plddt: number) => {
   return '#FF7D45'; // Very low (orange)
 };
 
-// Protein backbone component
+// Protein backbone component with enhanced AlphaFold features
 const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
-  // Generate protein structure
-  const { positions, colors } = useMemo(() => {
+  // Generate protein structure with realistic pLDDT scores
+  const { positions, colors, plddtScores } = useMemo(() => {
     const positions: number[] = [];
     const colors: number[] = [];
+    const plddtScores = generateRealisticPLDDTScores(morphFactor);
     
-    // Create a more complex protein structure
+    // Create a more complex protein structure with realistic secondary structure
     for (let i = 0; i < 50; i++) {
       const t = i / 49;
       const morphT = t * morphFactor;
@@ -35,10 +63,28 @@ const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
       const unfoldedY = 0;
       const unfoldedZ = 0;
       
-      // Folded state: complex 3D structure with alpha-helices and beta-sheets
-      const foldedX = Math.sin(t * 4 * Math.PI) * 2;
-      const foldedY = Math.cos(t * 3 * Math.PI) * 2;
-      const foldedZ = Math.sin(t * 2 * Math.PI) * 1.5;
+      // Folded state: realistic protein structure with alpha-helices and beta-sheets
+      // Alpha-helix regions (residues 10-25 and 35-45)
+      let foldedX, foldedY, foldedZ;
+      
+      if (t >= 0.2 && t <= 0.5) {
+        // Alpha-helix 1
+        const helixT = (t - 0.2) / 0.3;
+        foldedX = Math.sin(helixT * 4 * Math.PI) * 2;
+        foldedY = Math.cos(helixT * 4 * Math.PI) * 2;
+        foldedZ = helixT * 3;
+      } else if (t >= 0.7 && t <= 0.9) {
+        // Alpha-helix 2
+        const helixT = (t - 0.7) / 0.2;
+        foldedX = Math.sin(helixT * 4 * Math.PI) * 1.5 + 1;
+        foldedY = Math.cos(helixT * 4 * Math.PI) * 1.5 - 1;
+        foldedZ = helixT * 2 - 2;
+      } else {
+        // Loop regions
+        foldedX = Math.sin(t * 6 * Math.PI) * 1;
+        foldedY = Math.cos(t * 5 * Math.PI) * 1;
+        foldedZ = Math.sin(t * 3 * Math.PI) * 0.5;
+      }
       
       // Interpolate between unfolded and folded
       const x = unfoldedX * (1 - morphT) + foldedX * morphT;
@@ -48,12 +94,12 @@ const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
       positions.push(x, y, z);
       
       // Color based on pLDDT score
-      const plddt = mockPLDDTScores[i];
+      const plddt = plddtScores[i];
       const color = new THREE.Color(getAlphaFoldColor(plddt));
       colors.push(color.r, color.g, color.b);
     }
     
-    return { positions, colors };
+    return { positions, colors, plddtScores };
   }, [morphFactor]);
   
   const geometry = useMemo(() => {
@@ -76,23 +122,41 @@ const ProteinBackbone = ({ morphFactor }: { morphFactor: number }) => {
   );
 };
 
-// Side chains component
+// Side chains component with enhanced AlphaFold features
 const SideChains = ({ morphFactor }: { morphFactor: number }) => {
   const groupRef = useRef<THREE.Group>(null);
   
   const sideChains = useMemo(() => {
     const chains = [];
+    const plddtScores = generateRealisticPLDDTScores(morphFactor);
     
     for (let i = 0; i < 50; i += 2) { // Every other residue
       const t = i / 49;
       const morphT = t * morphFactor;
       
       // Base position (same as backbone)
-      const baseX = (t - 0.5) * 10 * (1 - morphT) + Math.sin(t * 4 * Math.PI) * 2 * morphT;
-      const baseY = 0 * (1 - morphT) + Math.cos(t * 3 * Math.PI) * 2 * morphT;
-      const baseZ = 0 * (1 - morphT) + Math.sin(t * 2 * Math.PI) * 1.5 * morphT;
+      let baseX, baseY, baseZ;
       
-      // Side chain offset
+      if (t >= 0.2 && t <= 0.5) {
+        // Alpha-helix 1
+        const helixT = (t - 0.2) / 0.3;
+        baseX = (t - 0.5) * 10 * (1 - morphT) + Math.sin(helixT * 4 * Math.PI) * 2 * morphT;
+        baseY = 0 * (1 - morphT) + Math.cos(helixT * 4 * Math.PI) * 2 * morphT;
+        baseZ = 0 * (1 - morphT) + helixT * 3 * morphT;
+      } else if (t >= 0.7 && t <= 0.9) {
+        // Alpha-helix 2
+        const helixT = (t - 0.7) / 0.2;
+        baseX = (t - 0.5) * 10 * (1 - morphT) + (Math.sin(helixT * 4 * Math.PI) * 1.5 + 1) * morphT;
+        baseY = 0 * (1 - morphT) + (Math.cos(helixT * 4 * Math.PI) * 1.5 - 1) * morphT;
+        baseZ = 0 * (1 - morphT) + (helixT * 2 - 2) * morphT;
+      } else {
+        // Loop regions
+        baseX = (t - 0.5) * 10 * (1 - morphT) + Math.sin(t * 6 * Math.PI) * 1 * morphT;
+        baseY = 0 * (1 - morphT) + Math.cos(t * 5 * Math.PI) * 1 * morphT;
+        baseZ = 0 * (1 - morphT) + Math.sin(t * 3 * Math.PI) * 0.5 * morphT;
+      }
+      
+      // Side chain offset (more realistic)
       const offsetX = Math.sin(i * 0.5) * 0.5;
       const offsetY = Math.cos(i * 0.3) * 0.5;
       const offsetZ = Math.sin(i * 0.7) * 0.5;
@@ -101,7 +165,7 @@ const SideChains = ({ morphFactor }: { morphFactor: number }) => {
       const y = baseY + offsetY * morphT;
       const z = baseZ + offsetZ * morphT;
       
-      const plddt = mockPLDDTScores[i];
+      const plddt = plddtScores[i];
       const color = getAlphaFoldColor(plddt);
       
       chains.push({ x, y, z, color, plddt });
@@ -128,8 +192,8 @@ const SideChains = ({ morphFactor }: { morphFactor: number }) => {
   );
 };
 
-// PAE Plot Component
-const PAEPlot = () => {
+// Enhanced PAE Plot Component with more realistic AlphaFold-like data
+const PAEPlot = ({ morphFactor }: { morphFactor: number }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useMemo(() => {
@@ -142,21 +206,44 @@ const PAEPlot = () => {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Generate mock PAE data (50x50 matrix)
+    // Generate more realistic PAE data that changes with folding
     const size = 50;
-    const paeData = Array.from({ length: size }, () =>
-      Array.from({ length: size }, () => Math.random() * 20)
+    const paeData = Array.from({ length: size }, (_, i) =>
+      Array.from({ length: size }, (_, j) => {
+        // Base error decreases as protein folds
+        const baseError = 15 - morphFactor * 10;
+        
+        // Structural domains have lower error (better prediction)
+        const domain1 = (i >= 10 && i <= 25) && (j >= 10 && j <= 25);
+        const domain2 = (i >= 35 && i <= 45) && (j >= 35 && j <= 45);
+        
+        let error = baseError;
+        if (domain1 || domain2) {
+          error *= 0.3; // Much lower error in structured regions
+        }
+        
+        // Add some noise
+        const noise = (Math.random() - 0.5) * 3;
+        error = Math.max(0, Math.min(20, error + noise));
+        
+        return error;
+      })
     );
     
-    // Draw PAE heatmap
+    // Draw PAE heatmap with AlphaFold-like coloring
     const cellSize = canvas.width / size;
     
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         const pae = paeData[i][j];
-        const intensity = Math.min(255, (pae / 20) * 255);
         
-        ctx.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
+        // AlphaFold PAE color scheme: green (low error) to red (high error)
+        const normalizedError = pae / 20;
+        const r = Math.round(255 * normalizedError);
+        const g = Math.round(255 * (1 - normalizedError));
+        const b = 0;
+        
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
       }
     }
@@ -171,7 +258,7 @@ const PAEPlot = () => {
     ctx.fillText('Residue j', 0, 0);
     ctx.restore();
     
-  }, []);
+  }, [morphFactor]);
   
   return (
     <div className="bg-gray-900 rounded-lg p-4">
@@ -185,6 +272,10 @@ const PAEPlot = () => {
       <div className="flex justify-between text-xs text-gray-400 mt-2">
         <span>0 Å</span>
         <span>20 Å</span>
+      </div>
+      <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <span className="text-green-400">Low Error</span>
+        <span className="text-red-400">High Error</span>
       </div>
     </div>
   );
@@ -219,6 +310,11 @@ const ProteinFolding = () => {
     }
   });
   
+  // Calculate current pLDDT statistics
+  const currentPLDDTScores = generateRealisticPLDDTScores(morphFactor);
+  const averagePLDDT = Math.round(currentPLDDTScores.reduce((a, b) => a + b, 0) / currentPLDDTScores.length);
+  const highConfidenceCount = currentPLDDTScores.filter(score => score >= 70).length;
+  
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="text-center mb-8">
@@ -226,7 +322,7 @@ const ProteinFolding = () => {
           AlphaFold-Inspired Protein Folding
         </h2>
         <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Interactive 3D visualization of protein folding with pLDDT confidence scoring and PAE analysis.
+          Interactive 3D visualization of protein folding with pLDDT confidence scoring and PAE analysis, inspired by Google DeepMind&apos;s AlphaFold.
         </p>
       </div>
       
@@ -262,11 +358,15 @@ const ProteinFolding = () => {
         </div>
       </div>
       
-      {/* Legend */}
+      {/* Enhanced Legend */}
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          pLDDT Confidence Legend
+          AlphaFold pLDDT Confidence Legend
         </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          The color of each amino acid indicates AlphaFold&apos;s confidence in its predicted position. 
+          Dark blue shows very high confidence, while orange indicates low confidence often found in flexible regions.
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#0053D6] rounded"></div>
@@ -308,16 +408,25 @@ const ProteinFolding = () => {
         </div>
         
         <div className="space-y-4">
-          <PAEPlot />
+          <PAEPlot morphFactor={morphFactor} />
           
           <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Structure Info
+              AlphaFold Structure Analysis
             </h3>
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
               <div>Length: 50 residues</div>
               <div>Folding Progress: {Math.round(morphFactor * 100)}%</div>
-              <div>Average pLDDT: {Math.round(mockPLDDTScores.reduce((a, b) => a + b, 0) / mockPLDDTScores.length)}</div>
+              <div>Average pLDDT: {averagePLDDT}</div>
+              <div>High Confidence: {highConfidenceCount}/50 residues</div>
+              <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <strong>pLDDT Score:</strong> Predicted Local Distance Difference Test
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <strong>PAE Plot:</strong> Shows confidence in relative residue positions
+                </div>
+              </div>
             </div>
           </div>
         </div>
