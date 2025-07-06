@@ -14,13 +14,13 @@ interface GitHubContributionsProps {
   delay?: number;
 }
 
-// Blue theme color function
+// Monochromatic blue color function
 const getBlueColor = (count: number): string => {
   if (count === 0) return '#f1f5f9'; // Light gray for no contributions
-  if (count <= 3) return '#dbeafe'; // Very light blue
-  if (count <= 6) return '#93c5fd'; // Light blue
-  if (count <= 9) return '#3b82f6'; // Medium blue
-  return '#1d4ed8'; // Dark blue for high activity
+  if (count <= 3) return '#EBF7FF'; // Very Light Blue
+  if (count <= 6) return '#BCE3F7'; // Lighter Blue
+  if (count <= 9) return '#5AC8FA'; // Light Blue
+  return '#007AFF'; // Apple Blue for high activity
 };
 
 export const GitHubContributions = ({ username, delay = 0 }: GitHubContributionsProps) => {
@@ -153,7 +153,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
                 <span className="text-sm text-muted-foreground">Less</span>
               </div>
               <div className="flex items-center gap-1">
-                {['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8'].map((color, index) => (
+                {['#EBF7FF', '#BCE3F7', '#5AC8FA', '#007AFF'].map((color, index) => (
                   <div
                     key={index}
                     className="w-3 h-3 rounded-sm"

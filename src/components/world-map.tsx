@@ -140,7 +140,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                               onMouseLeave={() => setHoveredCountry(null)}
                               style={{
                                 default: {
-                                  fill: isVisited ? "#dbeafe" : "#e5e7eb",
+                                  fill: isVisited ? "#EBF7FF" : "#e5e7eb",
                                   stroke: "#ffffff",
                                   strokeWidth: 0.75,
                                   outline: "none",
@@ -155,7 +155,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                                   cursor: "pointer",
                                 },
                                 pressed: {
-                                  fill: isVisited ? "#dbeafe" : "#e5e7eb",
+                                  fill: isVisited ? "#EBF7FF" : "#e5e7eb",
                                   stroke: "#ffffff",
                                   strokeWidth: 1,
                                   outline: "none",
@@ -179,7 +179,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
               {/* Legend */}
               <div className="flex items-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-200 rounded"></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#EBF7FF' }}></div>
                   <span>Visited</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -187,7 +187,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   <span>Not Yet Visited</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#007AFF' }}></div>
                   <span>Hover</span>
                 </div>
               </div>
