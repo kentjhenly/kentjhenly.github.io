@@ -251,11 +251,10 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   ))}
                   
                   {/* Region Labels */}
-                  <text x="20" y="20" fontSize="3" fill="#6b7280" className="pointer-events-none">New Territories</text>
-                  <text x="50" y="68" fontSize="3" fill="#6b7280" className="pointer-events-none">Kowloon</text>
-                  <text x="70" y="90" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
-                  <text x="25" y="80" fontSize="3" fill="#6b7280" className="pointer-events-none">Lantau</text>
-                  <text x="90" y="40" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
+                  <text x="10" y="15" fontSize="3" fill="#6b7280" className="pointer-events-none">New Territories</text>
+                  <text x="45" y="65" fontSize="3" fill="#6b7280" className="pointer-events-none">Kowloon</text>
+                  <text x="92" y="25" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
+                  <text x="70" y="98" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
 
                   {/* Legend for dashed blue lines */}
                   <rect x="5" y="95" width="18" height="4" fill="#fff" stroke="#e5e7eb" strokeWidth="0.5" />
