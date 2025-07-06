@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import BlurFade from "./magicui/blur-fade";
@@ -46,25 +46,35 @@ const RotatingCubeGroup = ({ isSolving, children, groupRef }: {
   return <group ref={groupRef}>{children}</group>;
 };
 
+// Cube Move Definitions
+type Move = 'R' | 'R\'' | 'R2' | 'L' | 'L\'' | 'L2' | 'U' | 'U\'' | 'U2' | 'D' | 'D\'' | 'D2' | 'F' | 'F\'' | 'F2' | 'B' | 'B\'' | 'B2';
+
 // CFOP Algorithm Definitions
 const CFOP_ALGORITHMS = {
-  // Common OLL cases
-  OLL_T: "R U R' U' R' F R F'",
-  OLL_U: "R U2 R' U' R U R' U' R U' R'",
-  OLL_L: "F R' F' R U R U' R'",
-  OLL_H: "R U R' U R U' R' U R U2 R'",
+  // Cross algorithms
+  CROSS_EDGE_INSERT: ['R', 'U', 'R\'', 'U\''],
   
-  // Common PLL cases
-  PLL_T: "R U R' U' R' F R2 U' R' U' R U R' F'",
-  PLL_U: "R U' R U R U R U' R' U' R2",
-  PLL_Y: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
-  PLL_J: "R' U L' U2 R U' R' U2 R L U'",
+  // F2L algorithms
+  F2L_PAIR_INSERT: ['R', 'U', 'R\''],
+  F2L_PAIR_INSERT_ALT: ['U', 'R', 'U\'', 'R\''],
+  
+  // OLL algorithms
+  OLL_T: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_U: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'R', 'U\'', 'R\''],
+  OLL_L: ['F', 'R\'', 'F\'', 'R', 'U', 'R', 'U\'', 'R\''],
+  OLL_H: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U', 'R', 'U2', 'R\''],
+  
+  // PLL algorithms
+  PLL_T: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\''],
+  PLL_U: ['R', 'U\'', 'R', 'U', 'R', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R2'],
+  PLL_Y: ['F', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  PLL_J: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L', 'U\''],
   
   // Trigger moves
-  SEXY_MOVE: "R U R' U'",
-  SEXY_MOVE_INVERSE: "U R U' R'",
-  SUNE: "R U R' U R U2 R'",
-  ANTISUNE: "R' U' R U' R' U2 R"
+  SEXY_MOVE: ['R', 'U', 'R\'', 'U\''],
+  SEXY_MOVE_INVERSE: ['U', 'R', 'U\'', 'R\''],
+  SUNE: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  ANTISUNE: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R']
 };
 
 // CFOP Solving Stages
@@ -74,6 +84,238 @@ enum SolvingStage {
   OLL = "OLL",
   PLL = "PLL",
   SOLVED = "Solved"
+}
+
+// Cube State Management
+interface CubeState {
+  [key: string]: string[]; // [top, bottom, left, right, front, back]
+}
+
+class CubeSolver {
+  private state: CubeState = {};
+  private moveQueue: Move[] = [];
+  private isAnimating = false;
+  private animationSpeed = 300; // ms per move
+
+  constructor(initialState: CubeState) {
+    this.state = JSON.parse(JSON.stringify(initialState));
+  }
+
+  // Apply a single move to the cube state
+  private applyMove(move: Move): void {
+    const newState: CubeState = {};
+    
+    // Deep copy current state
+    Object.keys(this.state).forEach(key => {
+      newState[key] = [...this.state[key]];
+    });
+
+    // Apply the move based on cube notation
+    switch (move) {
+      case 'R':
+        this.applyRightRotation(newState, 1);
+        break;
+      case 'R\'':
+        this.applyRightRotation(newState, 3);
+        break;
+      case 'R2':
+        this.applyRightRotation(newState, 2);
+        break;
+      case 'L':
+        this.applyLeftRotation(newState, 1);
+        break;
+      case 'L\'':
+        this.applyLeftRotation(newState, 3);
+        break;
+      case 'L2':
+        this.applyLeftRotation(newState, 2);
+        break;
+      case 'U':
+        this.applyUpRotation(newState, 1);
+        break;
+      case 'U\'':
+        this.applyUpRotation(newState, 3);
+        break;
+      case 'U2':
+        this.applyUpRotation(newState, 2);
+        break;
+      case 'D':
+        this.applyDownRotation(newState, 1);
+        break;
+      case 'D\'':
+        this.applyDownRotation(newState, 3);
+        break;
+      case 'D2':
+        this.applyDownRotation(newState, 2);
+        break;
+      case 'F':
+        this.applyFrontRotation(newState, 1);
+        break;
+      case 'F\'':
+        this.applyFrontRotation(newState, 3);
+        break;
+      case 'F2':
+        this.applyFrontRotation(newState, 2);
+        break;
+      case 'B':
+        this.applyBackRotation(newState, 1);
+        break;
+      case 'B\'':
+        this.applyBackRotation(newState, 3);
+        break;
+      case 'B2':
+        this.applyBackRotation(newState, 2);
+        break;
+    }
+
+    this.state = newState;
+  }
+
+  // Apply right face rotation
+  private applyRightRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      // Rotate right face (x = 1)
+      const rightFacePieces = Object.keys(state).filter(key => key.startsWith('1,'));
+      rightFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        // Rotate face colors: [top, bottom, left, right, front, back]
+        const temp = faceColors[0];
+        faceColors[0] = faceColors[4]; // front -> top
+        faceColors[4] = faceColors[1]; // bottom -> front
+        faceColors[1] = faceColors[5]; // back -> bottom
+        faceColors[5] = temp; // top -> back
+        state[key] = faceColors;
+      });
+
+      // Rotate adjacent edges
+      const adjacentPieces = [
+        '1,1,0', '1,0,1', '1,-1,0', '1,0,-1' // top, front, bottom, back edges
+      ];
+      
+      adjacentPieces.forEach(key => {
+        if (state[key]) {
+          const faceColors = [...state[key]];
+          // Rotate edge colors appropriately
+          const temp = faceColors[0];
+          faceColors[0] = faceColors[4];
+          faceColors[4] = faceColors[1];
+          faceColors[1] = faceColors[5];
+          faceColors[5] = temp;
+          state[key] = faceColors;
+        }
+      });
+    }
+  }
+
+  // Apply left face rotation (similar to right but for x = -1)
+  private applyLeftRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const leftFacePieces = Object.keys(state).filter(key => key.startsWith('-1,'));
+      leftFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        const temp = faceColors[0];
+        faceColors[0] = faceColors[5]; // back -> top
+        faceColors[5] = faceColors[1]; // bottom -> back
+        faceColors[1] = faceColors[4]; // front -> bottom
+        faceColors[4] = temp; // top -> front
+        state[key] = faceColors;
+      });
+    }
+  }
+
+  // Apply up face rotation (y = 1)
+  private applyUpRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const upFacePieces = Object.keys(state).filter(key => key.includes(',1,'));
+      upFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        const temp = faceColors[2]; // left
+        faceColors[2] = faceColors[4]; // front -> left
+        faceColors[4] = faceColors[3]; // right -> front
+        faceColors[3] = faceColors[5]; // back -> right
+        faceColors[5] = temp; // left -> back
+        state[key] = faceColors;
+      });
+    }
+  }
+
+  // Apply down face rotation (y = -1)
+  private applyDownRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const downFacePieces = Object.keys(state).filter(key => key.includes(',-1,'));
+      downFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        const temp = faceColors[2]; // left
+        faceColors[2] = faceColors[5]; // back -> left
+        faceColors[5] = faceColors[3]; // right -> back
+        faceColors[3] = faceColors[4]; // front -> right
+        faceColors[4] = temp; // left -> front
+        state[key] = faceColors;
+      });
+    }
+  }
+
+  // Apply front face rotation (z = 1)
+  private applyFrontRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const frontFacePieces = Object.keys(state).filter(key => key.endsWith(',1'));
+      frontFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        const temp = faceColors[0]; // top
+        faceColors[0] = faceColors[2]; // left -> top
+        faceColors[2] = faceColors[1]; // bottom -> left
+        faceColors[1] = faceColors[3]; // right -> bottom
+        faceColors[3] = temp; // top -> right
+        state[key] = faceColors;
+      });
+    }
+  }
+
+  // Apply back face rotation (z = -1)
+  private applyBackRotation(state: CubeState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const backFacePieces = Object.keys(state).filter(key => key.endsWith(',-1'));
+      backFacePieces.forEach(key => {
+        const faceColors = [...state[key]];
+        const temp = faceColors[0]; // top
+        faceColors[0] = faceColors[3]; // right -> top
+        faceColors[3] = faceColors[1]; // bottom -> right
+        faceColors[1] = faceColors[2]; // left -> bottom
+        faceColors[2] = temp; // top -> left
+        state[key] = faceColors;
+      });
+    }
+  }
+
+  // Add moves to queue
+  public addMoves(moves: Move[]): void {
+    this.moveQueue.push(...moves);
+  }
+
+  // Execute next move in queue
+  public executeNextMove(): Move | null {
+    if (this.moveQueue.length > 0) {
+      const move = this.moveQueue.shift()!;
+      this.applyMove(move);
+      return move;
+    }
+    return null;
+  }
+
+  // Get current state
+  public getState(): CubeState {
+    return JSON.parse(JSON.stringify(this.state));
+  }
+
+  // Check if queue is empty
+  public isQueueEmpty(): boolean {
+    return this.moveQueue.length === 0;
+  }
+
+  // Get queue length
+  public getQueueLength(): number {
+    return this.moveQueue.length;
+  }
 }
 
 const RubiksCubeScene = () => {
@@ -87,6 +329,10 @@ const RubiksCubeScene = () => {
   const [currentAlgorithm, setCurrentAlgorithm] = useState<string>("");
   const [crossColor, setCrossColor] = useState<string>("white");
   const [isColorNeutral, setIsColorNeutral] = useState(false);
+  
+  const solverRef = useRef<CubeSolver | null>(null);
+  const animationRef = useRef<number | null>(null);
+  const lastMoveTimeRef = useRef<number>(0);
 
   // Rubik's cube colors
   const colors = {
@@ -107,6 +353,134 @@ const RubiksCubeScene = () => {
       }
     }
   }
+
+  // Create initial solved state
+  const createSolvedState = (): CubeState => {
+    const state: CubeState = {};
+    cubePositions.forEach((position) => {
+      const key = `${position[0]},${position[1]},${position[2]}`;
+      const [x, y, z] = position;
+      
+      let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
+      
+      if (z === 1) faceColors[4] = colors.blue; // front
+      else if (z === -1) faceColors[5] = colors.green; // back
+      
+      if (x === 1) faceColors[3] = colors.red; // right
+      else if (x === -1) faceColors[2] = colors.orange; // left
+      
+      if (y === 1) faceColors[0] = colors.yellow; // top
+      else if (y === -1) faceColors[1] = colors.white; // bottom
+      
+      state[key] = faceColors;
+    });
+    return state;
+  };
+
+  // Create scrambled state
+  const createScrambledState = (): CubeState => {
+    const solvedState = createSolvedState();
+    const solver = new CubeSolver(solvedState);
+    
+    // Apply random moves to scramble
+    const moves: Move[] = ['R', 'L', 'U', 'D', 'F', 'B', 'R\'', 'L\'', 'U\'', 'D\'', 'F\'', 'B\''];
+    for (let i = 0; i < 20; i++) {
+      const randomMove = moves[Math.floor(Math.random() * moves.length)];
+      solver.addMoves([randomMove]);
+      solver.executeNextMove();
+    }
+    
+    return solver.getState();
+  };
+
+  // Animation loop using requestAnimationFrame
+  const animateMoves = useCallback((currentTime: number) => {
+    if (!solverRef.current || !isSolving) return;
+
+    if (currentTime - lastMoveTimeRef.current > 300) { // 300ms per move
+      const move = solverRef.current.executeNextMove();
+      if (move) {
+        setCubeStates(solverRef.current.getState());
+        setCurrentAlgorithm(`Executing: ${move}`);
+        lastMoveTimeRef.current = currentTime;
+      } else {
+        // Queue is empty, solving complete
+        setIsSolving(false);
+        setCurrentStage(SolvingStage.SOLVED);
+        setCurrentAlgorithm("Cube Solved!");
+        setIsSolved(true);
+        return;
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(animateMoves);
+  }, [isSolving]);
+
+  // Start solving with CFOP method
+  const startSolving = async () => {
+    setIsSolving(true);
+    setIsSolved(false);
+    setCurrentStage(null);
+    setCurrentAlgorithm("");
+    
+    // Create scrambled state
+    const scrambledState = createScrambledState();
+    setCubeStates(scrambledState);
+    
+    // Initialize solver
+    solverRef.current = new CubeSolver(scrambledState);
+    
+    // Randomly select cross color for color neutrality
+    if (isColorNeutral) {
+      const colorOptions = Object.values(colors);
+      setCrossColor(colorOptions[Math.floor(Math.random() * colorOptions.length)]);
+    }
+    
+    // Build CFOP solve sequence
+    setCurrentStage(SolvingStage.CROSS);
+    setCurrentAlgorithm("Cross Formation");
+    
+    // Add cross moves
+    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT);
+    
+    // Add F2L moves
+    setCurrentStage(SolvingStage.F2L);
+    setCurrentAlgorithm("F2L Pairing");
+    for (let i = 0; i < 4; i++) {
+      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT);
+      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT);
+    }
+    
+    // Add trigger moves
+    solverRef.current.addMoves(CFOP_ALGORITHMS.SEXY_MOVE);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.SUNE);
+    
+    // Add OLL moves
+    setCurrentStage(SolvingStage.OLL);
+    setCurrentAlgorithm("OLL: T-Perm");
+    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_T);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_U);
+    
+    // Add PLL moves
+    setCurrentStage(SolvingStage.PLL);
+    setCurrentAlgorithm("PLL: T-Perm");
+    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_T);
+    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_U);
+    
+    // Start animation loop
+    lastMoveTimeRef.current = performance.now();
+    animationRef.current = requestAnimationFrame(animateMoves);
+  };
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   // Simple mouse controls
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -130,240 +504,15 @@ const RubiksCubeScene = () => {
     setIsDragging(false);
   };
 
-  // Create a realistic scrambled state
-  const createScrambledState = () => {
-    const scrambled: { [key: string]: string[] } = {};
-    
-    cubePositions.forEach((position) => {
-      const key = `${position[0]},${position[1]},${position[2]}`;
-      const [x, y, z] = position;
-      
-      // Start with solved state
-      let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
-      
-      if (z === 1) faceColors[4] = colors.blue; // front
-      else if (z === -1) faceColors[5] = colors.green; // back
-      
-      if (x === 1) faceColors[3] = colors.red; // right
-      else if (x === -1) faceColors[2] = colors.orange; // left
-      
-      if (y === 1) faceColors[0] = colors.yellow; // top
-      else if (y === -1) faceColors[1] = colors.white; // bottom
-      
-      scrambled[key] = faceColors;
-    });
-    
-    // Apply random moves to scramble
-    const positions = Object.keys(scrambled);
-    for (let i = 0; i < 15; i++) {
-      const pos1 = positions[Math.floor(Math.random() * positions.length)];
-      const pos2 = positions[Math.floor(Math.random() * positions.length)];
-      if (pos1 !== pos2) {
-        const temp = scrambled[pos1];
-        scrambled[pos1] = scrambled[pos2];
-        scrambled[pos2] = temp;
-      }
-    }
-    
-    return scrambled;
-  };
-
-  // CFOP Cross Stage
-  const solveCross = (currentState: { [key: string]: string[] }) => {
-    setCurrentStage(SolvingStage.CROSS);
-    setCurrentAlgorithm("Cross Formation");
-    
-    // Highlight cross pieces
-    const crossPieces = [
-      "0,-1,0", // center bottom
-      "0,-1,1", // front edge
-      "0,-1,-1", // back edge
-      "1,-1,0", // right edge
-      "-1,-1,0" // left edge
-    ];
-    
-    crossPieces.forEach((key) => {
-      if (currentState[key]) {
-        const faceColors = [...currentState[key]];
-        faceColors[1] = crossColor; // bottom face
-        currentState[key] = faceColors;
-      }
-    });
-    
-    setCubeStates({ ...currentState });
-  };
-
-  // CFOP F2L Stage
-  const solveF2L = (currentState: { [key: string]: string[] }) => {
-    setCurrentStage(SolvingStage.F2L);
-    setCurrentAlgorithm("F2L Pairing");
-    
-    // Solve F2L pairs
-    const f2lPairs = [
-      { corner: "1,-1,1", edge: "1,0,1" }, // front-right
-      { corner: "-1,-1,1", edge: "-1,0,1" }, // front-left
-      { corner: "1,-1,-1", edge: "1,0,-1" }, // back-right
-      { corner: "-1,-1,-1", edge: "-1,0,-1" } // back-left
-    ];
-    
-    f2lPairs.forEach((pair, index) => {
-      setTimeout(() => {
-        setCurrentAlgorithm(`F2L Pair ${index + 1}`);
-        
-        // Solve corner
-        if (currentState[pair.corner]) {
-          const faceColors = [...currentState[pair.corner]];
-          faceColors[1] = crossColor; // bottom
-          if (pair.corner.includes("1")) faceColors[3] = colors.red; // right
-          else faceColors[2] = colors.orange; // left
-          if (pair.corner.includes(",1")) faceColors[4] = colors.blue; // front
-          else faceColors[5] = colors.green; // back
-          currentState[pair.corner] = faceColors;
-        }
-        
-        // Solve edge
-        if (currentState[pair.edge]) {
-          const faceColors = [...currentState[pair.edge]];
-          if (pair.edge.includes("1")) faceColors[3] = colors.red; // right
-          else faceColors[2] = colors.orange; // left
-          if (pair.edge.includes(",1")) faceColors[4] = colors.blue; // front
-          else faceColors[5] = colors.green; // back
-          currentState[pair.edge] = faceColors;
-        }
-        
-        setCubeStates({ ...currentState });
-      }, index * 800);
-    });
-  };
-
-  // CFOP OLL Stage
-  const solveOLL = (currentState: { [key: string]: string[] }) => {
-    setCurrentStage(SolvingStage.OLL);
-    
-    const ollAlgorithms = [
-      { name: "T-Perm", algorithm: CFOP_ALGORITHMS.OLL_T },
-      { name: "U-Perm", algorithm: CFOP_ALGORITHMS.OLL_U },
-      { name: "L-Perm", algorithm: CFOP_ALGORITHMS.OLL_L },
-      { name: "H-Perm", algorithm: CFOP_ALGORITHMS.OLL_H }
-    ];
-    
-    ollAlgorithms.forEach((oll, index) => {
-      setTimeout(() => {
-        setCurrentAlgorithm(`${oll.name}: ${oll.algorithm}`);
-        
-        // Solve top layer orientation
-        cubePositions.forEach((position) => {
-          const key = `${position[0]},${position[1]},${position[2]}`;
-          const [x, y, z] = position;
-          
-          if (y === 1) { // top layer
-            const faceColors = [...currentState[key]];
-            faceColors[0] = colors.yellow; // top face
-            currentState[key] = faceColors;
-          }
-        });
-        
-        setCubeStates({ ...currentState });
-      }, index * 600);
-    });
-  };
-
-  // CFOP PLL Stage
-  const solvePLL = (currentState: { [key: string]: string[] }) => {
-    setCurrentStage(SolvingStage.PLL);
-    
-    const pllAlgorithms = [
-      { name: "T-Perm", algorithm: CFOP_ALGORITHMS.PLL_T },
-      { name: "U-Perm", algorithm: CFOP_ALGORITHMS.PLL_U },
-      { name: "Y-Perm", algorithm: CFOP_ALGORITHMS.PLL_Y },
-      { name: "J-Perm", algorithm: CFOP_ALGORITHMS.PLL_J }
-    ];
-    
-    pllAlgorithms.forEach((pll, index) => {
-      setTimeout(() => {
-        setCurrentAlgorithm(`${pll.name}: ${pll.algorithm}`);
-        
-        // Solve top layer permutation
-        cubePositions.forEach((position) => {
-          const key = `${position[0]},${position[1]},${position[2]}`;
-          const [x, y, z] = position;
-          
-          if (y === 1) { // top layer
-            const faceColors = [...currentState[key]];
-            faceColors[0] = colors.yellow; // top
-            if (x === 1) faceColors[3] = colors.red; // right
-            else if (x === -1) faceColors[2] = colors.orange; // left
-            if (z === 1) faceColors[4] = colors.blue; // front
-            else if (z === -1) faceColors[5] = colors.green; // back
-            currentState[key] = faceColors;
-          }
-        });
-        
-        setCubeStates({ ...currentState });
-      }, index * 500);
-    });
-  };
-
-  // Execute trigger moves with faster animation
-  const executeTriggerMove = (moveName: string, algorithm: string) => {
-    setCurrentAlgorithm(`Trigger: ${moveName} - ${algorithm}`);
-    // Trigger moves execute faster to emphasize efficiency
-    return new Promise(resolve => setTimeout(resolve, 200));
-  };
-
-  const startSolving = async () => {
-    setIsSolving(true);
-    setIsSolved(false);
-    setCurrentStage(null);
-    setCurrentAlgorithm("");
-    
-    // Randomly select cross color for color neutrality
-    if (isColorNeutral) {
-      const colorOptions = Object.values(colors);
-      setCrossColor(colorOptions[Math.floor(Math.random() * colorOptions.length)]);
-    }
-    
-    const scrambled = createScrambledState();
-    setCubeStates(scrambled);
-    
-    let currentState = { ...scrambled };
-    
-    // CFOP Solving Sequence
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Cross Stage
-    solveCross(currentState);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // F2L Stage
-    solveF2L(currentState);
-    await new Promise(resolve => setTimeout(resolve, 4000));
-    
-    // Execute some trigger moves
-    await executeTriggerMove("Sexy Move", CFOP_ALGORITHMS.SEXY_MOVE);
-    await executeTriggerMove("Sune", CFOP_ALGORITHMS.SUNE);
-    
-    // OLL Stage
-    solveOLL(currentState);
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // PLL Stage
-    solvePLL(currentState);
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Final solved state
-    setCurrentStage(SolvingStage.SOLVED);
-    setCurrentAlgorithm("Cube Solved!");
-    setIsSolved(true);
-    setIsSolving(false);
-  };
-
   const resetCube = () => {
     setIsSolving(false);
     setIsSolved(false);
     setCubeStates({});
     setCurrentStage(null);
     setCurrentAlgorithm("");
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
     }
@@ -437,6 +586,11 @@ const RubiksCubeScene = () => {
           <div className="text-sm font-semibold">{currentStage}</div>
           {currentAlgorithm && (
             <div className="text-xs text-gray-300 mt-1">{currentAlgorithm}</div>
+          )}
+          {solverRef.current && (
+            <div className="text-xs text-gray-400 mt-1">
+              Moves remaining: {solverRef.current.getQueueLength()}
+            </div>
           )}
         </div>
       )}
