@@ -18,7 +18,7 @@ export const DATA = {
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
   ],
   contact: {
-    email: "heilcheng2-c@my.cityu.edu.hk",
+    email: "haileycheng@proton.me",
     tel: "+852-XXX-XXX-XXX",
     social: {
       GitHub: {
@@ -29,14 +29,14 @@ export const DATA = {
       },
       LinkedIn: {
         name: "LinkedIn",
-        url: "https://linkedin.com/in/hailey-cheng",
+        url: "https://linkedin.com/in/heilcheng",
         icon: Icons.linkedin,
         navbar: true,
       },
 
       email: {
         name: "Send Email",
-        url: "mailto:heilcheng2-c@my.cityu.edu.hk",
+        url: "mailto:haileycheng@proton.me",
         icon: Icons.email,
         navbar: false,
       },
