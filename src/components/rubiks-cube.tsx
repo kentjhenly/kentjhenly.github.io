@@ -7,18 +7,23 @@ import BlurFade from "./magicui/blur-fade";
 
 interface CubeProps {
   position: [number, number, number];
-  color: string;
+  faceColors: string[]; // [top, bottom, left, right, front, back]
   id: number;
   isAnimating?: boolean;
 }
 
-const Cube = ({ position, color, id, isAnimating }: CubeProps) => {
+const Cube = ({ position, faceColors, id, isAnimating }: CubeProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   return (
     <mesh ref={meshRef} position={position}>
       <boxGeometry args={[0.9, 0.9, 0.9]} />
-      <meshStandardMaterial color={color} />
+      <meshStandardMaterial color={faceColors[0]} attach="material-0" /> {/* top */}
+      <meshStandardMaterial color={faceColors[1]} attach="material-1" /> {/* bottom */}
+      <meshStandardMaterial color={faceColors[2]} attach="material-2" /> {/* left */}
+      <meshStandardMaterial color={faceColors[3]} attach="material-3" /> {/* right */}
+      <meshStandardMaterial color={faceColors[4]} attach="material-4" /> {/* front */}
+      <meshStandardMaterial color={faceColors[5]} attach="material-5" /> {/* back */}
     </mesh>
   );
 };
@@ -46,7 +51,7 @@ const RubiksCubeScene = () => {
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const groupRef = useRef<THREE.Group>(null);
   const [isSolved, setIsSolved] = useState(false);
-  const [cubeStates, setCubeStates] = useState<{ [key: string]: string }>({});
+  const [cubeStates, setCubeStates] = useState<{ [key: string]: string[] }>({});
 
   // Rubik's cube colors
   const colors = {
@@ -94,28 +99,48 @@ const RubiksCubeScene = () => {
     setIsSolving(true);
     
     // Create a properly scrambled state first
-    const scrambledStates: { [key: string]: string } = {};
+    const scrambledStates: { [key: string]: string[] } = {};
     
     // Create a realistic scrambled state by applying some moves to a solved cube
-    const solvedState: { [key: string]: string } = {};
+    const solvedState: { [key: string]: string[] } = {};
     cubePositions.forEach((position) => {
       const key = `${position[0]},${position[1]},${position[2]}`;
       const [x, y, z] = position;
-      // Start with solved state
-      if (z === 1) solvedState[key] = colors.blue;
-      else if (z === -1) solvedState[key] = colors.green;
-      else if (x === 1) solvedState[key] = colors.red;
-      else if (x === -1) solvedState[key] = colors.orange;
-      else if (y === 1) solvedState[key] = colors.yellow;
-      else if (y === -1) solvedState[key] = colors.white;
-      else solvedState[key] = colors.white; // Center pieces
+      // Start with solved state - each cube has 6 faces [top, bottom, left, right, front, back]
+      let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
+      
+      if (z === 1) {
+        // Front face is blue
+        faceColors[4] = colors.blue;
+      } else if (z === -1) {
+        // Back face is green
+        faceColors[5] = colors.green;
+      }
+      
+      if (x === 1) {
+        // Right face is red
+        faceColors[3] = colors.red;
+      } else if (x === -1) {
+        // Left face is orange
+        faceColors[2] = colors.orange;
+      }
+      
+      if (y === 1) {
+        // Top face is yellow
+        faceColors[0] = colors.yellow;
+      } else if (y === -1) {
+        // Bottom face is white
+        faceColors[1] = colors.white;
+      }
+      
+      solvedState[key] = faceColors;
     });
     
     // Apply some "moves" to scramble it
     const scrambled = { ...solvedState };
     
-    // Simulate some cube moves by swapping colors
-    const swapColors = (key1: string, key2: string) => {
+    // Simulate some cube moves by swapping face colors
+    const swapFaceColors = (key1: string, key2: string) => {
       const temp = scrambled[key1];
       scrambled[key1] = scrambled[key2];
       scrambled[key2] = temp;
@@ -127,7 +152,7 @@ const RubiksCubeScene = () => {
       const pos1 = positions[Math.floor(Math.random() * positions.length)];
       const pos2 = positions[Math.floor(Math.random() * positions.length)];
       if (pos1 !== pos2) {
-        swapColors(pos1, pos2);
+        swapFaceColors(pos1, pos2);
       }
     }
     
@@ -137,15 +162,17 @@ const RubiksCubeScene = () => {
     let currentState = { ...scrambled };
     
     const solveSteps = [
-      // Step 1: Start solving - fix the white face
+      // Step 1: Start solving - fix the white face (bottom)
       () => {
         groupRef.current?.rotation.set(0, Math.PI / 6, 0);
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
           const [x, y, z] = position;
-          // Fix the white face (bottom)
           if (y === -1) {
-            currentState[key] = colors.white;
+            // Fix bottom face to white
+            const faceColors = [...currentState[key]];
+            faceColors[1] = colors.white; // bottom face
+            currentState[key] = faceColors;
           }
         });
         setCubeStates({ ...currentState });
@@ -156,8 +183,10 @@ const RubiksCubeScene = () => {
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
           const [x, y, z] = position;
-          if (y === -1) currentState[key] = colors.white;
-          if (y === 1) currentState[key] = colors.yellow;
+          const faceColors = [...currentState[key]];
+          if (y === -1) faceColors[1] = colors.white; // bottom face
+          if (y === 1) faceColors[0] = colors.yellow; // top face
+          currentState[key] = faceColors;
         });
         setCubeStates({ ...currentState });
       },
@@ -167,30 +196,37 @@ const RubiksCubeScene = () => {
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
           const [x, y, z] = position;
-          if (y === -1) currentState[key] = colors.white;
-          if (y === 1) currentState[key] = colors.yellow;
-          if (x === 1) currentState[key] = colors.red;
-          if (x === -1) currentState[key] = colors.orange;
-          if (z === 1) currentState[key] = colors.blue;
-          if (z === -1) currentState[key] = colors.green;
+          const faceColors = [...currentState[key]];
+          if (y === -1) faceColors[1] = colors.white; // bottom face
+          if (y === 1) faceColors[0] = colors.yellow; // top face
+          if (x === 1) faceColors[3] = colors.red; // right face
+          if (x === -1) faceColors[2] = colors.orange; // left face
+          if (z === 1) faceColors[4] = colors.blue; // front face
+          if (z === -1) faceColors[5] = colors.green; // back face
+          currentState[key] = faceColors;
         });
         setCubeStates({ ...currentState });
       },
       // Step 4: Perfectly solved - proper Rubik's cube colors
       () => {
         groupRef.current?.rotation.set(0, 0, 0);
-        const perfectlySolved: { [key: string]: string } = {};
+        const perfectlySolved: { [key: string]: string[] } = {};
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
           const [x, y, z] = position;
-          // Perfectly solved state with proper face colors
-          if (y === 1) perfectlySolved[key] = colors.yellow;
-          else if (y === -1) perfectlySolved[key] = colors.white;
-          else if (z === 1) perfectlySolved[key] = colors.blue;
-          else if (z === -1) perfectlySolved[key] = colors.green;
-          else if (x === 1) perfectlySolved[key] = colors.red;
-          else if (x === -1) perfectlySolved[key] = colors.orange;
-          else perfectlySolved[key] = colors.white; // Center pieces
+          // Perfectly solved state with proper face colors [top, bottom, left, right, front, back]
+          let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
+          
+          if (y === 1) faceColors[0] = colors.yellow; // top face
+          else if (y === -1) faceColors[1] = colors.white; // bottom face
+          
+          if (z === 1) faceColors[4] = colors.blue; // front face
+          else if (z === -1) faceColors[5] = colors.green; // back face
+          
+          if (x === 1) faceColors[3] = colors.red; // right face
+          else if (x === -1) faceColors[2] = colors.orange; // left face
+          
+          perfectlySolved[key] = faceColors;
         });
         setCubeStates(perfectlySolved);
         setIsSolved(true);
@@ -240,22 +276,39 @@ const RubiksCubeScene = () => {
             const [x, y, z] = position;
             
             // Use custom state if available, otherwise use default solved state
-            let color = colors.white;
+            let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
             if (Object.keys(cubeStates).length > 0) {
               // Use the solving animation state
-              color = cubeStates[key] || colors.white;
+              faceColors = cubeStates[key] || [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
             } else {
-              // Default solved state
-              if (z === 1) color = colors.blue;
-              else if (z === -1) color = colors.green;
-              else if (x === 1) color = colors.red;
-              else if (x === -1) color = colors.orange;
-              else if (y === 1) color = colors.yellow;
-              else if (y === -1) color = colors.white;
+              // Default solved state - each cube has 6 faces [top, bottom, left, right, front, back]
+              if (z === 1) {
+                // Front face is blue
+                faceColors[4] = colors.blue;
+              } else if (z === -1) {
+                // Back face is green
+                faceColors[5] = colors.green;
+              }
+              
+              if (x === 1) {
+                // Right face is red
+                faceColors[3] = colors.red;
+              } else if (x === -1) {
+                // Left face is orange
+                faceColors[2] = colors.orange;
+              }
+              
+              if (y === 1) {
+                // Top face is yellow
+                faceColors[0] = colors.yellow;
+              } else if (y === -1) {
+                // Bottom face is white
+                faceColors[1] = colors.white;
+              }
             }
             
             return (
-              <Cube key={index} position={position} color={color} id={index} />
+              <Cube key={index} position={position} faceColors={faceColors} id={index} />
             );
           })}
         </RotatingCubeGroup>
