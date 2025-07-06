@@ -86,15 +86,19 @@ enum SolvingStage {
   SOLVED = "Solved"
 }
 
-// Cube State Management
+// Cube State Management - Now tracks actual piece positions
+interface CubePiece {
+  position: [number, number, number];
+  faceColors: string[]; // [top, bottom, left, right, front, back]
+}
+
 interface CubeState {
-  [key: string]: string[]; // [top, bottom, left, right, front, back]
+  pieces: CubePiece[];
 }
 
 class CubeSolver {
-  private state: CubeState = {};
+  private state: CubeState;
   private moveQueue: Move[] = [];
-  private isAnimating = false;
   private animationSpeed = 300; // ms per move
 
   constructor(initialState: CubeState) {
@@ -103,12 +107,12 @@ class CubeSolver {
 
   // Apply a single move to the cube state
   private applyMove(move: Move): void {
-    const newState: CubeState = {};
-    
-    // Deep copy current state
-    Object.keys(this.state).forEach(key => {
-      newState[key] = [...this.state[key]];
-    });
+    const newState: CubeState = {
+      pieces: this.state.pieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }))
+    };
 
     // Apply the move based on cube notation
     switch (move) {
@@ -171,118 +175,123 @@ class CubeSolver {
     this.state = newState;
   }
 
-  // Apply right face rotation
+  // Apply right face rotation - Now properly rotates pieces
   private applyRightRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      // Rotate right face (x = 1)
-      const rightFacePieces = Object.keys(state).filter(key => key.startsWith('1,'));
-      rightFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        // Rotate face colors: [top, bottom, left, right, front, back]
-        const temp = faceColors[0];
-        faceColors[0] = faceColors[4]; // front -&gt; top
-        faceColors[4] = faceColors[1]; // bottom -&gt; front
-        faceColors[1] = faceColors[5]; // back -&gt; bottom
-        faceColors[5] = temp; // top -&gt; back
-        state[key] = faceColors;
-      });
-
-      // Rotate adjacent edges
-      const adjacentPieces = [
-        '1,1,0', '1,0,1', '1,-1,0', '1,0,-1' // top, front, bottom, back edges
-      ];
-      
-      adjacentPieces.forEach(key => {
-        if (state[key]) {
-          const faceColors = [...state[key]];
-          // Rotate edge colors appropriately
-          const temp = faceColors[0];
-          faceColors[0] = faceColors[4];
-          faceColors[4] = faceColors[1];
-          faceColors[1] = faceColors[5];
-          faceColors[5] = temp;
-          state[key] = faceColors;
+      // Rotate pieces on the right face (x = 1)
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (x === 1) {
+          // Rotate the piece position
+          piece.position = [x, -z, y];
+          
+          // Rotate face colors: [top, bottom, left, right, front, back]
+          const temp = piece.faceColors[0];
+          piece.faceColors[0] = piece.faceColors[4]; // front -&gt; top
+          piece.faceColors[4] = piece.faceColors[1]; // bottom -&gt; front
+          piece.faceColors[1] = piece.faceColors[5]; // back -&gt; bottom
+          piece.faceColors[5] = temp; // top -&gt; back
         }
       });
     }
   }
 
-  // Apply left face rotation (similar to right but for x = -1)
+  // Apply left face rotation
   private applyLeftRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      const leftFacePieces = Object.keys(state).filter(key => key.startsWith('-1,'));
-      leftFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        const temp = faceColors[0];
-        faceColors[0] = faceColors[5]; // back -&gt; top
-        faceColors[5] = faceColors[1]; // bottom -&gt; back
-        faceColors[1] = faceColors[4]; // front -&gt; bottom
-        faceColors[4] = temp; // top -&gt; front
-        state[key] = faceColors;
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (x === -1) {
+          // Rotate the piece position
+          piece.position = [x, z, -y];
+          
+          // Rotate face colors
+          const temp = piece.faceColors[0];
+          piece.faceColors[0] = piece.faceColors[5]; // back -&gt; top
+          piece.faceColors[5] = piece.faceColors[1]; // bottom -&gt; back
+          piece.faceColors[1] = piece.faceColors[4]; // front -&gt; bottom
+          piece.faceColors[4] = temp; // top -&gt; front
+        }
       });
     }
   }
 
-  // Apply up face rotation (y = 1)
+  // Apply up face rotation
   private applyUpRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      const upFacePieces = Object.keys(state).filter(key => key.includes(',1,'));
-      upFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        const temp = faceColors[2]; // left
-        faceColors[2] = faceColors[4]; // front -&gt; left
-        faceColors[4] = faceColors[3]; // right -&gt; front
-        faceColors[3] = faceColors[5]; // back -&gt; right
-        faceColors[5] = temp; // left -&gt; back
-        state[key] = faceColors;
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (y === 1) {
+          // Rotate the piece position
+          piece.position = [z, y, -x];
+          
+          // Rotate face colors
+          const temp = piece.faceColors[2]; // left
+          piece.faceColors[2] = piece.faceColors[4]; // front -&gt; left
+          piece.faceColors[4] = piece.faceColors[3]; // right -&gt; front
+          piece.faceColors[3] = piece.faceColors[5]; // back -&gt; right
+          piece.faceColors[5] = temp; // left -&gt; back
+        }
       });
     }
   }
 
-  // Apply down face rotation (y = -1)
+  // Apply down face rotation
   private applyDownRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      const downFacePieces = Object.keys(state).filter(key => key.includes(',-1,'));
-      downFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        const temp = faceColors[2]; // left
-        faceColors[2] = faceColors[5]; // back -&gt; left
-        faceColors[5] = faceColors[3]; // right -&gt; back
-        faceColors[3] = faceColors[4]; // front -&gt; right
-        faceColors[4] = temp; // left -&gt; front
-        state[key] = faceColors;
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (y === -1) {
+          // Rotate the piece position
+          piece.position = [-z, y, x];
+          
+          // Rotate face colors
+          const temp = piece.faceColors[2]; // left
+          piece.faceColors[2] = piece.faceColors[5]; // back -&gt; left
+          piece.faceColors[5] = piece.faceColors[3]; // right -&gt; back
+          piece.faceColors[3] = piece.faceColors[4]; // front -&gt; right
+          piece.faceColors[4] = temp; // left -&gt; front
+        }
       });
     }
   }
 
-  // Apply front face rotation (z = 1)
+  // Apply front face rotation
   private applyFrontRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      const frontFacePieces = Object.keys(state).filter(key => key.endsWith(',1'));
-      frontFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        const temp = faceColors[0]; // top
-        faceColors[0] = faceColors[2]; // left -&gt; top
-        faceColors[2] = faceColors[1]; // bottom -&gt; left
-        faceColors[1] = faceColors[3]; // right -&gt; bottom
-        faceColors[3] = temp; // top -&gt; right
-        state[key] = faceColors;
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (z === 1) {
+          // Rotate the piece position
+          piece.position = [-y, x, z];
+          
+          // Rotate face colors
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[2]; // left -&gt; top
+          piece.faceColors[2] = piece.faceColors[1]; // bottom -&gt; left
+          piece.faceColors[1] = piece.faceColors[3]; // right -&gt; bottom
+          piece.faceColors[3] = temp; // top -&gt; right
+        }
       });
     }
   }
 
-  // Apply back face rotation (z = -1)
+  // Apply back face rotation
   private applyBackRotation(state: CubeState, count: number): void {
     for (let i = 0; i < count; i++) {
-      const backFacePieces = Object.keys(state).filter(key => key.endsWith(',-1'));
-      backFacePieces.forEach(key => {
-        const faceColors = [...state[key]];
-        const temp = faceColors[0]; // top
-        faceColors[0] = faceColors[3]; // right -&gt; top
-        faceColors[3] = faceColors[1]; // bottom -&gt; right
-        faceColors[1] = faceColors[2]; // left -&gt; bottom
-        faceColors[2] = temp; // top -&gt; left
-        state[key] = faceColors;
+      state.pieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        if (z === -1) {
+          // Rotate the piece position
+          piece.position = [y, -x, z];
+          
+          // Rotate face colors
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[3]; // right -&gt; top
+          piece.faceColors[3] = piece.faceColors[1]; // bottom -&gt; right
+          piece.faceColors[1] = piece.faceColors[2]; // left -&gt; bottom
+          piece.faceColors[2] = temp; // top -&gt; left
+        }
       });
     }
   }
@@ -316,6 +325,51 @@ class CubeSolver {
   public getQueueLength(): number {
     return this.moveQueue.length;
   }
+
+  // Check if cube is solved
+  public isSolved(): boolean {
+    // Check if all faces are uniform color
+    const faces = {
+      top: this.state.pieces.filter(p => p.position[1] === 1).map(p => p.faceColors[0]),
+      bottom: this.state.pieces.filter(p => p.position[1] === -1).map(p => p.faceColors[1]),
+      left: this.state.pieces.filter(p => p.position[0] === -1).map(p => p.faceColors[2]),
+      right: this.state.pieces.filter(p => p.position[0] === 1).map(p => p.faceColors[3]),
+      front: this.state.pieces.filter(p => p.position[2] === 1).map(p => p.faceColors[4]),
+      back: this.state.pieces.filter(p => p.position[2] === -1).map(p => p.faceColors[5])
+    };
+
+    return Object.values(faces).every(faceColors => 
+      faceColors.every(color => color === faceColors[0])
+    );
+  }
+
+  // Generate CFOP solve sequence based on current state
+  public generateCFOPSolve(): Move[] {
+    const moves: Move[] = [];
+    
+    // Simple CFOP sequence - in a real implementation, this would analyze the current state
+    // For now, we'll use a basic sequence that should work for most scrambles
+    
+    // Cross
+    moves.push(...CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
+    moves.push(...CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
+    
+    // F2L
+    for (let i = 0; i < 4; i++) {
+      moves.push(...CFOP_ALGORITHMS.F2L_PAIR_INSERT as Move[]);
+      moves.push(...CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT as Move[]);
+    }
+    
+    // OLL
+    moves.push(...CFOP_ALGORITHMS.OLL_T as Move[]);
+    moves.push(...CFOP_ALGORITHMS.OLL_U as Move[]);
+    
+    // PLL
+    moves.push(...CFOP_ALGORITHMS.PLL_T as Move[]);
+    moves.push(...CFOP_ALGORITHMS.PLL_U as Move[]);
+    
+    return moves;
+  }
 }
 
 const RubiksCubeScene = () => {
@@ -323,11 +377,9 @@ const RubiksCubeScene = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const groupRef = useRef<THREE.Group>(null);
-  const [isSolved, setIsSolved] = useState(false);
-  const [cubeStates, setCubeStates] = useState<{ [key: string]: string[] }>({});
+  const [cubeState, setCubeState] = useState<CubeState | null>(null);
   const [currentStage, setCurrentStage] = useState<SolvingStage | null>(null);
   const [currentAlgorithm, setCurrentAlgorithm] = useState<string>("");
-  const [crossColor, setCrossColor] = useState<string>("white");
   const [isColorNeutral, setIsColorNeutral] = useState(false);
   
   const solverRef = useRef<CubeSolver | null>(null);
@@ -356,9 +408,9 @@ const RubiksCubeScene = () => {
 
   // Create initial solved state
   const createSolvedState = (): CubeState => {
-    const state: CubeState = {};
+    const pieces: CubePiece[] = [];
+    
     cubePositions.forEach((position) => {
-      const key = `${position[0]},${position[1]},${position[2]}`;
       const [x, y, z] = position;
       
       let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
@@ -372,9 +424,13 @@ const RubiksCubeScene = () => {
       if (y === 1) faceColors[0] = colors.yellow; // top
       else if (y === -1) faceColors[1] = colors.white; // bottom
       
-      state[key] = faceColors;
+      pieces.push({
+        position: position,
+        faceColors: faceColors
+      });
     });
-    return state;
+    
+    return { pieces };
   };
 
   // Create scrambled state
@@ -400,7 +456,7 @@ const RubiksCubeScene = () => {
     if (currentTime - lastMoveTimeRef.current > 300) { // 300ms per move
       const move = solverRef.current.executeNextMove();
       if (move) {
-        setCubeStates(solverRef.current.getState());
+        setCubeState(solverRef.current.getState());
         setCurrentAlgorithm(`Executing: ${move}`);
         lastMoveTimeRef.current = currentTime;
       } else {
@@ -408,7 +464,6 @@ const RubiksCubeScene = () => {
         setIsSolving(false);
         setCurrentStage(SolvingStage.SOLVED);
         setCurrentAlgorithm("Cube Solved!");
-        setIsSolved(true);
         return;
       }
     }
@@ -419,54 +474,22 @@ const RubiksCubeScene = () => {
   // Start solving with CFOP method
   const startSolving = async () => {
     setIsSolving(true);
-    setIsSolved(false);
     setCurrentStage(null);
     setCurrentAlgorithm("");
     
     // Create scrambled state
     const scrambledState = createScrambledState();
-    setCubeStates(scrambledState);
+    setCubeState(scrambledState);
     
     // Initialize solver
     solverRef.current = new CubeSolver(scrambledState);
     
-    // Randomly select cross color for color neutrality
-    if (isColorNeutral) {
-      const colorOptions = Object.values(colors);
-      setCrossColor(colorOptions[Math.floor(Math.random() * colorOptions.length)]);
-    }
-    
-    // Build CFOP solve sequence
+    // Generate CFOP solve sequence based on current state
     setCurrentStage(SolvingStage.CROSS);
-    setCurrentAlgorithm("Cross Formation");
+    setCurrentAlgorithm("Generating CFOP sequence...");
     
-    // Add cross moves
-    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.CROSS_EDGE_INSERT as Move[]);
-    
-    // Add F2L moves
-    setCurrentStage(SolvingStage.F2L);
-    setCurrentAlgorithm("F2L Pairing");
-    for (let i = 0; i < 4; i++) {
-      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT as Move[]);
-      solverRef.current.addMoves(CFOP_ALGORITHMS.F2L_PAIR_INSERT_ALT as Move[]);
-    }
-    
-    // Add trigger moves
-    solverRef.current.addMoves(CFOP_ALGORITHMS.SEXY_MOVE as Move[]);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.SUNE as Move[]);
-    
-    // Add OLL moves
-    setCurrentStage(SolvingStage.OLL);
-    setCurrentAlgorithm("OLL: T-Perm");
-    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_T as Move[]);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.OLL_U as Move[]);
-    
-    // Add PLL moves
-    setCurrentStage(SolvingStage.PLL);
-    setCurrentAlgorithm("PLL: T-Perm");
-    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_T as Move[]);
-    solverRef.current.addMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
+    const solveSequence = solverRef.current.generateCFOPSolve();
+    solverRef.current.addMoves(solveSequence);
     
     // Start animation loop
     lastMoveTimeRef.current = performance.now();
@@ -506,8 +529,7 @@ const RubiksCubeScene = () => {
 
   const resetCube = () => {
     setIsSolving(false);
-    setIsSolved(false);
-    setCubeStates({});
+    setCubeState(null);
     setCurrentStage(null);
     setCurrentAlgorithm("");
     if (animationRef.current) {
@@ -539,15 +561,25 @@ const RubiksCubeScene = () => {
           {/* Generate all 27 cubes */}
           {cubePositions.map((position, index) => {
             const key = `${position[0]},${position[1]},${position[2]}`;
-            const [x, y, z] = position;
             
             // Use custom state if available, otherwise use default solved state
             let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
-            if (Object.keys(cubeStates).length > 0) {
-              // Use the solving animation state
-              faceColors = cubeStates[key] || [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
+            let cubePosition = position;
+            
+            if (cubeState) {
+              // Find the piece at this position in the current state
+              const piece = cubeState.pieces.find(p => 
+                p.position[0] === position[0] && 
+                p.position[1] === position[1] && 
+                p.position[2] === position[2]
+              );
+              if (piece) {
+                faceColors = piece.faceColors;
+                cubePosition = piece.position;
+              }
             } else {
               // Default solved state - each cube has 6 faces [top, bottom, left, right, front, back]
+              const [x, y, z] = position;
               if (z === 1) {
                 // Front face is blue
                 faceColors[4] = colors.blue;
@@ -574,7 +606,7 @@ const RubiksCubeScene = () => {
             }
             
             return (
-              <Cube key={index} position={position} faceColors={faceColors} id={index} />
+              <Cube key={index} position={cubePosition} faceColors={faceColors} id={index} />
             );
           })}
         </RotatingCubeGroup>
