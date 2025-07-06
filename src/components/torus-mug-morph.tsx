@@ -166,9 +166,9 @@ export default function TorusMugMorph() {
         <directionalLight position={[5, 5, 5]} intensity={0.7} />
         <MorphingMesh meshRef={meshRef} flatVerts={flatVerts} indices={indices} normals={normals} />
         <Html center>
-          <div style={{ position: "absolute", top: 20, left: 0, right: 0, width: 300, margin: "0 auto", background: "rgba(255,255,255,0.8)", borderRadius: 8, padding: 8, boxShadow: "0 2px 8px #0001" }}>
-            <label style={{ fontWeight: 500, fontSize: 16 }}>
-              Morph: {morph.toFixed(2)}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 300, background: "rgba(255,255,255,0.9)", borderRadius: 12, padding: 16, boxShadow: "0 4px 16px rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
+            <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center" }}>
+              <div style={{ marginBottom: 8 }}>Morph: {morph.toFixed(2)}</div>
               <input
                 type="range"
                 min={0}
@@ -176,9 +176,9 @@ export default function TorusMugMorph() {
                 step={0.01}
                 value={morph}
                 onChange={e => setMorph(Number(e.target.value))}
-                style={{ width: "100%" }}
+                style={{ width: "100%", height: "8px", borderRadius: "4px", background: "linear-gradient(to right, #fbbf24 0%, #fbbf24 50%, #e5e7eb 50%, #e5e7eb 100%)", outline: "none", cursor: "pointer" }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 8, color: "#6b7280" }}>
                 <span>Torus</span>
                 <span>Mug</span>
               </div>
