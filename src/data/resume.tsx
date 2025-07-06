@@ -60,17 +60,17 @@ export const DATA = {
       ],
     },
     {
-      company: "Coglix.ai",
+      company: "Stealth Startup",
       badges: [],
-      href: "https://coglix.ai",
+      href: "#",
       location: "Hong Kong",
       title: "Co-Founder & Machine Learning Engineer",
-      logoUrl: "/Coglix.png",
+      logoUrl: "/stealth.jpeg",
       start: "November 2024",
       end: "Present",
       bullets: [
-        "Built an end-to-end AI platform using Python, PyTorch, and NLP libraries (Transformers, Librosa) to extract and analyze complex features from audio data",
-        "Developed and deployed custom deep learning models achieving over 90% accuracy, with a low-latency REST API (Flask, Docker) delivering sub-300ms response times for real-time processing"
+        "Building next-generation AI products in stealth mode. Details coming soon!",
+        "Leading the development of proprietary deep learning models and scalable infrastructure for confidential projects."
       ],
     },
     {
