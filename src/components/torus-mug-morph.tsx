@@ -102,24 +102,9 @@ export default function TorusMugMorph() {
         <directionalLight position={[5, 5, 5]} intensity={0.7} />
         <mesh ref={meshRef} castShadow receiveShadow>
           <bufferGeometry attach="geometry">
-            <bufferAttribute
-              attach="attributes-position"
-              count={flatVerts.length / 3}
-              array={new Float32Array(flatVerts)}
-              itemSize={3}
-            />
-            <bufferAttribute
-              attach="attributes-normal"
-              count={flatVerts.length / 3}
-              array={new Float32Array(flatVerts)}
-              itemSize={3}
-            />
-            <bufferAttribute
-              attach="index"
-              array={new Uint16Array(indices)}
-              count={indices.length}
-              itemSize={1}
-            />
+            <bufferAttribute attach="attributes-position" args={[new Float32Array(flatVerts), 3]} />
+            {/* Optionally, recalculate normals or remove the normals attribute for smooth shading */}
+            <bufferAttribute attach="index" args={[new Uint16Array(indices), 1]} />
           </bufferGeometry>
           <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.4} flatShading={false} />
         </mesh>
