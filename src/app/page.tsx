@@ -194,7 +194,6 @@ export default function Page() {
       <HongKongSpots delay={BLUR_FADE_DELAY * 20} />
       <HongKongMap delay={BLUR_FADE_DELAY * 21} />
       <WorldMap delay={BLUR_FADE_DELAY * 22} />
-      <RubiksCube delay={BLUR_FADE_DELAY * 23} />
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 20}>
