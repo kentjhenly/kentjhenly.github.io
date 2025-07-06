@@ -40,8 +40,8 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
   };
 
   const getCountryStyle = (geo: any) => {
-    const isVisited = visitedCountries.includes(geo.properties.ISO_A3);
-    const isHovered = hoveredCountry === geo.properties.ISO_A3;
+    const isVisited = visitedCountries.includes(geo.id);
+    const isHovered = hoveredCountry === geo.id;
     
     return {
       default: {
@@ -85,7 +85,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
       "VAT": "Vatican City",
       "QAT": "Qatar",
     };
-    return countryNames[geo.properties.ISO_A3] || geo.properties.NAME;
+    return countryNames[geo.id] || geo.properties.name;
   };
 
   if (!isClient) {
@@ -151,14 +151,14 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 <Geographies geography="/world-countries.json">
                   {({ geographies }) =>
                     geographies.map((geo) => {
-                      const isVisited = visitedCountries.includes(geo.properties.ISO_A3);
+                      const isVisited = visitedCountries.includes(geo.id);
                       return (
                         <Geography
                           key={geo.rsmKey}
                           geography={geo}
                           style={getCountryStyle(geo)}
                           onMouseEnter={() => {
-                            setHoveredCountry(geo.properties.ISO_A3);
+                            setHoveredCountry(geo.id);
                           }}
                           onMouseLeave={() => {
                             setHoveredCountry(null);
