@@ -6,7 +6,7 @@ interface HongKongSpotsProps {
   delay?: number;
 }
 
-export const HongKongSpots = ({ delay }: HongKongSpotsProps) => {
+export const HongKongSpots = ({ delay = 0 }: HongKongSpotsProps) => {
   const spotCategories = [
     {
       theme: "Nature & Adventure",
