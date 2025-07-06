@@ -165,13 +165,6 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                       strokeWidth={2}
                       style={{ cursor: "pointer", transition: "r 0.2s" }}
                     />
-                    <text
-                      y={-12}
-                      textAnchor="middle"
-                      style={{ fontSize: 12, fill: "#374151", pointerEvents: "none", textShadow: "0 1px 2px #fff" }}
-                    >
-                      {key}
-                    </text>
                   </Marker>
                 ))}
               </ComposableMap>
