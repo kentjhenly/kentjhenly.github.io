@@ -26,10 +26,35 @@ interface WorldMapProps {
 export const WorldMap = ({ delay }: WorldMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [clickedCountry, setClickedCountry] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const getCountryName = (countryCode: string) => {
+    const countryNames: { [key: string]: string } = {
+      "USA": "United States",
+      "CHN": "China",
+      "TWN": "Taiwan",
+      "JPN": "Japan",
+      "KOR": "South Korea",
+      "MYS": "Malaysia",
+      "THA": "Thailand",
+      "FRA": "France",
+      "ESP": "Spain",
+      "CHE": "Switzerland",
+      "ITA": "Italy",
+      "QAT": "Qatar",
+    };
+    return countryNames[countryCode] || countryCode;
+  };
+
+  const handleCountryClick = (countryCode: string) => {
+    if (visitedCountries.includes(countryCode)) {
+      setClickedCountry(clickedCountry === countryCode ? null : countryCode);
+    }
+  };
 
   if (!isClient) {
     return (
@@ -89,12 +114,13 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   {/* North America */}
                   <path
                     d="M150 150 Q200 100 250 120 Q300 140 320 180 Q300 220 250 240 Q200 260 150 250 Q120 230 130 200 Q140 170 150 150"
-                    fill={visitedCountries.includes("USA") ? "#3b82f6" : "#e5e7eb"}
+                    fill={visitedCountries.includes("USA") ? "#40c463" : "#e5e7eb"}
                     stroke="#ffffff"
                     strokeWidth="2"
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("USA")}
                     onMouseLeave={() => setHoveredCountry(null)}
+                    onClick={() => handleCountryClick("USA")}
                   />
                   
                   {/* South America */}
@@ -108,12 +134,13 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   {/* Europe */}
                   <path
                     d="M450 120 Q470 110 490 115 Q510 120 520 130 Q515 140 510 150 Q505 160 500 170"
-                    fill={visitedCountries.includes("FRA") || visitedCountries.includes("ESP") || visitedCountries.includes("CHE") || visitedCountries.includes("ITA") ? "#3b82f6" : "#e5e7eb"}
+                    fill={visitedCountries.includes("FRA") || visitedCountries.includes("ESP") || visitedCountries.includes("CHE") || visitedCountries.includes("ITA") ? "#40c463" : "#e5e7eb"}
                     stroke="#ffffff"
                     strokeWidth="2"
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("Europe")}
                     onMouseLeave={() => setHoveredCountry(null)}
+                    onClick={() => handleCountryClick("Europe")}
                   />
                   
                   {/* Africa */}
@@ -127,12 +154,13 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   {/* Asia */}
                   <path
                     d="M520 100 Q600 90 700 110 Q750 130 780 150 Q800 170 820 190 Q830 210 840 230"
-                    fill={visitedCountries.includes("CHN") || visitedCountries.includes("TWN") || visitedCountries.includes("JPN") || visitedCountries.includes("KOR") || visitedCountries.includes("MYS") || visitedCountries.includes("THA") ? "#3b82f6" : "#e5e7eb"}
+                    fill={visitedCountries.includes("CHN") || visitedCountries.includes("TWN") || visitedCountries.includes("JPN") || visitedCountries.includes("KOR") || visitedCountries.includes("MYS") || visitedCountries.includes("THA") ? "#40c463" : "#e5e7eb"}
                     stroke="#ffffff"
                     strokeWidth="2"
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("Asia")}
                     onMouseLeave={() => setHoveredCountry(null)}
+                    onClick={() => handleCountryClick("Asia")}
                   />
                   
                   {/* Australia */}
@@ -146,12 +174,13 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   {/* Middle East */}
                   <path
                     d="M520 200 Q540 190 560 195 Q580 200 590 210 Q585 220 580 230 Q575 240 570 250"
-                    fill={visitedCountries.includes("QAT") ? "#3b82f6" : "#e5e7eb"}
+                    fill={visitedCountries.includes("QAT") ? "#40c463" : "#e5e7eb"}
                     stroke="#ffffff"
                     strokeWidth="2"
                     className="cursor-pointer transition-colors duration-200 hover:opacity-80"
                     onMouseEnter={() => setHoveredCountry("QAT")}
                     onMouseLeave={() => setHoveredCountry(null)}
+                    onClick={() => handleCountryClick("QAT")}
                   />
                 </svg>
               </div>
@@ -159,7 +188,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
               {/* Legend */}
               <div className="flex items-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                  <div className="w-4 h-4 bg-green-500 rounded"></div>
                   <span>Visited</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -168,34 +197,31 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 </div>
               </div>
               
+              {/* Click tooltip */}
+              {clickedCountry && (
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-green-700">
+                    {clickedCountry === "Europe" 
+                      ? "Europe: France, Spain, Switzerland, Italy"
+                      : clickedCountry === "Asia"
+                      ? "Asia: China, Taiwan, Japan, South Korea, Malaysia, Thailand"
+                      : getCountryName(clickedCountry)
+                    }
+                  </p>
+                </div>
+              )}
+              
               {/* Hover tooltip */}
-              {hoveredCountry && (
+              {hoveredCountry && !clickedCountry && (
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
                     {visitedCountries.includes(hoveredCountry) || 
                      (hoveredCountry === "Europe" && (visitedCountries.includes("FRA") || visitedCountries.includes("ESP") || visitedCountries.includes("CHE") || visitedCountries.includes("ITA"))) ||
                      (hoveredCountry === "Asia" && (visitedCountries.includes("CHN") || visitedCountries.includes("TWN") || visitedCountries.includes("JPN") || visitedCountries.includes("KOR") || visitedCountries.includes("MYS") || visitedCountries.includes("THA")))
-                     ? "✅ Visited" : "⏳ Not yet visited"}
+                     ? "✅ Visited - Click to see details" : "⏳ Not yet visited"}
                   </p>
                 </div>
               )}
-              
-              {/* Country List */}
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground mb-2">
-                  Countries visited: {visitedCountries.length}
-                </p>
-                <div className="flex flex-wrap justify-center gap-2 text-xs">
-                  {visitedCountries.map((country) => (
-                    <span
-                      key={country}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full"
-                    >
-                      {country}
-                    </span>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
