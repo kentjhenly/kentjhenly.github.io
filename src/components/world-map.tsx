@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import BlurFade from "./magicui/blur-fade";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
+import geoData from "../../public/world-countries.json";
 
 // List of countries you've visited (ISO 3166-1 alpha-3 codes)
 const visitedCountries = [
@@ -47,18 +48,10 @@ interface WorldMapProps {
 export const WorldMap = ({ delay }: WorldMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [geoData, setGeoData] = useState<any>(null);
-  const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+  const [position, setPosition] = useState({ coordinates: [0, 20], zoom: 1.5 });
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    // Fetch the world-countries.json file from the public directory
-    fetch("/world-countries.json")
-      .then((res) => res.json())
-      .then((data) => setGeoData(data));
   }, []);
 
   // Helper to get country name from feature
@@ -74,7 +67,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
   // Memoize visited set for fast lookup
   const visitedSet = useMemo(() => new Set(visitedCountries), []);
 
-  if (!isClient || !geoData) {
+  if (!isClient) {
     return (
       <BlurFade delay={delay}>
         <div className="space-y-12 w-full py-12">
@@ -117,17 +110,21 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
           <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
             <div className="flex flex-col items-center space-y-6">
               <div className="relative w-full max-w-2xl">
-                <ComposableMap
-                  projectionConfig={{ scale: 180 }}
-                  width={800}
-                  height={400}
-                  style={{ width: "100%", height: "auto", maxHeight: 400 }}
+                              <ComposableMap
+                projection="geoMercator"
+                projectionConfig={{
+                  rotate: [-10, 0, 0],
+                  scale: 150,
+                }}
+                width={800}
+                height={400}
+                style={{ width: "100%", height: "auto", maxHeight: 400 }}
+              >
+                <ZoomableGroup
+                  zoom={position.zoom}
+                  center={position.coordinates as [number, number]}
+                  onMoveEnd={({ coordinates, zoom }) => setPosition({ coordinates, zoom })}
                 >
-                  <ZoomableGroup
-                    zoom={position.zoom}
-                    center={position.coordinates as [number, number]}
-                    onMoveEnd={({ coordinates, zoom }) => setPosition({ coordinates, zoom })}
-                  >
                     <Geographies geography={geoData}>
                       {({ geographies }) =>
                         geographies.map((geo) => {

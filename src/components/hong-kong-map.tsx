@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import BlurFade from "./magicui/blur-fade";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import geoData from "../../public/hk-districts-topo.json";
 
 interface HongKongMapProps {
   delay?: number;
@@ -75,30 +76,15 @@ const locations = {
 export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
-  const [geoData, setGeoData] = useState<any>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    fetch("/hk-districts-topo.json")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => setGeoData(data))
-      .catch((error) => {
-        console.error("Error loading Hong Kong map data:", error);
-      });
-  }, []);
-
   const getLocationName = (locationKey: string) => locations[locationKey as keyof typeof locations]?.name || locationKey;
   const getLocationDescription = (locationKey: string) => locations[locationKey as keyof typeof locations]?.description || "";
 
-  if (!isClient || !geoData) {
+  if (!isClient) {
     return (
       <BlurFade delay={delay}>
         <div className="flex justify-center">
