@@ -140,8 +140,6 @@ export default function Page() {
         </div>
       </section>
       <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
-      <WorldMap delay={BLUR_FADE_DELAY * 14} />
-      <RubiksCube delay={BLUR_FADE_DELAY * 15} />
       <section id="books">
         <div className="space-y-12 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 16}>
@@ -185,6 +183,8 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
+      <WorldMap delay={BLUR_FADE_DELAY * 14} />
+      <RubiksCube delay={BLUR_FADE_DELAY * 15} />
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 20}>

@@ -8,7 +8,7 @@ import BlurFade from "./magicui/blur-fade";
 const visitedCountries = [
   "USA", // United States
   "CHN", // China
-  "HKG", // Hong Kong (Special Administrative Region)
+  // "HKG", // Hong Kong (not present in GeoJSON)
   "TWN", // Taiwan
   "JPN", // Japan
   "KOR", // South Korea
@@ -18,9 +18,9 @@ const visitedCountries = [
   "ESP", // Spain
   "CHE", // Switzerland
   "ITA", // Italy
-  "VAT", // Vatican City
+  // "VAT", // Vatican City (not present in GeoJSON)
   "QAT", // Qatar
-];
+]; // Only include codes present in the GeoJSON file
 
 interface WorldMapProps {
   delay?: number;
