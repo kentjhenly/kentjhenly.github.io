@@ -55,30 +55,65 @@ function createFoldedStructure(): THREE.CatmullRomCurve3 {
   return new THREE.CatmullRomCurve3(points);
 }
 
-// Get color based on position and secondary structure
-function getColorByPosition(index: number, totalPoints: number, morph: number): string {
+// AlphaFold pLDDT confidence color scheme
+const getPlddtColor = (plddt: number): string => {
+  if (plddt > 90) return "#0053D6"; // Very high confidence - Dark Blue
+  if (plddt > 70) return "#65CBF3"; // Confident - Light Blue
+  if (plddt > 50) return "#FFD300"; // Low confidence - Yellow
+  return "#FF7D45"; // Very low confidence - Orange
+};
+
+// Generate mock pLDDT scores based on position and folding state
+function generatePlddtScores(totalPoints: number, morph: number): number[] {
+  const scores = [];
+  for (let i = 0; i < totalPoints; i++) {
+    // Base confidence increases as protein folds
+    let baseScore = 30 + morph * 60;
+    
+    // Add structural bias - structured regions have higher confidence
+    if (morph > 0.5) {
+      if (i <= 8) {
+        baseScore += 15; // Alpha helix - higher confidence
+      } else if (i <= 15) {
+        baseScore += 10; // Beta sheet - good confidence
+      } else {
+        baseScore -= 5; // Loops - lower confidence
+      }
+    }
+    
+    // Add some realistic variation
+    const variation = (Math.random() - 0.5) * 15;
+    const score = Math.max(0, Math.min(100, baseScore + variation));
+    scores.push(score);
+  }
+  return scores;
+}
+
+// Get color based on position and AlphaFold confidence
+function getColorByPosition(index: number, totalPoints: number, morph: number, plddtScores: number[]): string {
   if (morph < 0.3) {
     // Rainbow gradient for unfolded state
     const hue = (index / totalPoints) * 360;
     return `hsl(${hue}, 70%, 60%)`;
   } else {
-    // Secondary structure coloring for folded state
-    if (index <= 8) {
-      return "#ef4444"; // Red for alpha helix
-    } else if (index <= 15) {
-      return "#f59e0b"; // Yellow for beta sheet
-    } else {
-      return "#10b981"; // Green for loops/turns
-    }
+    // AlphaFold pLDDT coloring for folded state
+    const plddt = plddtScores[index] || 70;
+    return getPlddtColor(plddt);
   }
 }
 
-// Optimized protein backbone component
+// Optimized protein backbone component with AlphaFold confidence
 function ProteinBackbone({ morph }: { morph: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const geometryRef = useRef<THREE.TubeGeometry>(null);
   const unfoldedCurve = useMemo(() => createUnfoldedCurve(), []);
   const foldedCurve = useMemo(() => createFoldedStructure(), []);
+  
+  // Generate pLDDT scores
+  const plddtScores = useMemo(() => {
+    const maxPoints = Math.max(unfoldedCurve.points.length, foldedCurve.points.length);
+    return generatePlddtScores(maxPoints, morph);
+  }, [unfoldedCurve.points.length, foldedCurve.points.length, morph]);
   
   useFrame(() => {
     if (!meshRef.current || !geometryRef.current) return;
@@ -107,6 +142,11 @@ function ProteinBackbone({ morph }: { morph: number }) {
       geometryRef.current.attributes.position.needsUpdate = true;
       geometryRef.current.computeVertexNormals();
     }
+    
+    // Update material color based on average pLDDT
+    const averagePlddt = plddtScores.reduce((a, b) => a + b, 0) / plddtScores.length;
+    const materialColor = morph < 0.3 ? "#4ade80" : getPlddtColor(averagePlddt);
+    (meshRef.current.material as THREE.MeshPhysicalMaterial).color.set(materialColor);
   });
   
   return (
@@ -124,12 +164,18 @@ function ProteinBackbone({ morph }: { morph: number }) {
   );
 }
 
-// Optimized amino acid side chains with rainbow coloring
+// Optimized amino acid side chains with AlphaFold confidence coloring
 function SideChains({ morph }: { morph: number }) {
   const groupRef = useRef<THREE.Group>(null);
   const unfoldedCurve = useMemo(() => createUnfoldedCurve(), []);
   const foldedCurve = useMemo(() => createFoldedStructure(), []);
   const sideChainRefs = useRef<THREE.Mesh[]>([]);
+  
+  // Generate pLDDT scores
+  const plddtScores = useMemo(() => {
+    const maxPoints = Math.max(unfoldedCurve.points.length, foldedCurve.points.length);
+    return generatePlddtScores(maxPoints, morph);
+  }, [unfoldedCurve.points.length, foldedCurve.points.length, morph]);
   
   useFrame(() => {
     if (!groupRef.current) return;
@@ -186,14 +232,107 @@ function SideChains({ morph }: { morph: number }) {
         offset.applyAxisAngle(tangent, Math.PI / 2);
         sideChain.position.copy(interpolatedPoint).add(offset);
         
-        // Update color
-        const color = getColorByPosition(i, maxPoints, morph);
+        // Update color based on AlphaFold confidence
+        const color = getColorByPosition(i, maxPoints, morph, plddtScores);
         (sideChain.material as THREE.MeshPhysicalMaterial).color.set(color);
       }
     });
   });
   
   return <group ref={groupRef} />;
+}
+
+// PAE Plot Component (Predicted Aligned Error)
+function PAEPlot({ morph }: { morph: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const size = 200;
+    canvas.width = size;
+    canvas.height = size;
+    
+    // Clear canvas
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 0, size, size);
+    
+    // Generate mock PAE data
+    const resolution = 20;
+    const cellSize = size / resolution;
+    
+    for (let i = 0; i < resolution; i++) {
+      for (let j = 0; j < resolution; j++) {
+        // Create realistic PAE pattern
+        const distance = Math.sqrt((i - resolution/2) ** 2 + (j - resolution/2) ** 2);
+        const maxDistance = resolution / 2;
+        
+        // Base error decreases as protein folds
+        let baseError = 15 - morph * 10;
+        
+        // Add structural patterns
+        if (morph > 0.5) {
+          // Structured regions have lower error
+          if ((i < 8 && j < 8) || (i > 12 && j > 12)) {
+            baseError -= 5;
+          }
+          // Flexible regions have higher error
+          if (i > 8 && i < 12 && j > 8 && j < 12) {
+            baseError += 3;
+          }
+        }
+        
+        // Add some noise
+        const noise = (Math.random() - 0.5) * 3;
+        const error = Math.max(0, Math.min(30, baseError + noise));
+        
+        // Color based on error (green = low error, red = high error)
+        const intensity = 1 - (error / 30);
+        const r = Math.round(255 * (1 - intensity));
+        const g = Math.round(255 * intensity);
+        const b = 0;
+        
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
+      }
+    }
+    
+    // Add grid lines
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= resolution; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * cellSize, 0);
+      ctx.lineTo(i * cellSize, size);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(0, i * cellSize);
+      ctx.lineTo(size, i * cellSize);
+      ctx.stroke();
+    }
+  }, [morph]);
+  
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <canvas 
+        ref={canvasRef} 
+        style={{ 
+          border: '1px solid rgba(255,255,255,0.2)', 
+          borderRadius: '8px',
+          maxWidth: '100%',
+          height: 'auto'
+        }} 
+      />
+      <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>
+        PAE Plot: Green = Low Error, Red = High Error
+      </p>
+    </div>
+  );
 }
 
 // Main component
@@ -225,7 +364,7 @@ export default function ProteinFolding() {
   }, [isPlaying]);
   
   return (
-    <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
+    <div style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
       {/* Enhanced morph control at the top */}
       <div style={{ 
         width: "100%", 
@@ -239,7 +378,7 @@ export default function ProteinFolding() {
       }}>
         <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center", color: "#374151" }}>
           <div style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Protein Folding: {morph.toFixed(2)}</span>
+            <span>AlphaFold Protein Folding: {morph.toFixed(2)}</span>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               style={{
@@ -281,63 +420,71 @@ export default function ProteinFolding() {
         </label>
       </div>
       
-      {/* Enhanced 3D model below the control */}
-      <div style={{ height: 400, borderRadius: "12px", overflow: "hidden" }}>
-        <Canvas 
-          camera={{ position: [0, 0, 12], fov: 50 }}
-          shadows
-          gl={{ antialias: true }}
-        >
-          {/* Enhanced lighting setup */}
-          <hemisphereLight intensity={0.3} groundColor="#000000" />
-          <ambientLight intensity={0.2} />
-          <directionalLight 
-            position={[5, 5, 5]} 
-            intensity={0.8}
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            shadow-camera-far={50}
-            shadow-camera-left={-10}
-            shadow-camera-right={10}
-            shadow-camera-top={10}
-            shadow-camera-bottom={-10}
-          />
-          <pointLight position={[-5, 5, 5]} intensity={0.4} color="#4ade80" />
-          <pointLight position={[5, -5, -5]} intensity={0.3} color="#3b82f6" />
-          <pointLight position={[0, 8, 0]} intensity={0.2} color="#ffffff" />
-          
-          {/* Gradient background */}
-          <mesh position={[0, 0, -10]}>
-            <planeGeometry args={[30, 30]} />
-            <meshBasicMaterial color="#1e293b" />
-          </mesh>
-          
-          {/* Ground plane for shadows */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -4, 0]} receiveShadow>
-            <planeGeometry args={[20, 20]} />
-            <meshStandardMaterial color="#334155" transparent opacity={0.3} />
-          </mesh>
-          
-          {/* Protein components */}
-          <ProteinBackbone morph={morph} />
-          <SideChains morph={morph} />
-          
-          {/* Orbit controls for interactive viewing */}
-          <OrbitControls 
-            enablePan={true}
-            enableZoom={true}
-            enableRotate={true}
-            minDistance={5}
-            maxDistance={20}
-            autoRotate={false}
-            dampingFactor={0.05}
-            enableDamping={true}
-          />
-        </Canvas>
+      {/* Main content area with 3D model and PAE plot */}
+      <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
+        {/* Enhanced 3D model */}
+        <div style={{ flex: 1, height: 400, borderRadius: "12px", overflow: "hidden" }}>
+          <Canvas 
+            camera={{ position: [0, 0, 12], fov: 50 }}
+            shadows
+            gl={{ antialias: true }}
+          >
+            {/* Enhanced lighting setup */}
+            <hemisphereLight intensity={0.3} groundColor="#000000" />
+            <ambientLight intensity={0.2} />
+            <directionalLight 
+              position={[5, 5, 5]} 
+              intensity={0.8}
+              castShadow
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+              shadow-camera-far={50}
+              shadow-camera-left={-10}
+              shadow-camera-right={10}
+              shadow-camera-top={10}
+              shadow-camera-bottom={-10}
+            />
+            <pointLight position={[-5, 5, 5]} intensity={0.4} color="#4ade80" />
+            <pointLight position={[5, -5, -5]} intensity={0.3} color="#3b82f6" />
+            <pointLight position={[0, 8, 0]} intensity={0.2} color="#ffffff" />
+            
+            {/* Gradient background */}
+            <mesh position={[0, 0, -10]}>
+              <planeGeometry args={[30, 30]} />
+              <meshBasicMaterial color="#1e293b" />
+            </mesh>
+            
+            {/* Ground plane for shadows */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -4, 0]} receiveShadow>
+              <planeGeometry args={[20, 20]} />
+              <meshStandardMaterial color="#334155" transparent opacity={0.3} />
+            </mesh>
+            
+            {/* Protein components */}
+            <ProteinBackbone morph={morph} />
+            <SideChains morph={morph} />
+            
+            {/* Orbit controls for interactive viewing */}
+            <OrbitControls 
+              enablePan={true}
+              enableZoom={true}
+              enableRotate={true}
+              minDistance={5}
+              maxDistance={20}
+              autoRotate={false}
+              dampingFactor={0.05}
+              enableDamping={true}
+            />
+          </Canvas>
+        </div>
+        
+        {/* PAE Plot */}
+        <div style={{ width: 220 }}>
+          <PAEPlot morph={morph} />
+        </div>
       </div>
       
-      {/* Enhanced description with color legend */}
+      {/* AlphaFold pLDDT Confidence Legend */}
       <div style={{ 
         marginTop: 20, 
         padding: 16, 
@@ -345,15 +492,38 @@ export default function ProteinFolding() {
         borderRadius: 8,
         border: "1px solid rgba(255,255,255,0.1)"
       }}>
-        <h3 style={{ margin: "0 0 12px 0", color: "#374151", fontSize: 18 }}>The Concept: Protein Folding Visualization</h3>
+        <h3 style={{ margin: "0 0 12px 0", color: "#374151", fontSize: 18 }}>
+          AlphaFold-Inspired Protein Folding Visualization
+        </h3>
         <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
-          Proteins start as a linear chain of amino acids (the primary structure) and must fold into a specific, complex 3D shape (the tertiary structure) to become functional. This process is fundamental to all of biology.
+          This visualization demonstrates protein folding inspired by Google DeepMind's AlphaFold, using their confidence metrics to color the structure.
+        </p>
+        
+        {/* pLDDT Confidence Legend */}
+        <div style={{ margin: "12px 0", display: "flex", flexWrap: "wrap", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "16px", height: "16px", backgroundColor: "#0053D6", borderRadius: "2px" }}></div>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very High (>90)</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "16px", height: "16px", backgroundColor: "#65CBF3", borderRadius: "2px" }}></div>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Confident (70-90)</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "16px", height: "16px", backgroundColor: "#FFD300", borderRadius: "2px" }}></div>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Low (50-70)</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "16px", height: "16px", backgroundColor: "#FF7D45", borderRadius: "2px" }}></div>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>Very Low (<50)</span>
+          </div>
+        </div>
+        
+        <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
+          <strong>pLDDT Score:</strong> The color of each amino acid indicates AlphaFold's confidence in its predicted position. Dark blue shows very high confidence, while orange indicates low confidence often found in flexible regions.
         </p>
         <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
-          <strong>Color Coding:</strong> Rainbow gradient shows sequence order when unfolded. When folded: <span style={{color: "#ef4444"}}>Red</span> = Alpha-helices, <span style={{color: "#f59e0b"}}>Yellow</span> = Beta-sheets, <span style={{color: "#10b981"}}>Green</span> = Loops/turns.
-        </p>
-        <p style={{ margin: "0 0 8px 0", color: "#6b7280", fontSize: 14, lineHeight: 1.5 }}>
-          The spheres represent amino acid side chains, while the backbone shows the polypeptide chain. Use the slider or play button to watch the protein transition from an unfolded state to a compact, functional structure.
+          <strong>PAE Plot:</strong> Shows the Predicted Aligned Error between different parts of the protein. Green squares indicate well-predicted relative positions, while red shows higher uncertainty.
         </p>
       </div>
     </div>
