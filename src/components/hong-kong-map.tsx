@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
+import Image from "next/image";
 import BlurFade from "./magicui/blur-fade";
 
 interface HongKongMapProps {
@@ -99,6 +100,18 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
     setIsClient(true);
   }, []);
 
+  // Fix for Leaflet marker icons in Next.js
+  useEffect(() => {
+    if (isClient) {
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      });
+    }
+  }, [isClient]);
+
   if (!isClient) {
     return (
       <BlurFade delay={delay}>
@@ -112,16 +125,6 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
       </BlurFade>
     );
   }
-
-  // Fix for Leaflet marker icons in Next.js
-  useEffect(() => {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    });
-  }, []);
 
   return (
     <BlurFade delay={delay}>
@@ -156,11 +159,23 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
             </div>
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2">
-                <img src={natureIcon.options.iconUrl} alt="Nature" className="w-4 h-auto"/>
+                <Image 
+                  src={natureIcon.options.iconUrl} 
+                  alt="Nature" 
+                  width={16} 
+                  height={16} 
+                  className="w-4 h-auto"
+                />
                 <span>Nature</span>
               </div>
               <div className="flex items-center space-x-2">
-                <img src={urbanIcon.options.iconUrl} alt="Urban" className="w-4 h-auto"/>
+                <Image 
+                  src={urbanIcon.options.iconUrl} 
+                  alt="Urban" 
+                  width={16} 
+                  height={16} 
+                  className="w-4 h-auto"
+                />
                 <span>Urban</span>
               </div>
             </div>
