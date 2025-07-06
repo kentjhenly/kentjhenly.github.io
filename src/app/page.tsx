@@ -52,7 +52,7 @@ export default function Page() {
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 5}>
           <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-            I'm a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
+            I&apos;m a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
           </p>
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 6}>
@@ -62,7 +62,7 @@ export default function Page() {
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 7}>
           <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: "What if I could use math and code to solve big biology questions instead?" That idea completely changed my path.
+            At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: &ldquo;What if I could use math and code to solve big biology questions instead?&rdquo; That idea completely changed my path.
           </p>
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 8}>
@@ -72,7 +72,7 @@ export default function Page() {
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 9}>
           <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            When I'm not coding or solving equations, you'll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it's always "No.1" at Comebuytea.
+            When I&apos;m not coding or solving equations, you&apos;ll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it&apos;s always &ldquo;No.1&rdquo; at Comebuytea.
           </p>
         </BlurFade>
       </section>
