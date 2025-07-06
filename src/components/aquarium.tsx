@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Fish, Shrimp } from "lucide-react";
+import { Fish } from "lucide-react";
 
 interface SeaCreature {
   id: number;
@@ -16,25 +16,25 @@ interface SeaCreature {
   opacity: number;
 }
 
+const fishColors = [
+  "#FF6B6B", // Red
+  "#4ECDC4", // Teal
+  "#45B7D1", // Blue
+  "#96CEB4", // Green
+  "#FFEAA7", // Yellow
+  "#DDA0DD", // Plum
+];
+
+const shrimpColors = [
+  "#FF8C69", // Salmon
+  "#FFB6C1", // Light pink
+  "#F0E68C", // Khaki
+  "#98FB98", // Pale green
+];
+
 export const Aquarium = () => {
   const [isActive, setIsActive] = useState(false);
   const [creatures, setCreatures] = useState<SeaCreature[]>([]);
-
-  const fishColors = [
-    "#FF6B6B", // Red
-    "#4ECDC4", // Teal
-    "#45B7D1", // Blue
-    "#96CEB4", // Green
-    "#FFEAA7", // Yellow
-    "#DDA0DD", // Plum
-  ];
-
-  const shrimpColors = [
-    "#FF8C69", // Salmon
-    "#FFB6C1", // Light pink
-    "#F0E68C", // Khaki
-    "#98FB98", // Pale green
-  ];
 
   useEffect(() => {
     if (!isActive) {
@@ -179,7 +179,7 @@ export const Aquarium = () => {
             </>
           ) : (
             <>
-              <Shrimp className="w-4 h-4" />
+              <span className="text-lg">🌊</span>
               Show Aquarium
             </>
           )}
