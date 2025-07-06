@@ -1,18 +1,19 @@
-import { BookCard } from "@/components/book-card";
-import { WorldMap } from "@/components/world-map";
-import { HongKongSpots } from "@/components/hong-kong-spots";
-import { HongKongMap } from "@/components/hong-kong-map";
-import BlurFade from "@/components/magicui/blur-fade";
-import BlurFadeText from "@/components/magicui/blur-fade-text";
-import { ProjectCard } from "@/components/project-card";
-import { ResumeCard } from "@/components/resume-card";
-import { GitHubContributions } from "@/components/github-contributions";
-import { RubiksCube } from "@/components/rubiks-cube";
+import dynamic from "next/dynamic";
+
+const GitHubContributions = dynamic(() => import("@/components/github-contributions").then(mod => mod.GitHubContributions), { ssr: false });
+const RubiksCube = dynamic(() => import("@/components/rubiks-cube").then(mod => mod.RubiksCube), { ssr: false });
+const HongKongMap = dynamic(() => import("@/components/hong-kong-map").then(mod => mod.HongKongMap), { ssr: false });
+const WorldMap = dynamic(() => import("@/components/world-map").then(mod => mod.WorldMap), { ssr: false });
+const BlurFade = dynamic(() => import("@/components/magicui/blur-fade").then(mod => mod.default), { ssr: false });
+const BlurFadeText = dynamic(() => import("@/components/magicui/blur-fade-text").then(mod => mod.default), { ssr: false });
+const ProjectCard = dynamic(() => import("@/components/project-card").then(mod => mod.ProjectCard), { ssr: false });
+const ResumeCard = dynamic(() => import("@/components/resume-card").then(mod => mod.ResumeCard), { ssr: false });
+const BookCard = dynamic(() => import("@/components/book-card").then(mod => mod.BookCard), { ssr: false });
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
-import Markdown from "react-markdown";
+const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const BLUR_FADE_DELAY = 0.04;
 
