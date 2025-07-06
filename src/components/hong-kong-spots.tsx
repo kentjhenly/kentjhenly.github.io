@@ -9,25 +9,20 @@ interface HongKongSpotsProps {
 export const HongKongSpots = ({ delay = 0 }: HongKongSpotsProps) => {
   const spotCategories = [
     {
-      theme: "Nature & Adventure",
+      theme: "Nature",
       spots: [
         "Camping on Tai Mo Shan (大帽山) on December 31st to wait for the sunrise",
         "Kayaking at Tiu Chung Chau (吊鐘洲)",
         "Hiking at Tai Tong Sweet Gum Woods (大棠紅葉楓香林) & Thousand Island Lake (千島湖)",
+        "Squid fishing in Sai Kung (西貢)",
       ],
     },
     {
-      theme: "Urban Life",
+      theme: "Urban",
       spots: [
         "Picnicking at West Kowloon (西九龍)",
         "City walk on Hong Kong Island (from Admiralty 金鐘 to Causeway Bay 銅鑼灣)",
         "Browsing local bookstores",
-      ],
-    },
-    {
-      theme: "Local Activities",
-      spots: [
-        "Squid fishing in Sai Kung (西貢)",
       ],
     },
   ];
