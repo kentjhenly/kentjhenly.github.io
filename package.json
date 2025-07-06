@@ -46,7 +46,9 @@
   },
   "pnpm": {
     "overrides": {
-      "three": "^0.152.2"
+      "three": "0.152.2",
+      "@react-three/fiber": "8.13.7",
+      "@react-three/drei": "9.56.6"
     }
   },
   "devDependencies": {
