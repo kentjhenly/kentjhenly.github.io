@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Fish } from "lucide-react";
 
 // Define the sections of your page
 const SECTIONS = [
@@ -156,9 +156,9 @@ export function TableOfContents() {
             // TODO: Add aquarium functionality
             console.log("Show aquarium clicked");
           }}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg text-sm font-medium"
+          className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg"
         >
-          Show Aquarium
+          <Fish className="w-5 h-5" />
         </motion.button>
       </div>
     </>
