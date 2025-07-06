@@ -14,6 +14,9 @@ const SECTIONS = [
   { id: "education", label: "Education" },
   { id: "projects", label: "Projects" },
   { id: "books", label: "Books" },
+  { id: "hong-kong", label: "Hong Kong" },
+  { id: "world", label: "World" },
+  { id: "contact", label: "Contact" },
 ];
 
 export function TableOfContents() {

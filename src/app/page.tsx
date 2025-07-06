@@ -221,23 +221,42 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      <BlurFade delay={BLUR_FADE_DELAY * 20}>
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Best parts of Hong Kong.
-            </h2>
-            <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              A collection of my favorite spots and activities in the city I call home.
-            </p>
+
+      <section id="hong-kong">
+        <BlurFade delay={BLUR_FADE_DELAY * 27}>
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                Best parts of Hong Kong.
+              </h2>
+              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                A collection of my favorite spots and activities in the city I call home.
+              </p>
+            </div>
           </div>
-        </div>
-      </BlurFade>
-      <HongKongMap delay={BLUR_FADE_DELAY * 21} />
-      <WorldMap delay={BLUR_FADE_DELAY * 22} />
+        </BlurFade>
+        <HongKongMap delay={BLUR_FADE_DELAY * 28} />
+      </section>
+
+      <section id="world">
+        <BlurFade delay={BLUR_FADE_DELAY * 29}>
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                World Map.
+              </h2>
+              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                Countries I&apos;ve visited and want to visit.
+              </p>
+            </div>
+          </div>
+        </BlurFade>
+        <WorldMap delay={BLUR_FADE_DELAY * 30} />
+      </section>
+
       <section id="contact">
         <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 20}>
+          <BlurFade delay={BLUR_FADE_DELAY * 31}>
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                 Get in Touch.
