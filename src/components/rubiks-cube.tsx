@@ -453,14 +453,34 @@ const RubiksCubeScene = () => {
   const animateMoves = useCallback((currentTime: number) => {
     if (!solverRef.current || !isSolving) return;
 
+    // Initialize lastMoveTime if not set
+    if (lastMoveTimeRef.current === 0) {
+      lastMoveTimeRef.current = currentTime;
+    }
+
     if (currentTime - lastMoveTimeRef.current > 300) { // 300ms per move
       const move = solverRef.current.executeNextMove();
       if (move) {
         setCubeState(solverRef.current.getState());
         setCurrentAlgorithm(`Executing: ${move}`);
         lastMoveTimeRef.current = currentTime;
+        
+        // Update stage based on remaining moves
+        const remainingMoves = solverRef.current.getQueueLength();
+        console.log("Executed move:", move, "Remaining:", remainingMoves);
+        
+        if (remainingMoves > 60) {
+          setCurrentStage(SolvingStage.CROSS);
+        } else if (remainingMoves > 40) {
+          setCurrentStage(SolvingStage.F2L);
+        } else if (remainingMoves > 20) {
+          setCurrentStage(SolvingStage.OLL);
+        } else if (remainingMoves > 0) {
+          setCurrentStage(SolvingStage.PLL);
+        }
       } else {
         // Queue is empty, solving complete
+        console.log("Solving complete!");
         setIsSolving(false);
         setCurrentStage(SolvingStage.SOLVED);
         setCurrentAlgorithm("Cube Solved!");
@@ -489,10 +509,11 @@ const RubiksCubeScene = () => {
     setCurrentAlgorithm("Generating CFOP sequence...");
     
     const solveSequence = solverRef.current.generateCFOPSolve();
+    console.log("Generated solve sequence:", solveSequence.length, "moves");
     solverRef.current.addMoves(solveSequence);
     
-    // Start animation loop
-    lastMoveTimeRef.current = performance.now();
+    // Reset animation timing and start animation loop
+    lastMoveTimeRef.current = 0;
     animationRef.current = requestAnimationFrame(animateMoves);
   };
 
