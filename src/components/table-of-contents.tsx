@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Fish } from "lucide-react";
-import { Aquarium } from "./aquarium";
+import { ChevronRight } from "lucide-react";
 
 // Define the sections of your page
 const SECTIONS = [
@@ -23,7 +22,6 @@ const SECTIONS = [
 export function TableOfContents() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAquariumActive, setIsAquariumActive] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -103,17 +101,17 @@ export function TableOfContents() {
         </ul>
       </motion.nav>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden fixed top-4 right-16 z-50">
+      {/* Mobile Navigation - Navbar Style */}
+      <div className="md:hidden fixed top-4 right-4 z-50">
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-14 right-0 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border dark:border-gray-700"
+              className="absolute top-14 right-0 bg-background backdrop-blur-lg border rounded-lg shadow-xl [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] p-3"
             >
-              <ul className="flex flex-col space-y-3">
+              <ul className="flex flex-col space-y-2">
                 {SECTIONS.map((section) => (
                   <li key={section.id}>
                     <a
@@ -123,10 +121,10 @@ export function TableOfContents() {
                         scrollTo(section.id);
                       }}
                       className={cn(
-                        "text-sm",
+                        "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                         activeSection === section.id
-                          ? "text-blue-400 font-bold"
-                          : "text-gray-700 dark:text-gray-300"
+                          ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium"
+                          : "text-foreground hover:bg-muted"
                       )}
                     >
                       {section.label}
@@ -138,39 +136,22 @@ export function TableOfContents() {
           )}
         </AnimatePresence>
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg"
+          className="size-12 bg-background backdrop-blur-lg border rounded-full flex items-center justify-center shadow-lg [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
         >
           <motion.div
             animate={{ rotate: isMobileMenuOpen ? 45 : 0 }}
             transition={{ duration: 0.3 }}
+            className="text-foreground"
           >
-            <ChevronRight />
+            <ChevronRight className="size-4" />
           </motion.div>
         </motion.button>
       </div>
 
-      {/* Show Aquarium Button (light blue, circular, fish icon only) */}
-      <div className="fixed top-4 right-4 z-50">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsAquariumActive(!isAquariumActive)}
-          className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors",
-            isAquariumActive 
-              ? "bg-blue-500 text-white" 
-              : "bg-blue-400 text-white hover:bg-blue-500"
-          )}
-        >
-          <Fish className="w-5 h-5" />
-        </motion.button>
-      </div>
 
-      {/* Aquarium Component */}
-      <Aquarium isActive={isAquariumActive} />
     </>
   );
 } 
