@@ -147,8 +147,8 @@ export function TableOfContents() {
         </motion.button>
       </div>
 
-      {/* Mobile Show Aquarium Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      {/* Show Aquarium Button (always visible, circular, fish icon only) */}
+      <div className="fixed top-4 left-4 z-50">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
