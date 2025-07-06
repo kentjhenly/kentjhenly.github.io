@@ -106,9 +106,9 @@ export const DATA = {
       end: "2024",
     },
     {
-      school: "Pearson Edexcel International A-Levels",
+      school: "Pearson Edexcel A-Levels",
       href: "https://qualifications.pearson.com",
-      degree: "3A* in Mathematics, Biology, Economics\nReceived offers from HKU, CUHK, KCL and Manchester",
+      degree: "4A* in Mathematics, Biology, Economics, Chinese\nReceived offers from HKU, CUHK, KCL and Manchester",
       logoUrl: "/pearson.jpeg",
       start: "2022",
       end: "2023",
