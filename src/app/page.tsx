@@ -151,8 +151,8 @@ export default function Page() {
         </div>
       </section>
       {/* Responsive GitHub Contributions Graph */}
-      <div className="sm:overflow-x-auto sm:max-w-full sm:pb-2">
-        <div className="sm:min-w-[600px]">
+      <div className="overflow-x-auto max-w-full pb-2 sm:overflow-visible sm:max-w-none sm:pb-0">
+        <div className="min-w-[600px] sm:min-w-0">
           <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
         </div>
       </div>
