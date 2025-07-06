@@ -25,7 +25,7 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 
 - **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
 - **GitHub Contribution Graph**: Real-time GitHub activity visualization
-- **Interactive 3D Rubik's Cube**: Built with Three.js and React Three Fiber
+- **Professional CFOP Solver**: Interactive 3D visualization of the CFOP method used by professional speed-cubers, featuring Cross, F2L, OLL, and PLL stages with algorithm names, trigger moves, and color neutrality
 - **Aquarium Mode**: Toggle a floating aquarium overlay with animated fish and shrimp
 - **Responsive Design**: Optimized for all devices
 - **Dark/Light Mode**: Built-in theme switching

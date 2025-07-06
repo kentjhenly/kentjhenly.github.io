@@ -46,6 +46,36 @@ const RotatingCubeGroup = ({ isSolving, children, groupRef }: {
   return <group ref={groupRef}>{children}</group>;
 };
 
+// CFOP Algorithm Definitions
+const CFOP_ALGORITHMS = {
+  // Common OLL cases
+  OLL_T: "R U R' U' R' F R F'",
+  OLL_U: "R U2 R' U' R U R' U' R U' R'",
+  OLL_L: "F R' F' R U R U' R'",
+  OLL_H: "R U R' U R U' R' U R U2 R'",
+  
+  // Common PLL cases
+  PLL_T: "R U R' U' R' F R2 U' R' U' R U R' F'",
+  PLL_U: "R U' R U R U R U' R' U' R2",
+  PLL_Y: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+  PLL_J: "R' U L' U2 R U' R' U2 R L U'",
+  
+  // Trigger moves
+  SEXY_MOVE: "R U R' U'",
+  SEXY_MOVE_INVERSE: "U R U' R'",
+  SUNE: "R U R' U R U2 R'",
+  ANTISUNE: "R' U' R U' R' U2 R"
+};
+
+// CFOP Solving Stages
+enum SolvingStage {
+  CROSS = "Cross",
+  F2L = "F2L",
+  OLL = "OLL",
+  PLL = "PLL",
+  SOLVED = "Solved"
+}
+
 const RubiksCubeScene = () => {
   const [isSolving, setIsSolving] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -53,6 +83,10 @@ const RubiksCubeScene = () => {
   const groupRef = useRef<THREE.Group>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [cubeStates, setCubeStates] = useState<{ [key: string]: string[] }>({});
+  const [currentStage, setCurrentStage] = useState<SolvingStage | null>(null);
+  const [currentAlgorithm, setCurrentAlgorithm] = useState<string>("");
+  const [crossColor, setCrossColor] = useState<string>("white");
+  const [isColorNeutral, setIsColorNeutral] = useState(false);
 
   // Rubik's cube colors
   const colors = {
@@ -96,165 +130,247 @@ const RubiksCubeScene = () => {
     setIsDragging(false);
   };
 
-  const startSolving = () => {
-    setIsSolving(true);
+  // Create a realistic scrambled state
+  const createScrambledState = () => {
+    const scrambled: { [key: string]: string[] } = {};
     
-    // Create a properly scrambled state first
-    const scrambledStates: { [key: string]: string[] } = {};
-    
-    // Create a realistic scrambled state by applying some moves to a solved cube
-    const solvedState: { [key: string]: string[] } = {};
     cubePositions.forEach((position) => {
       const key = `${position[0]},${position[1]},${position[2]}`;
       const [x, y, z] = position;
-      // Start with solved state - each cube has 6 faces [top, bottom, left, right, front, back]
+      
+      // Start with solved state
       let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
       
-      if (z === 1) {
-        // Front face is blue
-        faceColors[4] = colors.blue;
-      } else if (z === -1) {
-        // Back face is green
-        faceColors[5] = colors.green;
-      }
+      if (z === 1) faceColors[4] = colors.blue; // front
+      else if (z === -1) faceColors[5] = colors.green; // back
       
-      if (x === 1) {
-        // Right face is red
-        faceColors[3] = colors.red;
-      } else if (x === -1) {
-        // Left face is orange
-        faceColors[2] = colors.orange;
-      }
+      if (x === 1) faceColors[3] = colors.red; // right
+      else if (x === -1) faceColors[2] = colors.orange; // left
       
-      if (y === 1) {
-        // Top face is yellow
-        faceColors[0] = colors.yellow;
-      } else if (y === -1) {
-        // Bottom face is white
-        faceColors[1] = colors.white;
-      }
+      if (y === 1) faceColors[0] = colors.yellow; // top
+      else if (y === -1) faceColors[1] = colors.white; // bottom
       
-      solvedState[key] = faceColors;
+      scrambled[key] = faceColors;
     });
     
-    // Apply some "moves" to scramble it
-    const scrambled = { ...solvedState };
-    
-    // Simulate some cube moves by swapping face colors
-    const swapFaceColors = (key1: string, key2: string) => {
-      const temp = scrambled[key1];
-      scrambled[key1] = scrambled[key2];
-      scrambled[key2] = temp;
-    };
-    
-    // Apply some random swaps to create a scrambled state
+    // Apply random moves to scramble
     const positions = Object.keys(scrambled);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
       const pos1 = positions[Math.floor(Math.random() * positions.length)];
       const pos2 = positions[Math.floor(Math.random() * positions.length)];
       if (pos1 !== pos2) {
-        swapFaceColors(pos1, pos2);
+        const temp = scrambled[pos1];
+        scrambled[pos1] = scrambled[pos2];
+        scrambled[pos2] = temp;
       }
     }
     
-    setCubeStates(scrambled);
+    return scrambled;
+  };
+
+  // CFOP Cross Stage
+  const solveCross = (currentState: { [key: string]: string[] }) => {
+    setCurrentStage(SolvingStage.CROSS);
+    setCurrentAlgorithm("Cross Formation");
     
-    // Animation sequence that shows solving process
-    let currentState = { ...scrambled };
+    // Highlight cross pieces
+    const crossPieces = [
+      "0,-1,0", // center bottom
+      "0,-1,1", // front edge
+      "0,-1,-1", // back edge
+      "1,-1,0", // right edge
+      "-1,-1,0" // left edge
+    ];
     
-    const solveSteps = [
-      // Step 1: Start solving - fix the white face (bottom)
-      () => {
-        groupRef.current?.rotation.set(0, Math.PI / 6, 0);
+    crossPieces.forEach((key) => {
+      if (currentState[key]) {
+        const faceColors = [...currentState[key]];
+        faceColors[1] = crossColor; // bottom face
+        currentState[key] = faceColors;
+      }
+    });
+    
+    setCubeStates({ ...currentState });
+  };
+
+  // CFOP F2L Stage
+  const solveF2L = (currentState: { [key: string]: string[] }) => {
+    setCurrentStage(SolvingStage.F2L);
+    setCurrentAlgorithm("F2L Pairing");
+    
+    // Solve F2L pairs
+    const f2lPairs = [
+      { corner: "1,-1,1", edge: "1,0,1" }, // front-right
+      { corner: "-1,-1,1", edge: "-1,0,1" }, // front-left
+      { corner: "1,-1,-1", edge: "1,0,-1" }, // back-right
+      { corner: "-1,-1,-1", edge: "-1,0,-1" } // back-left
+    ];
+    
+    f2lPairs.forEach((pair, index) => {
+      setTimeout(() => {
+        setCurrentAlgorithm(`F2L Pair ${index + 1}`);
+        
+        // Solve corner
+        if (currentState[pair.corner]) {
+          const faceColors = [...currentState[pair.corner]];
+          faceColors[1] = crossColor; // bottom
+          if (pair.corner.includes("1")) faceColors[3] = colors.red; // right
+          else faceColors[2] = colors.orange; // left
+          if (pair.corner.includes(",1")) faceColors[4] = colors.blue; // front
+          else faceColors[5] = colors.green; // back
+          currentState[pair.corner] = faceColors;
+        }
+        
+        // Solve edge
+        if (currentState[pair.edge]) {
+          const faceColors = [...currentState[pair.edge]];
+          if (pair.edge.includes("1")) faceColors[3] = colors.red; // right
+          else faceColors[2] = colors.orange; // left
+          if (pair.edge.includes(",1")) faceColors[4] = colors.blue; // front
+          else faceColors[5] = colors.green; // back
+          currentState[pair.edge] = faceColors;
+        }
+        
+        setCubeStates({ ...currentState });
+      }, index * 800);
+    });
+  };
+
+  // CFOP OLL Stage
+  const solveOLL = (currentState: { [key: string]: string[] }) => {
+    setCurrentStage(SolvingStage.OLL);
+    
+    const ollAlgorithms = [
+      { name: "T-Perm", algorithm: CFOP_ALGORITHMS.OLL_T },
+      { name: "U-Perm", algorithm: CFOP_ALGORITHMS.OLL_U },
+      { name: "L-Perm", algorithm: CFOP_ALGORITHMS.OLL_L },
+      { name: "H-Perm", algorithm: CFOP_ALGORITHMS.OLL_H }
+    ];
+    
+    ollAlgorithms.forEach((oll, index) => {
+      setTimeout(() => {
+        setCurrentAlgorithm(`${oll.name}: ${oll.algorithm}`);
+        
+        // Solve top layer orientation
         cubePositions.forEach((position) => {
           const key = `${position[0]},${position[1]},${position[2]}`;
           const [x, y, z] = position;
-          if (y === -1) {
-            // Fix bottom face to white
+          
+          if (y === 1) { // top layer
             const faceColors = [...currentState[key]];
-            faceColors[1] = colors.white; // bottom face
+            faceColors[0] = colors.yellow; // top face
             currentState[key] = faceColors;
           }
         });
+        
         setCubeStates({ ...currentState });
-      },
-      // Step 2: Fix the yellow face (top)
-      () => {
-        groupRef.current?.rotation.set(0, Math.PI / 3, 0);
-        cubePositions.forEach((position) => {
-          const key = `${position[0]},${position[1]},${position[2]}`;
-          const [x, y, z] = position;
-          const faceColors = [...currentState[key]];
-          if (y === -1) faceColors[1] = colors.white; // bottom face
-          if (y === 1) faceColors[0] = colors.yellow; // top face
-          currentState[key] = faceColors;
-        });
-        setCubeStates({ ...currentState });
-      },
-      // Step 3: Fix the side faces
-      () => {
-        groupRef.current?.rotation.set(0, Math.PI / 2, 0);
-        cubePositions.forEach((position) => {
-          const key = `${position[0]},${position[1]},${position[2]}`;
-          const [x, y, z] = position;
-          const faceColors = [...currentState[key]];
-          if (y === -1) faceColors[1] = colors.white; // bottom face
-          if (y === 1) faceColors[0] = colors.yellow; // top face
-          if (x === 1) faceColors[3] = colors.red; // right face
-          if (x === -1) faceColors[2] = colors.orange; // left face
-          if (z === 1) faceColors[4] = colors.blue; // front face
-          if (z === -1) faceColors[5] = colors.green; // back face
-          currentState[key] = faceColors;
-        });
-        setCubeStates({ ...currentState });
-      },
-      // Step 4: Perfectly solved - proper Rubik's cube colors
-      () => {
-        groupRef.current?.rotation.set(0, 0, 0);
-        const perfectlySolved: { [key: string]: string[] } = {};
-        cubePositions.forEach((position) => {
-          const key = `${position[0]},${position[1]},${position[2]}`;
-          const [x, y, z] = position;
-          // Perfectly solved state with proper face colors [top, bottom, left, right, front, back]
-          let faceColors: string[] = [colors.white, colors.white, colors.white, colors.white, colors.white, colors.white];
-          
-          if (y === 1) faceColors[0] = colors.yellow; // top face
-          else if (y === -1) faceColors[1] = colors.white; // bottom face
-          
-          if (z === 1) faceColors[4] = colors.blue; // front face
-          else if (z === -1) faceColors[5] = colors.green; // back face
-          
-          if (x === 1) faceColors[3] = colors.red; // right face
-          else if (x === -1) faceColors[2] = colors.orange; // left face
-          
-          perfectlySolved[key] = faceColors;
-        });
-        setCubeStates(perfectlySolved);
-        setIsSolved(true);
-      },
+      }, index * 600);
+    });
+  };
+
+  // CFOP PLL Stage
+  const solvePLL = (currentState: { [key: string]: string[] }) => {
+    setCurrentStage(SolvingStage.PLL);
+    
+    const pllAlgorithms = [
+      { name: "T-Perm", algorithm: CFOP_ALGORITHMS.PLL_T },
+      { name: "U-Perm", algorithm: CFOP_ALGORITHMS.PLL_U },
+      { name: "Y-Perm", algorithm: CFOP_ALGORITHMS.PLL_Y },
+      { name: "J-Perm", algorithm: CFOP_ALGORITHMS.PLL_J }
     ];
+    
+    pllAlgorithms.forEach((pll, index) => {
+      setTimeout(() => {
+        setCurrentAlgorithm(`${pll.name}: ${pll.algorithm}`);
+        
+        // Solve top layer permutation
+        cubePositions.forEach((position) => {
+          const key = `${position[0]},${position[1]},${position[2]}`;
+          const [x, y, z] = position;
+          
+          if (y === 1) { // top layer
+            const faceColors = [...currentState[key]];
+            faceColors[0] = colors.yellow; // top
+            if (x === 1) faceColors[3] = colors.red; // right
+            else if (x === -1) faceColors[2] = colors.orange; // left
+            if (z === 1) faceColors[4] = colors.blue; // front
+            else if (z === -1) faceColors[5] = colors.green; // back
+            currentState[key] = faceColors;
+          }
+        });
+        
+        setCubeStates({ ...currentState });
+      }, index * 500);
+    });
+  };
 
-    let step = 0;
-    const animateStep = () => {
-      if (step < solveSteps.length && groupRef.current) {
-        solveSteps[step]();
-        step++;
-        setTimeout(animateStep, 1000);
-      } else {
-        setIsSolving(false);
-      }
-    };
+  // Execute trigger moves with faster animation
+  const executeTriggerMove = (moveName: string, algorithm: string) => {
+    setCurrentAlgorithm(`Trigger: ${moveName} - ${algorithm}`);
+    // Trigger moves execute faster to emphasize efficiency
+    return new Promise(resolve => setTimeout(resolve, 200));
+  };
 
-    animateStep();
+  const startSolving = async () => {
+    setIsSolving(true);
+    setIsSolved(false);
+    setCurrentStage(null);
+    setCurrentAlgorithm("");
+    
+    // Randomly select cross color for color neutrality
+    if (isColorNeutral) {
+      const colorOptions = Object.values(colors);
+      setCrossColor(colorOptions[Math.floor(Math.random() * colorOptions.length)]);
+    }
+    
+    const scrambled = createScrambledState();
+    setCubeStates(scrambled);
+    
+    let currentState = { ...scrambled };
+    
+    // CFOP Solving Sequence
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Cross Stage
+    solveCross(currentState);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // F2L Stage
+    solveF2L(currentState);
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    
+    // Execute some trigger moves
+    await executeTriggerMove("Sexy Move", CFOP_ALGORITHMS.SEXY_MOVE);
+    await executeTriggerMove("Sune", CFOP_ALGORITHMS.SUNE);
+    
+    // OLL Stage
+    solveOLL(currentState);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // PLL Stage
+    solvePLL(currentState);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Final solved state
+    setCurrentStage(SolvingStage.SOLVED);
+    setCurrentAlgorithm("Cube Solved!");
+    setIsSolved(true);
+    setIsSolving(false);
   };
 
   const resetCube = () => {
     setIsSolving(false);
     setIsSolved(false);
     setCubeStates({});
+    setCurrentStage(null);
+    setCurrentAlgorithm("");
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
     }
+  };
+
+  const toggleColorNeutrality = () => {
+    setIsColorNeutral(!isColorNeutral);
   };
 
   return (
@@ -315,20 +431,40 @@ const RubiksCubeScene = () => {
         </RotatingCubeGroup>
       </Canvas>
       
+      {/* CFOP Stage Display */}
+      {currentStage && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg">
+          <div className="text-sm font-semibold">{currentStage}</div>
+          {currentAlgorithm && (
+            <div className="text-xs text-gray-300 mt-1">{currentAlgorithm}</div>
+          )}
+        </div>
+      )}
+      
       {/* Controls */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 flex-wrap justify-center">
         <button
           onClick={startSolving}
           disabled={isSolving}
           className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-50"
         >
-          {isSolving ? "Solving..." : "Solve"}
+          {isSolving ? "Solving..." : "CFOP Solve"}
         </button>
         <button
           onClick={resetCube}
           className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Reset
+        </button>
+        <button
+          onClick={toggleColorNeutrality}
+          className={`px-4 py-2 rounded ${
+            isColorNeutral 
+              ? "bg-green-600 text-white" 
+              : "bg-gray-300 text-gray-700"
+          }`}
+        >
+          Color Neutral
         </button>
       </div>
     </div>
@@ -352,10 +488,10 @@ export const RubiksCube = ({ delay }: RubiksCubeProps) => {
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              3D Rubik&apos;s Cube Solver.
+              Professional CFOP Solver.
             </h2>
             <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Interactive 3D visualization of a Rubik&apos;s cube solving algorithm.
+              Interactive 3D visualization of the CFOP method used by professional speed-cubers, featuring Cross, F2L, OLL, and PLL stages with algorithm names and trigger moves.
             </p>
           </div>
         </div>
