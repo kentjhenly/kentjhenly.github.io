@@ -209,96 +209,94 @@ export default function TorusMugMorph() {
   }
 
   return (
-    <div style={{ width: "100%", maxWidth: 600, height: 500, margin: "0 auto" }}>
-      <Canvas 
-        camera={{ position: [0, 0, 8], fov: 50 }}
-        shadows
-        gl={{ antialias: true }}
-      >
-        {/* Enhanced lighting setup */}
-        <ambientLight intensity={0.4} />
-        <directionalLight 
-          position={[5, 5, 5]} 
-          intensity={0.8}
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={50}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
-        <pointLight position={[-5, 5, 5]} intensity={0.3} />
-        <pointLight position={[0, -5, 0]} intensity={0.2} />
-        
-        {/* Ground plane for shadows */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
-          <planeGeometry args={[20, 20]} />
-          <meshStandardMaterial color="#f0f0f0" transparent opacity={0.3} />
-        </mesh>
-        
-        <MorphingMesh 
-          meshRef={meshRef} 
-          flatVerts={flatVerts} 
-          indices={indices} 
-          normals={normals}
-          color={materialColor}
-        />
-        
-        {/* Orbit controls for interactive viewing */}
-        <OrbitControls 
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          minDistance={3}
-          maxDistance={15}
-          autoRotate={false}
-        />
-        
-        {/* Transparent UI overlay at bottom */}
-        <Html position={[0, -2, 0]}>
-          <div style={{ 
-            position: "absolute", 
-            bottom: "20px", 
-            left: "50%", 
-            transform: "translateX(-50%)", 
-            width: 300, 
-            background: "rgba(255,255,255,0.1)", 
-            borderRadius: 12, 
-            padding: 16, 
-            boxShadow: "0 4px 16px rgba(0,0,0,0.1)", 
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255,255,255,0.2)"
-          }}>
-            <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center", color: "#374151" }}>
-              <div style={{ marginBottom: 8 }}>Morph: {morph.toFixed(2)}</div>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={morph}
-                onChange={e => setMorph(Number(e.target.value))}
-                style={{ 
-                  width: "100%", 
-                  height: "8px", 
-                  borderRadius: "4px", 
-                  background: `linear-gradient(to right, #fbbf24 0%, ${lerpColor("#fbbf24", "#ffffff", 0.5).getHexString()} 50%, #ffffff 100%)`, 
-                  outline: "none", 
-                  cursor: "pointer",
-                  WebkitAppearance: "none",
-                  appearance: "none"
-                }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 8, color: "#6b7280" }}>
-                <span>Torus</span>
-                <span>Mug</span>
-              </div>
-            </label>
+    <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
+      {/* Morph control at the top */}
+      <div style={{ 
+        width: "100%", 
+        background: "rgba(255,255,255,0.1)", 
+        borderRadius: 12, 
+        padding: 16, 
+        marginBottom: 20,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.1)", 
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.2)"
+      }}>
+        <label style={{ fontWeight: 500, fontSize: 16, display: "block", textAlign: "center", color: "#374151" }}>
+          <div style={{ marginBottom: 8 }}>Morph: {morph.toFixed(2)}</div>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={morph}
+            onChange={e => setMorph(Number(e.target.value))}
+            style={{ 
+              width: "100%", 
+              height: "8px", 
+              borderRadius: "4px", 
+              background: `linear-gradient(to right, #fbbf24 0%, ${lerpColor("#fbbf24", "#ffffff", 0.5).getHexString()} 50%, #ffffff 100%)`, 
+              outline: "none", 
+              cursor: "pointer",
+              WebkitAppearance: "none",
+              appearance: "none"
+            }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 8, color: "#6b7280" }}>
+            <span>Torus</span>
+            <span>Mug</span>
           </div>
-        </Html>
-      </Canvas>
+        </label>
+      </div>
+      
+      {/* 3D model below the control */}
+      <div style={{ height: 400 }}>
+        <Canvas 
+          camera={{ position: [0, 0, 8], fov: 50 }}
+          shadows
+          gl={{ antialias: true }}
+        >
+          {/* Enhanced lighting setup */}
+          <ambientLight intensity={0.4} />
+          <directionalLight 
+            position={[5, 5, 5]} 
+            intensity={0.8}
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-far={50}
+            shadow-camera-left={-10}
+            shadow-camera-right={10}
+            shadow-camera-top={10}
+            shadow-camera-bottom={-10}
+          />
+          <pointLight position={[-5, 5, 5]} intensity={0.3} />
+          <pointLight position={[0, -5, 0]} intensity={0.2} />
+          
+          {/* Ground plane for shadows */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
+            <planeGeometry args={[20, 20]} />
+            <meshStandardMaterial color="#f0f0f0" transparent opacity={0.3} />
+          </mesh>
+          
+          <MorphingMesh 
+            meshRef={meshRef} 
+            flatVerts={flatVerts} 
+            indices={indices} 
+            normals={normals}
+            color={materialColor}
+          />
+          
+          {/* Orbit controls for interactive viewing */}
+          <OrbitControls 
+            enablePan={true}
+            enableZoom={true}
+            enableRotate={true}
+            minDistance={3}
+            maxDistance={15}
+            autoRotate={false}
+          />
+        </Canvas>
+      </div>
     </div>
   );
 } 
