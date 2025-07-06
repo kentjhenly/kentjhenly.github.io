@@ -89,25 +89,31 @@ export default function TorusMugMorph() {
   // Flatten for BufferGeometry
   const flatVerts = useMemo(() => morphedVerts.flat(), [morphedVerts]);
 
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.005;
-    }
-  });
+  // Move useFrame into a child component
+  function MorphingMesh({ meshRef, flatVerts, indices }: { meshRef: React.RefObject<THREE.Mesh>, flatVerts: number[], indices: number[] }) {
+    useFrame(() => {
+      if (meshRef.current) {
+        meshRef.current.rotation.y += 0.005;
+      }
+    });
+    return (
+      <mesh ref={meshRef} castShadow receiveShadow>
+        <bufferGeometry attach="geometry">
+          <bufferAttribute attach="attributes-position" args={[new Float32Array(flatVerts), 3]} />
+          {/* Optionally, recalculate normals or remove the normals attribute for smooth shading */}
+          <bufferAttribute attach="index" args={[new Uint16Array(indices), 1]} />
+        </bufferGeometry>
+        <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.4} flatShading={false} />
+      </mesh>
+    );
+  }
 
   return (
     <div style={{ width: "100%", maxWidth: 600, height: 500, margin: "0 auto" }}>
       <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
         <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={0.7} />
-        <mesh ref={meshRef} castShadow receiveShadow>
-          <bufferGeometry attach="geometry">
-            <bufferAttribute attach="attributes-position" args={[new Float32Array(flatVerts), 3]} />
-            {/* Optionally, recalculate normals or remove the normals attribute for smooth shading */}
-            <bufferAttribute attach="index" args={[new Uint16Array(indices), 1]} />
-          </bufferGeometry>
-          <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.4} flatShading={false} />
-        </mesh>
+        <MorphingMesh meshRef={meshRef} flatVerts={flatVerts} indices={indices} />
         <Html center>
           <div style={{ position: "absolute", top: 20, left: 0, right: 0, width: 300, margin: "0 auto", background: "rgba(255,255,255,0.8)", borderRadius: 8, padding: 8, boxShadow: "0 2px 8px #0001" }}>
             <label style={{ fontWeight: 500, fontSize: 16 }}>
