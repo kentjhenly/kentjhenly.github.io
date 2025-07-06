@@ -18,7 +18,27 @@ const visitedCountries = [
   "CHE", // Switzerland
   "ITA", // Italy
   "QAT", // Qatar
+  "GBR", // United Kingdom
+  "FIN", // Finland
 ];
+
+// Map of country codes to full names for the word list
+const countryNames: { [key: string]: string } = {
+  "USA": "United States",
+  "CHN": "China",
+  "TWN": "Taiwan",
+  "JPN": "Japan",
+  "KOR": "South Korea",
+  "MYS": "Malaysia",
+  "THA": "Thailand",
+  "FRA": "France",
+  "ESP": "Spain",
+  "CHE": "Switzerland",
+  "ITA": "Italy",
+  "QAT": "Qatar",
+  "GBR": "United Kingdom",
+  "FIN": "Finland",
+};
 
 interface WorldMapProps {
   delay?: number;
@@ -170,6 +190,21 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-blue-500 rounded"></div>
                   <span>Hover</span>
+                </div>
+              </div>
+              
+              {/* Visited Countries Word List */}
+              <div className="w-full max-w-2xl">
+                <h3 className="text-lg font-semibold text-center mb-4">Countries Visited</h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {visitedCountries.map((countryCode) => (
+                    <span
+                      key={countryCode}
+                      className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium border border-green-200"
+                    >
+                      {countryNames[countryCode]}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
