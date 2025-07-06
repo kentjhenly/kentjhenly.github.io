@@ -7,8 +7,11 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 **Optimized:**
 - For GitHub Pages deployment
 - Interactive World Map: Highlights countries visited, with zoom, pan, and hover effects
+- Hong Kong Map: Interactive map with points of interest and clustering
 - GitHub Contribution Graph: Real-time GitHub activity visualization
 - Interactive 3D Rubik's Cube: Built with Three.js and React Three Fiber
+- Protein Folding Visualization: AlphaFold-inspired 3D protein structure with pLDDT confidence scoring
+- Torus-Mug Morph: Interactive 3D morphing between topological equivalents
 - Aquarium Mode: Toggle a floating aquarium overlay with animated fish
 
 ## Table of Contents
@@ -23,9 +26,12 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 
 ## Features
 
-- **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects
+- **Interactive World Map**: Highlights countries visited, with zoom, pan, and hover effects using react-simple-maps
+- **Hong Kong Map**: Interactive map with custom markers, clustering, and points of interest using React Leaflet
 - **GitHub Contribution Graph**: Real-time GitHub activity visualization
 - **Professional CFOP Solver**: Interactive 3D visualization of the CFOP method used by professional speed-cubers, featuring Cross, F2L, OLL, and PLL stages with algorithm names, trigger moves, and color neutrality
+- **Protein Folding Visualization**: AlphaFold-inspired 3D protein structure with smooth tube geometry, pLDDT confidence scoring, PAE plots, and realistic secondary structure
+- **Torus-Mug Morph**: Interactive 3D morphing between a torus and coffee mug, demonstrating topological equivalence
 - **Aquarium Mode**: Toggle a floating aquarium overlay with animated fish and shrimp
 - **Responsive Design**: Optimized for all devices
 - **Dark/Light Mode**: Built-in theme switching
@@ -38,6 +44,8 @@ Built with Next.js, shadcn/ui, and magic ui, originally deployed on Vercel and n
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui
 - **Animations**: Framer Motion, Magic UI
+- **3D Graphics**: Three.js, React Three Fiber, @react-three/drei
+- **Maps**: React Leaflet, react-simple-maps
 - **Icons**: Lucide React
 - **Content**: MDX
 - **Deployment**: GitHub Actions
@@ -77,7 +85,6 @@ export const DATA = {
 - **Technical Experience**: Add your work history
 - **Education**: Update your academic background
 - **Projects**: Showcase your best work
-- **Books**: Replace with your own reading list (or remove this section)
 
 ### 3. Configure Features
 
@@ -87,6 +94,18 @@ const visitedCountries = [
   "USA", // Add your visited countries
   "CHN", // Use ISO A3 codes
   // ... more countries
+];
+```
+
+**Hong Kong Map** (`src/components/hong-kong-map.tsx`):
+```typescript
+const pointsOfInterest = [
+  {
+    name: "Your Location",
+    type: "urban", // or "nature"
+    coordinates: [22.3193, 114.1694], // [lat, lng]
+    description: "Your description"
+  }
 ];
 ```
 
@@ -101,9 +120,9 @@ const visitedCountries = [
 3. For local development: Create `.env.local` with `NEXT_PUBLIC_GITHUB_TOKEN=your_token_here`
 4. For GitHub Pages: Repository Settings → Secrets → Create `PERSONAL_ACCESS_TOKEN`
 
-**Aquarium Mode**: 
-- Already included, just toggle on/off
-- Customize colors in `src/components/aquarium.tsx`
+**Showcase Page** (`src/app/showcase/page.tsx`):
+- Customize the 3D visualizations or remove them entirely
+- Update descriptions and titles
 
 ### 4. Update Assets and Deploy
 
@@ -155,6 +174,14 @@ Don't want all the features? Here's how to remove them:
 <WorldMap delay={BLUR_FADE_DELAY * 19} />
 ```
 
+### Remove Hong Kong Map
+1. Delete `src/components/hong-kong-map.tsx`
+2. Remove from `src/app/page.tsx`:
+```typescript
+// Delete this line:
+<HongKongMap delay={BLUR_FADE_DELAY * 20} />
+```
+
 ### Remove GitHub Contributions
 1. Delete `src/components/github-contributions.tsx`
 2. Remove from `src/app/page.tsx`:
@@ -179,11 +206,29 @@ Don't want all the features? Here's how to remove them:
 <RubiksCube delay={BLUR_FADE_DELAY * 22} />
 ```
 
-### Remove Commonplace Book
-1. Delete `src/components/book-card.tsx`
-2. Remove from `src/app/page.tsx`:
+### Remove Protein Folding Visualization
+1. Delete `src/components/protein-folding.tsx`
+2. Remove from `src/app/showcase/page.tsx`:
 ```typescript
-// Delete the entire books section
+// Delete the protein folding section
+```
+
+### Remove Torus-Mug Morph
+1. Delete `src/components/torus-mug-morph.tsx`
+2. Remove from `src/app/showcase/page.tsx`:
+```typescript
+// Delete the torus-mug morph section
+```
+
+### Remove Showcase Page Entirely
+1. Delete `src/app/showcase/` folder
+2. Remove showcase link from `src/data/resume.tsx`:
+```typescript
+navbar: [
+  { href: "/", icon: HomeIcon, label: "Home" },
+  // Delete this line:
+  // { href: "/showcase", icon: SparklesIcon, label: "Showcase" },
+],
 ```
 
 ### Remove Blog
