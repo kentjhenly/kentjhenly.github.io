@@ -12,22 +12,25 @@ export const metadata = {
 
 const BLUR_FADE_DELAY = 0.04;
 
-// Define category configurations
+// Define category configurations with Apple-style design
 const CATEGORIES = {
   "Website Development": {
     icon: Code,
     description: "Technical tutorials and implementation guides",
-    color: "bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/30"
   },
   "Life & Thoughts": {
     icon: MessageSquare,
     description: "Personal reflections and experiences",
-    color: "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-50 dark:bg-green-950/30"
   },
   "Medium Articles": {
     icon: Globe,
     description: "External articles and publications",
-    color: "bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300"
+    color: "text-orange-600 dark:text-orange-400",
+    bgColor: "bg-orange-50 dark:bg-orange-950/30"
   }
 };
 
@@ -97,81 +100,81 @@ export default async function BlogPage() {
   });
 
   return (
-    <section className="max-w-4xl mx-auto">
+    <section className="max-w-3xl mx-auto px-4">
       <BlurFade delay={BLUR_FADE_DELAY}>
-        <div className="mb-12">
-          <h1 className="font-medium text-3xl mb-4 tracking-tighter">Blog</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-16 text-center">
+          <h1 className="font-semibold text-4xl mb-3 tracking-tight">Blog</h1>
+          <p className="text-lg text-muted-foreground leading-relaxed">
             Thoughts on software development, technology, and life in Hong Kong.
           </p>
         </div>
       </BlurFade>
       
-      <div className="space-y-12">
+      <div className="space-y-16">
         {Object.entries(postsByCategory).map(([category, posts], categoryIndex) => {
           const categoryConfig = CATEGORIES[category as keyof typeof CATEGORIES];
           const IconComponent = categoryConfig?.icon || BookOpen;
           
           return (
             <BlurFade key={category} delay={BLUR_FADE_DELAY * 2 + categoryIndex * 0.1}>
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Category Header */}
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${categoryConfig?.color}`}>
-                    <IconComponent className="size-5" />
+                <div className="text-center space-y-2">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${categoryConfig?.bgColor} ${categoryConfig?.color} mb-4`}>
+                    <IconComponent className="size-6" />
                   </div>
-                  <div>
-                    <h2 className="text-xl font-medium tracking-tight">{category}</h2>
-                    <p className="text-sm text-muted-foreground">{categoryConfig?.description}</p>
-                  </div>
+                  <h2 className="text-2xl font-semibold tracking-tight">{category}</h2>
+                  <p className="text-muted-foreground text-base">{categoryConfig?.description}</p>
                 </div>
                 
                 {/* Posts in this category */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {posts.map((post, postIndex) => (
                     <BlurFade 
                       key={post.type === 'local' ? post.slug : post.url} 
                       delay={BLUR_FADE_DELAY * 3 + categoryIndex * 0.1 + postIndex * 0.05}
                     >
                       <Link
-                        className="group block p-6 rounded-lg border border-transparent hover:border-border transition-colors duration-200"
+                        className="group block"
                         href={post.url}
                         target={post.isExternal ? "_blank" : undefined}
                         rel={post.isExternal ? "noopener noreferrer" : undefined}
                       >
-                        <article className="space-y-3">
-                          <div className="space-y-2">
-                            <div className="flex items-start justify-between">
-                              <h3 className="text-lg font-medium tracking-tight group-hover:text-foreground transition-colors flex-1">
-                                {post.title}
-                              </h3>
-                              {post.isExternal && (
-                                <ExternalLink className="size-4 text-muted-foreground mt-1 ml-2 flex-shrink-0" />
-                              )}
+                        <article className="p-8 rounded-2xl border border-border/50 hover:border-border transition-all duration-300 hover:shadow-sm hover:shadow-border/20">
+                          <div className="space-y-4">
+                            <div className="space-y-3">
+                              <div className="flex items-start justify-between">
+                                <h3 className="text-xl font-medium tracking-tight group-hover:text-foreground transition-colors duration-200 flex-1 leading-relaxed">
+                                  {post.title}
+                                </h3>
+                                {post.isExternal && (
+                                  <ExternalLink className="size-4 text-muted-foreground mt-1 ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                )}
+                              </div>
+                              <p className="text-muted-foreground leading-relaxed">
+                                {post.summary}
+                              </p>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              {post.summary}
-                            </p>
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <time className="text-xs text-muted-foreground">
-                              {formatDate(post.publishedAt)}
-                            </time>
-                            <div className="flex items-center space-x-2">
-                              {post.tags && post.tags.slice(0, 2).map((tag: string) => (
-                                <span
-                                  key={tag}
-                                  className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {post.isExternal && (
-                                <span className="text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">
-                                  Medium
-                                </span>
-                              )}
+                            
+                            <div className="flex items-center justify-between pt-2">
+                              <time className="text-sm text-muted-foreground font-medium">
+                                {formatDate(post.publishedAt)}
+                              </time>
+                              <div className="flex items-center space-x-2">
+                                {post.tags && post.tags.slice(0, 2).map((tag: string) => (
+                                  <span
+                                    key={tag}
+                                    className="text-xs px-3 py-1 rounded-full bg-muted/50 text-muted-foreground font-medium"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                                {post.isExternal && (
+                                  <span className="text-xs px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-medium">
+                                    Medium
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </article>
@@ -187,8 +190,11 @@ export default async function BlogPage() {
       
       {allPosts.length === 0 && (
         <BlurFade delay={BLUR_FADE_DELAY * 2}>
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No blog posts yet. Check back soon!</p>
+          <div className="text-center py-16">
+            <div className="w-16 h-16 rounded-full bg-muted/50 mx-auto mb-4 flex items-center justify-center">
+              <BookOpen className="size-8 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-lg">No blog posts yet. Check back soon!</p>
           </div>
         </BlurFade>
       )}
