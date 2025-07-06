@@ -470,8 +470,7 @@ const ProteinFolding = () => {
               <pointLight position={[-10, -10, -10]} intensity={0.3} />
               <pointLight position={[0, 10, 0]} intensity={0.2} />
               
-              {/* Environment for better reflections */}
-              <Environment preset="city" />
+              {/* Remove Environment component that causes HDR loading errors */}
               
               <ProteinBackbone morphFactor={morphFactor} />
               <SideChains morphFactor={morphFactor} />
