@@ -146,9 +146,37 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
           </div>
         </div>
         
-        {/* Graph centered for both mobile and desktop */}
+        {/* Graph container - different behavior for mobile vs desktop */}
         <div className="flex justify-center">
-          <div className="bg-card border rounded-lg p-4 md:p-6 w-full max-w-4xl lg:max-w-none overflow-x-auto lg:overflow-x-visible">
+          {/* Mobile: Fixed width container with scrollable graph */}
+          <div className="md:hidden w-full max-w-4xl">
+            <div className="bg-card border rounded-lg p-4">
+              <div className="flex items-center gap-4 mb-4 justify-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
+                  <span className="text-sm text-muted-foreground">Less</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
+                    <div
+                      key={index}
+                      className="w-3 h-3 rounded-sm"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-muted-foreground">More</span>
+              </div>
+              <div className="overflow-x-auto">
+                <div className="flex justify-center min-w-[600px]">
+                  {renderContributionGraph()}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Full width with left-aligned graph */}
+          <div className="hidden md:block bg-card border rounded-lg p-6 w-full">
             <div className="flex items-center gap-4 mb-4 justify-center">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
@@ -165,7 +193,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
               </div>
               <span className="text-sm text-muted-foreground">More</span>
             </div>
-            <div className="flex justify-center lg:justify-start">
+            <div className="flex justify-start">
               {renderContributionGraph()}
             </div>
           </div>
