@@ -147,7 +147,12 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
+      {/* Responsive GitHub Contributions Graph */}
+      <div className="overflow-x-auto max-w-full pb-2">
+        <div className="min-w-[600px]">
+          <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
+        </div>
+      </div>
       <section id="books">
         <div className="space-y-12 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 16}>
