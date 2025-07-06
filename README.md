@@ -126,6 +126,68 @@ colors: {
 }
 ```
 
+## 🗑️ Remove Unwanted Features
+
+Don't want all the features? Here's how to remove them:
+
+### Remove World Map
+1. Delete `src/components/world-map.tsx`
+2. Remove from `src/app/page.tsx`:
+```typescript
+// Delete this line:
+<WorldMap delay={BLUR_FADE_DELAY * 19} />
+```
+
+### Remove GitHub Contributions
+1. Delete `src/components/github-contributions.tsx`
+2. Remove from `src/app/page.tsx`:
+```typescript
+// Delete this line:
+<GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 13} />
+```
+
+### Remove Aquarium Mode
+1. Delete `src/components/aquarium.tsx`
+2. Remove from `src/app/layout.tsx`:
+```typescript
+// Delete this line:
+<Aquarium />
+```
+
+### Remove 3D Rubik's Cube
+1. Delete `src/components/rubiks-cube.tsx`
+2. Remove from `src/app/page.tsx`:
+```typescript
+// Delete this line:
+<RubiksCube delay={BLUR_FADE_DELAY * 22} />
+```
+
+### Remove Commonplace Book
+1. Delete `src/components/book-card.tsx`
+2. Remove from `src/app/page.tsx`:
+```typescript
+// Delete the entire books section
+```
+
+### Remove Blog
+1. Delete `content/` folder
+2. Delete `src/app/blog/` folder
+3. Remove blog link from `src/data/resume.tsx`:
+```typescript
+navbar: [
+  { href: "/", icon: HomeIcon, label: "Home" },
+  // Delete this line:
+  // { href: "/blog", icon: NotebookIcon, label: "Blog" },
+],
+```
+
+### Simplify Layout
+Want a minimal version? Keep only:
+- Personal info section
+- Experience section
+- Education section
+- Projects section
+
 ## 🚀 Quick Start
 
 ```bash
