@@ -176,7 +176,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
           </div>
 
           {/* Desktop: Full width with left-aligned graph */}
-          <div className="hidden md:block bg-card border rounded-lg p-6 w-full">
+          <div className="hidden md:block bg-card border rounded-lg p-6">
             <div className="flex items-center gap-4 mb-4 justify-center">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
