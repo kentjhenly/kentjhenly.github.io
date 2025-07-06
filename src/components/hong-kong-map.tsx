@@ -19,71 +19,71 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
     "Tai Mo Shan": {
       name: "Tai Mo Shan (大帽山)",
       description: "Camping on December 31st to wait for the sunrise",
-      x: 25,
-      y: 15,
+      x: 20, // New Territories, northwest
+      y: 18,
       type: "nature"
     },
     "Tiu Chung Chau": {
       name: "Tiu Chung Chau (吊鐘洲)",
       description: "Kayaking spot",
-      x: 75,
-      y: 70,
+      x: 80, // Southeast, near islands
+      y: 92,
       type: "nature"
     },
     "Tai Tong": {
       name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
       description: "Hiking with beautiful autumn leaves",
-      x: 20,
+      x: 18, // New Territories, west
       y: 35,
       type: "nature"
     },
     "Thousand Island Lake": {
       name: "Thousand Island Lake (千島湖)",
       description: "Hiking destination",
-      x: 30,
-      y: 40,
+      x: 30, // New Territories, southwest
+      y: 55,
       type: "nature"
     },
     "Braemar Hill": {
       name: "Braemar Hill (寶馬山)",
       description: "Night hiking with city views",
-      x: 42,
-      y: 72,
+      x: 82, // HK Island, northeast
+      y: 85,
       type: "nature"
     },
     "West Kowloon": {
       name: "West Kowloon (西九龍)",
       description: "Picnicking by the harbor",
-      x: 40,
-      y: 72,
+      x: 55, // Kowloon, west
+      y: 70,
       type: "urban"
     },
     "Admiralty": {
       name: "Admiralty (金鐘)",
       description: "Start of city walk",
-      x: 52,
-      y: 76,
+      x: 68, // HK Island, central
+      y: 88,
       type: "urban"
     },
     "Causeway Bay": {
       name: "Causeway Bay (銅鑼灣)",
       description: "End of city walk",
-      x: 58,
-      y: 76,
+      x: 85, // HK Island, east
+      y: 90,
       type: "urban"
     },
     "SoHo": {
       name: "SoHo",
       description: "Bar Leone - Asia's Best Bar 2024",
-      x: 55,
-      y: 78,
+      x: 65, // HK Island, central-west
+      y: 90,
       type: "urban"
     },
     "Sai Kung": {
       name: "Sai Kung (西貢)",
       description: "Squid fishing",
-      x: 80,
-      y: 35,
+      x: 95, // Sai Kung Peninsula, east
+      y: 45,
       type: "nature"
     }
   };
@@ -154,67 +154,67 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   {/* Background */}
                   <rect width="100" height="100" fill="#f8fafc" />
                   
-                  {/* New Territories - Main landmass (largest area) */}
+                  {/* New Territories - Top and left, largest area */}
                   <path
-                    d="M5 15 Q15 5 35 8 Q50 15 48 35 Q45 55 30 60 Q15 55 8 40 Q5 25 5 15"
+                    d="M5 10 Q20 2 50 5 Q80 10 90 30 Q95 50 80 60 Q60 70 40 60 Q20 50 10 30 Q5 20 5 10"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Kowloon Peninsula - Between NT and HK Island */}
+                  {/* Kowloon Peninsula - below NT, above HK Island */}
                   <path
-                    d="M35 70 Q42 65 50 67 Q55 70 53 75 Q50 78 45 77 Q40 75 35 70"
+                    d="M40 62 Q50 60 60 62 Q65 65 62 70 Q55 75 48 72 Q42 68 40 62"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Hong Kong Island - South of Kowloon */}
+                  {/* Hong Kong Island - much larger, southeast */}
                   <path
-                    d="M50 75 Q55 72 60 73 Q63 75 62 78 Q60 81 55 80 Q50 78 50 75"
+                    d="M50 80 Q60 75 80 78 Q90 85 85 95 Q75 98 60 95 Q50 90 50 80"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Lantau Island - West of HK Island */}
+                  {/* Lantau Island - southwest, smaller */}
                   <path
-                    d="M65 60 Q75 55 85 60 Q88 65 86 75 Q80 85 70 80 Q65 70 65 60"
+                    d="M10 70 Q20 65 35 70 Q40 75 35 85 Q25 90 15 85 Q10 80 10 70"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Sai Kung Peninsula - East of NT */}
+                  {/* Sai Kung Peninsula - east of NT */}
                   <path
-                    d="M70 25 Q80 20 90 25 Q93 30 91 40 Q85 50 75 45 Q70 35 70 25"
+                    d="M80 30 Q90 25 98 35 Q99 45 90 55 Q85 50 80 40 Q80 35 80 30"
                     fill="#e5e7eb"
                     stroke="#ffffff"
                     strokeWidth="1"
                   />
                   
-                  {/* Victoria Harbour - Between Kowloon and HK Island */}
+                  {/* Victoria Harbour - between Kowloon and HK Island */}
                   <path
-                    d="M48 72 Q52 74 56 72"
+                    d="M55 72 Q65 74 75 72"
                     fill="none"
                     stroke="#3b82f6"
                     strokeWidth="1.5"
                     strokeDasharray="4,2"
                   />
                   
-                  {/* Tolo Harbour - In NT */}
+                  {/* Tolo Harbour - in NT */}
                   <path
-                    d="M25 35 Q30 37 35 35"
+                    d="M30 25 Q40 28 50 25"
                     fill="none"
                     stroke="#3b82f6"
                     strokeWidth="0.8"
                     strokeDasharray="2,2"
                   />
                   
-                  {/* Mirs Bay - East of Sai Kung */}
+                  {/* Mirs Bay - east of Sai Kung */}
                   <path
-                    d="M85 30 Q90 32 95 30"
+                    d="M90 35 Q95 38 99 35"
                     fill="none"
                     stroke="#3b82f6"
                     strokeWidth="0.8"
@@ -250,11 +250,11 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   ))}
                   
                   {/* Region Labels */}
-                  <text x="25" y="20" fontSize="3" fill="#6b7280" className="pointer-events-none">New Territories</text>
-                  <text x="42" y="82" fontSize="3" fill="#6b7280" className="pointer-events-none">Kowloon</text>
-                  <text x="55" y="82" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
-                  <text x="75" y="70" fontSize="3" fill="#6b7280" className="pointer-events-none">Lantau</text>
-                  <text x="80" y="35" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
+                  <text x="20" y="20" fontSize="3" fill="#6b7280" className="pointer-events-none">New Territories</text>
+                  <text x="50" y="68" fontSize="3" fill="#6b7280" className="pointer-events-none">Kowloon</text>
+                  <text x="70" y="90" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
+                  <text x="25" y="80" fontSize="3" fill="#6b7280" className="pointer-events-none">Lantau</text>
+                  <text x="90" y="40" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
                 </svg>
               </div>
               
