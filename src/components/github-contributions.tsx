@@ -14,13 +14,13 @@ interface GitHubContributionsProps {
   delay?: number;
 }
 
-// Monochromatic blue color function
-const getBlueColor = (count: number): string => {
-  if (count === 0) return '#f1f5f9'; // Light gray for no contributions
-  if (count <= 3) return '#EBF7FF'; // Very Light Blue
-  if (count <= 6) return '#BCE3F7'; // Lighter Blue
-  if (count <= 9) return '#5AC8FA'; // Light Blue
-  return '#007AFF'; // Apple Blue for high activity
+// Original GitHub green color function
+const getGreenColor = (count: number): string => {
+  if (count === 0) return '#ebedf0'; // Light gray for no contributions
+  if (count <= 3) return '#9be9a8'; // Very light green
+  if (count <= 6) return '#40c463'; // Light green
+  if (count <= 9) return '#30a14e'; // Medium green
+  return '#216e39'; // Dark green for high activity
 };
 
 export const GitHubContributions = ({ username, delay = 0 }: GitHubContributionsProps) => {
@@ -120,7 +120,7 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
                 key={dayIndex}
                 className="w-3 h-3 rounded-sm"
                 style={{
-                  backgroundColor: day.contributionCount > 0 ? getBlueColor(day.contributionCount) : '#f1f5f9',
+                  backgroundColor: day.contributionCount > 0 ? getGreenColor(day.contributionCount) : '#ebedf0',
                 }}
                 title={`${day.date}: ${day.contributionCount} contributions`}
               />
@@ -149,11 +149,11 @@ export const GitHubContributions = ({ username, delay = 0 }: GitHubContributions
           <div className="bg-card border rounded-lg p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-[#f1f5f9]"></div>
+                <div className="w-3 h-3 rounded-sm bg-[#ebedf0]"></div>
                 <span className="text-sm text-muted-foreground">Less</span>
               </div>
               <div className="flex items-center gap-1">
-                {['#EBF7FF', '#BCE3F7', '#5AC8FA', '#007AFF'].map((color, index) => (
+                {['#9be9a8', '#40c463', '#30a14e', '#216e39'].map((color, index) => (
                   <div
                     key={index}
                     className="w-3 h-3 rounded-sm"
