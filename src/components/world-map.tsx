@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import BlurFade from "./magicui/blur-fade";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 
-// List of countries you've visited
+// List of countries you've visited (ISO 3166-1 alpha-3 codes)
 const visitedCountries = [
   "USA", // United States
   "CHN", // China
@@ -26,41 +27,34 @@ interface WorldMapProps {
 export const WorldMap = ({ delay }: WorldMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [geoData, setGeoData] = useState<any>(null);
+  const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const getCountryName = (countryCode: string) => {
-    const countryNames: { [key: string]: string } = {
-      "USA": "United States",
-      "CHN": "China",
-      "TWN": "Taiwan",
-      "JPN": "Japan",
-      "KOR": "South Korea",
-      "MYS": "Malaysia",
-      "THA": "Thailand",
-      "FRA": "France",
-      "ESP": "Spain",
-      "CHE": "Switzerland",
-      "ITA": "Italy",
-      "QAT": "Qatar",
-    };
-    return countryNames[countryCode] || countryCode;
+  useEffect(() => {
+    // Fetch the world-countries.json file from the public directory
+    fetch("/world-countries.json")
+      .then((res) => res.json())
+      .then((data) => setGeoData(data));
+  }, []);
+
+  // Helper to get country name from feature
+  const getCountryName = (feature: any) => {
+    return feature.properties.name;
   };
 
-  const getHoverText = (region: string) => {
-    if (region === "Europe") {
-      return "France, Spain, Switzerland, Italy";
-    } else if (region === "Asia") {
-      return "China, Taiwan, Japan, South Korea, Malaysia, Thailand";
-    } else if (visitedCountries.includes(region)) {
-      return getCountryName(region);
-    }
-    return null;
+  // Helper to get country code from feature
+  const getCountryCode = (feature: any) => {
+    return feature.id;
   };
 
-  if (!isClient) {
+  // Memoize visited set for fast lookup
+  const visitedSet = useMemo(() => new Set(visitedCountries), []);
+
+  if (!isClient || !geoData) {
     return (
       <BlurFade delay={delay}>
         <div className="space-y-12 w-full py-12">
@@ -74,7 +68,6 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
               </p>
             </div>
           </div>
-          
           <div className="flex justify-center">
             <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
               <div className="h-96 flex items-center justify-center">
@@ -100,91 +93,70 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
             </p>
           </div>
         </div>
-        
         <div className="flex justify-center">
           <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
             <div className="flex flex-col items-center space-y-6">
-              {/* Simple World Map Visualization */}
               <div className="relative w-full max-w-2xl">
-                <svg
-                  viewBox="0 0 1000 500"
-                  className="w-full h-auto"
-                  style={{ maxHeight: "400px" }}
+                <ComposableMap
+                  projectionConfig={{ scale: 180 }}
+                  width={800}
+                  height={400}
+                  style={{ width: "100%", height: "auto", maxHeight: 400 }}
                 >
-                  {/* Background */}
-                  <rect width="1000" height="500" fill="#f8fafc" />
-                  
-                  {/* Simplified continents */}
-                  {/* North America */}
-                  <path
-                    d="M150 150 Q200 100 250 120 Q300 140 320 180 Q300 220 250 240 Q200 260 150 250 Q120 230 130 200 Q140 170 150 150"
-                    fill={visitedCountries.includes("USA") ? "#40c463" : "#e5e7eb"}
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    className="cursor-pointer transition-colors duration-200 hover:opacity-80"
-                    onMouseEnter={() => setHoveredCountry("USA")}
-                    onMouseLeave={() => setHoveredCountry(null)}
-                  />
-                  
-                  {/* South America */}
-                  <path
-                    d="M250 250 Q270 280 280 320 Q285 360 280 400 Q275 430 270 450 Q265 470 260 480"
-                    fill="#e5e7eb"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Europe */}
-                  <path
-                    d="M450 120 Q470 110 490 115 Q510 120 520 130 Q515 140 510 150 Q505 160 500 170"
-                    fill={visitedCountries.includes("FRA") || visitedCountries.includes("ESP") || visitedCountries.includes("CHE") || visitedCountries.includes("ITA") ? "#40c463" : "#e5e7eb"}
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    className="cursor-pointer transition-colors duration-200 hover:opacity-80"
-                    onMouseEnter={() => setHoveredCountry("Europe")}
-                    onMouseLeave={() => setHoveredCountry(null)}
-                  />
-                  
-                  {/* Africa */}
-                  <path
-                    d="M470 180 Q480 200 485 250 Q490 300 485 350 Q480 400 475 450"
-                    fill="#e5e7eb"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Asia */}
-                  <path
-                    d="M520 100 Q600 90 700 110 Q750 130 780 150 Q800 170 820 190 Q830 210 840 230"
-                    fill={visitedCountries.includes("CHN") || visitedCountries.includes("TWN") || visitedCountries.includes("JPN") || visitedCountries.includes("KOR") || visitedCountries.includes("MYS") || visitedCountries.includes("THA") ? "#40c463" : "#e5e7eb"}
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    className="cursor-pointer transition-colors duration-200 hover:opacity-80"
-                    onMouseEnter={() => setHoveredCountry("Asia")}
-                    onMouseLeave={() => setHoveredCountry(null)}
-                  />
-                  
-                  {/* Australia */}
-                  <path
-                    d="M750 350 Q780 340 800 345 Q820 350 830 360 Q825 370 820 380 Q815 390 810 400"
-                    fill="#e5e7eb"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Middle East */}
-                  <path
-                    d="M520 200 Q540 190 560 195 Q580 200 590 210 Q585 220 580 230 Q575 240 570 250"
-                    fill={visitedCountries.includes("QAT") ? "#40c463" : "#e5e7eb"}
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    className="cursor-pointer transition-colors duration-200 hover:opacity-80"
-                    onMouseEnter={() => setHoveredCountry("QAT")}
-                    onMouseLeave={() => setHoveredCountry(null)}
-                  />
-                </svg>
+                  <ZoomableGroup
+                    zoom={position.zoom}
+                    center={position.coordinates as [number, number]}
+                    onMoveEnd={({ coordinates, zoom }) => setPosition({ coordinates, zoom })}
+                  >
+                    <Geographies geography={geoData}>
+                      {({ geographies }) =>
+                        geographies.map((geo) => {
+                          const code = getCountryCode(geo);
+                          const isVisited = visitedSet.has(code);
+                          return (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              onMouseEnter={() => setHoveredCountry(getCountryName(geo))}
+                              onMouseLeave={() => setHoveredCountry(null)}
+                              style={{
+                                default: {
+                                  fill: isVisited ? "#40c463" : "#e5e7eb",
+                                  stroke: "#ffffff",
+                                  strokeWidth: 0.75,
+                                  outline: "none",
+                                  transition: "fill 0.2s",
+                                  cursor: "pointer",
+                                },
+                                hover: {
+                                  fill: "#3b82f6",
+                                  stroke: "#ffffff",
+                                  strokeWidth: 1,
+                                  outline: "none",
+                                  cursor: "pointer",
+                                },
+                                pressed: {
+                                  fill: isVisited ? "#40c463" : "#e5e7eb",
+                                  stroke: "#ffffff",
+                                  strokeWidth: 1,
+                                  outline: "none",
+                                  cursor: "pointer",
+                                },
+                              }}
+                            />
+                          );
+                        })
+                      }
+                    </Geographies>
+                  </ZoomableGroup>
+                </ComposableMap>
+                {/* Tooltip for hovered country */}
+                {hoveredCountry && (
+                  <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-white bg-opacity-90 text-blue-700 px-4 py-2 rounded-lg shadow text-center pointer-events-none z-10">
+                    <span className="font-semibold text-base">{hoveredCountry}</span>
+                  </div>
+                )}
               </div>
-              
               {/* Legend */}
               <div className="flex items-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2">
@@ -195,16 +167,11 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                   <div className="w-4 h-4 bg-gray-300 rounded"></div>
                   <span>Not Yet Visited</span>
                 </div>
-              </div>
-              
-              {/* Hover tooltip */}
-              {hoveredCountry && (
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-green-700">
-                    {getHoverText(hoveredCountry)}
-                  </p>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                  <span>Hover</span>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

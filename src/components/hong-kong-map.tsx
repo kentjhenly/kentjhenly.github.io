@@ -1,97 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import BlurFade from "./magicui/blur-fade";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
 interface HongKongMapProps {
   delay?: number;
 }
 
+// Real lat/lon for each location
+const locations = {
+  "Tai Mo Shan": {
+    name: "Tai Mo Shan (大帽山)",
+    description: "Camping on December 31st to wait for the sunrise",
+    coordinates: [114.1175, 22.4197], // Tai Mo Shan peak
+    type: "nature"
+  },
+  "Tiu Chung Chau": {
+    name: "Tiu Chung Chau (吊鐘洲)",
+    description: "Kayaking spot (northeast, near Sai Kung; not Cheung Chau)",
+    coordinates: [114.3906, 22.4706], // Tiu Chung Chau
+    type: "nature"
+  },
+  "Tai Tong": {
+    name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
+    description: "Hiking with beautiful autumn leaves",
+    coordinates: [114.0262, 22.4442], // Tai Tong
+    type: "nature"
+  },
+  "Thousand Island Lake": {
+    name: "Thousand Island Lake (千島湖)",
+    description: "Hiking destination (near Tai Lam Chung Reservoir)",
+    coordinates: [114.0572, 22.3497], // Tai Lam Chung Reservoir
+    type: "nature"
+  },
+  "Braemar Hill": {
+    name: "Braemar Hill (寶馬山)",
+    description: "Night hiking with city views (above Causeway Bay, near North Point)",
+    coordinates: [114.2006, 22.2822], // Braemar Hill
+    type: "nature"
+  },
+  "West Kowloon": {
+    name: "West Kowloon (西九龍)",
+    description: "Picnicking by the harbor",
+    coordinates: [114.1588, 22.3045], // West Kowloon Cultural District
+    type: "urban"
+  },
+  "Admiralty": {
+    name: "Admiralty (金鐘)",
+    description: "Start of city walk",
+    coordinates: [114.1655, 22.2797], // Admiralty
+    type: "urban"
+  },
+  "Causeway Bay": {
+    name: "Causeway Bay (銅鑼灣)",
+    description: "End of city walk",
+    coordinates: [114.1860, 22.2806], // Causeway Bay
+    type: "urban"
+  },
+  "SoHo": {
+    name: "SoHo",
+    description: "Bar Leone - Asia's Best Bar 2024",
+    coordinates: [114.1511, 22.2819], // SoHo, Central
+    type: "urban"
+  },
+  "Sai Kung": {
+    name: "Sai Kung (西貢)",
+    description: "Squid fishing",
+    coordinates: [114.2710, 22.3833], // Sai Kung Town
+    type: "nature"
+  }
+};
+
 export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
   const [isClient, setIsClient] = useState(false);
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
+  const [geoData, setGeoData] = useState<any>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const locations = {
-    "Tai Mo Shan": {
-      name: "Tai Mo Shan (大帽山)",
-      description: "Camping on December 31st to wait for the sunrise",
-      x: 20,
-      y: 18,
-      type: "nature"
-    },
-    "Tiu Chung Chau": {
-      name: "Tiu Chung Chau (吊鐘洲)",
-      description: "Kayaking spot (northeast, near Sai Kung; not Cheung Chau)",
-      x: 97,
-      y: 28,
-      type: "nature"
-    },
-    "Tai Tong": {
-      name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
-      description: "Hiking with beautiful autumn leaves",
-      x: 18,
-      y: 35,
-      type: "nature"
-    },
-    "Thousand Island Lake": {
-      name: "Thousand Island Lake (千島湖)",
-      description: "Hiking destination (near Tai Lam Chung Reservoir)",
-      x: 22,
-      y: 48,
-      type: "nature"
-    },
-    "Braemar Hill": {
-      name: "Braemar Hill (寶馬山)",
-      description: "Night hiking with city views (above Causeway Bay, near North Point)",
-      x: 80,
-      y: 86,
-      type: "nature"
-    },
-    "West Kowloon": {
-      name: "West Kowloon (西九龍)",
-      description: "Picnicking by the harbor",
-      x: 55,
-      y: 70,
-      type: "urban"
-    },
-    "Admiralty": {
-      name: "Admiralty (金鐘)",
-      description: "Start of city walk",
-      x: 68,
-      y: 90,
-      type: "urban"
-    },
-    "Causeway Bay": {
-      name: "Causeway Bay (銅鑼灣)",
-      description: "End of city walk",
-      x: 83,
-      y: 92,
-      type: "urban"
-    },
-    "SoHo": {
-      name: "SoHo",
-      description: "Bar Leone - Asia's Best Bar 2024",
-      x: 62,
-      y: 92,
-      type: "urban"
-    },
-    "Sai Kung": {
-      name: "Sai Kung (西貢)",
-      description: "Squid fishing",
-      x: 95,
-      y: 38,
-      type: "nature"
-    }
-  };
+  useEffect(() => {
+    fetch("/hk-districts-topo.json")
+      .then((res) => res.json())
+      .then((data) => setGeoData(data));
+  }, []);
 
   const getLocationName = (locationKey: string) => locations[locationKey as keyof typeof locations]?.name || locationKey;
   const getLocationDescription = (locationKey: string) => locations[locationKey as keyof typeof locations]?.description || "";
 
-  if (!isClient) {
+  if (!isClient || !geoData) {
     return (
       <BlurFade delay={delay}>
         <div className="flex justify-center">
@@ -111,58 +110,78 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
         <div className="bg-card border rounded-lg p-6 w-full max-w-4xl">
           <div className="flex flex-col items-center space-y-6">
             <div className="relative w-full max-w-2xl">
-              <svg viewBox="0 0 100 100" className="w-full h-auto" style={{ maxHeight: "400px" }}>
-                <rect width="100" height="100" fill="#f8fafc" />
-                {/* New Territories */}
-                <path d="M5 10 Q20 2 50 5 Q80 10 90 30 Q95 50 80 60 Q60 70 40 60 Q20 50 10 30 Q5 20 5 10" fill="#e5e7eb" stroke="#ffffff" strokeWidth="1" />
-                {/* Kowloon */}
-                <path d="M40 62 Q50 60 60 62 Q65 65 62 70 Q55 75 48 72 Q42 68 40 62" fill="#e5e7eb" stroke="#ffffff" strokeWidth="1" />
-                {/* HK Island */}
-                <path d="M50 80 Q60 75 80 78 Q90 85 85 95 Q75 98 60 95 Q50 90 50 80" fill="#e5e7eb" stroke="#ffffff" strokeWidth="1" />
-                {/* Lantau */}
-                <path d="M10 70 Q20 65 35 70 Q40 75 35 85 Q25 90 15 85 Q10 80 10 70" fill="#e5e7eb" stroke="#ffffff" strokeWidth="1" />
-                {/* Sai Kung */}
-                <path d="M80 30 Q90 25 98 35 Q99 45 90 55 Q85 50 80 40 Q80 35 80 30" fill="#e5e7eb" stroke="#ffffff" strokeWidth="1" />
-                {/* Water features */}
-                <path d="M55 72 Q65 74 75 72" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,2" />
-                <path d="M30 25 Q40 28 50 25" fill="none" stroke="#3b82f6" strokeWidth="0.8" strokeDasharray="2,2" />
-                <path d="M90 35 Q95 38 99 35" fill="none" stroke="#3b82f6" strokeWidth="0.8" strokeDasharray="2,2" />
-                {/* Markers */}
+              <ComposableMap
+                projection="geoMercator"
+                projectionConfig={{
+                  center: [114.15, 22.35],
+                  scale: 35000,
+                }}
+                width={800}
+                height={400}
+                style={{ width: "100%", height: "auto", maxHeight: 400 }}
+              >
+                <Geographies geography={geoData}>
+                  {({ geographies }) =>
+                    geographies.map((geo) => (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        style={{
+                          default: {
+                            fill: "#e5e7eb",
+                            stroke: "#ffffff",
+                            strokeWidth: 0.75,
+                            outline: "none",
+                          },
+                          hover: {
+                            fill: "#3b82f6",
+                            stroke: "#ffffff",
+                            strokeWidth: 1,
+                            outline: "none",
+                          },
+                          pressed: {
+                            fill: "#e5e7eb",
+                            stroke: "#ffffff",
+                            strokeWidth: 1,
+                            outline: "none",
+                          },
+                        }}
+                      />
+                    ))
+                  }
+                </Geographies>
+                {/* Markers for locations */}
                 {Object.entries(locations).map(([key, location]) => (
-                  <g key={key}>
+                  <Marker
+                    key={key}
+                    coordinates={location.coordinates as [number, number]}
+                    onMouseEnter={() => setHoveredLocation(key)}
+                    onMouseLeave={() => setHoveredLocation(null)}
+                  >
                     <circle
-                      cx={location.x}
-                      cy={location.y}
-                      r="3"
+                      r={7}
                       fill={location.type === "nature" ? "#40c463" : "#3b82f6"}
-                      stroke="#ffffff"
-                      strokeWidth="1"
-                      className="cursor-pointer transition-all duration-200 hover:r-4"
-                      onMouseEnter={() => setHoveredLocation(key)}
-                      onMouseLeave={() => setHoveredLocation(null)}
+                      stroke="#fff"
+                      strokeWidth={2}
+                      style={{ cursor: "pointer", transition: "r 0.2s" }}
                     />
                     <text
-                      x={location.x + 6}
-                      y={location.y - 4}
-                      fontSize="2.5"
-                      fill="#374151"
-                      className="pointer-events-none"
-                      style={{ textShadow: '0 1px 2px #fff' }}
+                      y={-12}
+                      textAnchor="middle"
+                      style={{ fontSize: 12, fill: "#374151", pointerEvents: "none", textShadow: "0 1px 2px #fff" }}
                     >
                       {key}
                     </text>
-                  </g>
+                  </Marker>
                 ))}
-                {/* Region Labels */}
-                <text x="10" y="15" fontSize="3" fill="#6b7280" className="pointer-events-none">New Territories</text>
-                <text x="45" y="65" fontSize="3" fill="#6b7280" className="pointer-events-none">Kowloon</text>
-                <text x="92" y="25" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
-                <text x="70" y="98" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
-                {/* Legend for dashed blue lines */}
-                <rect x="5" y="95" width="18" height="4" fill="#fff" stroke="#e5e7eb" strokeWidth="0.5" />
-                <line x1="7" y1="97" x2="17" y2="97" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,2" />
-                <text x="19" y="98.5" fontSize="2.5" fill="#3b82f6">Harbour/Water</text>
-              </svg>
+              </ComposableMap>
+              {/* Tooltip for hovered location */}
+              {hoveredLocation && (
+                <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-white bg-opacity-90 text-blue-700 px-4 py-2 rounded-lg shadow text-center pointer-events-none z-10">
+                  <span className="font-semibold text-base">{getLocationName(hoveredLocation)}</span>
+                  <div className="text-xs text-gray-500 mt-1">{getLocationDescription(hoveredLocation)}</div>
+                </div>
+              )}
             </div>
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2">
@@ -174,16 +193,6 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                 <span>Urban</span>
               </div>
             </div>
-            {hoveredLocation && (
-              <div className="text-center">
-                <p className="text-lg font-semibold text-gray-700">
-                  {getLocationName(hoveredLocation)}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {getLocationDescription(hoveredLocation)}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
