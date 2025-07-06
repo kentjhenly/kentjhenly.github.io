@@ -19,71 +19,71 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
     "Tai Mo Shan": {
       name: "Tai Mo Shan (大帽山)",
       description: "Camping on December 31st to wait for the sunrise",
-      x: 20, // New Territories, northwest
+      x: 20,
       y: 18,
       type: "nature"
     },
     "Tiu Chung Chau": {
       name: "Tiu Chung Chau (吊鐘洲)",
-      description: "Kayaking spot",
-      x: 80, // Southeast, near islands
-      y: 92,
+      description: "Kayaking spot (northeast, near Sai Kung; not Cheung Chau)",
+      x: 97, // Far northeast, near Sai Kung
+      y: 28,
       type: "nature"
     },
     "Tai Tong": {
       name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
       description: "Hiking with beautiful autumn leaves",
-      x: 18, // New Territories, west
+      x: 18,
       y: 35,
       type: "nature"
     },
     "Thousand Island Lake": {
       name: "Thousand Island Lake (千島湖)",
-      description: "Hiking destination",
-      x: 30, // New Territories, southwest
-      y: 55,
+      description: "Hiking destination (near Tai Lam Chung Reservoir)",
+      x: 22, // Further northwest
+      y: 48,
       type: "nature"
     },
     "Braemar Hill": {
       name: "Braemar Hill (寶馬山)",
-      description: "Night hiking with city views",
-      x: 82, // HK Island, northeast
-      y: 85,
+      description: "Night hiking with city views (above Causeway Bay, near North Point)",
+      x: 80, // Above Causeway Bay, northeast HK Island
+      y: 86,
       type: "nature"
     },
     "West Kowloon": {
       name: "West Kowloon (西九龍)",
       description: "Picnicking by the harbor",
-      x: 55, // Kowloon, west
+      x: 55,
       y: 70,
       type: "urban"
     },
     "Admiralty": {
       name: "Admiralty (金鐘)",
       description: "Start of city walk",
-      x: 68, // HK Island, central
-      y: 88,
+      x: 68,
+      y: 90,
       type: "urban"
     },
     "Causeway Bay": {
       name: "Causeway Bay (銅鑼灣)",
       description: "End of city walk",
-      x: 85, // HK Island, east
-      y: 90,
+      x: 83,
+      y: 92,
       type: "urban"
     },
     "SoHo": {
       name: "SoHo",
       description: "Bar Leone - Asia's Best Bar 2024",
-      x: 65, // HK Island, central-west
-      y: 90,
+      x: 62,
+      y: 92,
       type: "urban"
     },
     "Sai Kung": {
       name: "Sai Kung (西貢)",
       description: "Squid fishing",
-      x: 95, // Sai Kung Peninsula, east
-      y: 45,
+      x: 95, // Further east, coastal
+      y: 38,
       type: "nature"
     }
   };
@@ -228,21 +228,22 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                       <circle
                         cx={location.x}
                         cy={location.y}
-                        r="2"
+                        r="3"
                         fill={location.type === "nature" ? "#40c463" : "#3b82f6"}
                         stroke="#ffffff"
                         strokeWidth="1"
-                        className="cursor-pointer transition-all duration-200 hover:r-3"
+                        className="cursor-pointer transition-all duration-200 hover:r-4"
                         onMouseEnter={() => setHoveredLocation(key)}
                         onMouseLeave={() => setHoveredLocation(null)}
                       />
                       {/* Label */}
                       <text
-                        x={location.x + 3}
-                        y={location.y - 3}
-                        fontSize="2"
+                        x={location.x + 6}
+                        y={location.y - 4}
+                        fontSize="2.5"
                         fill="#374151"
                         className="pointer-events-none"
+                        style={{ textShadow: '0 1px 2px #fff' }}
                       >
                         {key}
                       </text>
@@ -255,6 +256,11 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   <text x="70" y="90" fontSize="3" fill="#6b7280" className="pointer-events-none">HK Island</text>
                   <text x="25" y="80" fontSize="3" fill="#6b7280" className="pointer-events-none">Lantau</text>
                   <text x="90" y="40" fontSize="3" fill="#6b7280" className="pointer-events-none">Sai Kung</text>
+
+                  {/* Legend for dashed blue lines */}
+                  <rect x="5" y="95" width="18" height="4" fill="#fff" stroke="#e5e7eb" strokeWidth="0.5" />
+                  <line x1="7" y1="97" x2="17" y2="97" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,2" />
+                  <text x="19" y="98.5" fontSize="2.5" fill="#3b82f6">Harbour/Water</text>
                 </svg>
               </div>
               
