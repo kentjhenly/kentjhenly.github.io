@@ -923,7 +923,7 @@ class CubeSolver {
   // Apply cube rotations - this is crucial for proper advanced move handling
   private applyCubeRotation(state: CubeState, rotationType: string): void {
     for (let piece of state.pieces) {
-      const [x, y, z] = piece.position;
+        const [x, y, z] = piece.position;
       let newPosition: [number, number, number];
       let newFaceColors: string[];
 
@@ -2628,7 +2628,7 @@ class CubeSolver {
         });
         pieces.push(...whiteEdges.slice(0, 2)); // Highlight next 2 edges
         break;
-        
+      
       case SolvingStage.F2L:
         // Highlight the next F2L pair
         const nextPair = this.findNextF2LPair();
@@ -2636,7 +2636,7 @@ class CubeSolver {
           pieces.push(nextPair.corner, nextPair.edge);
         }
         break;
-        
+      
       case SolvingStage.OLL:
         // Highlight yellow pieces that need orientation
         const yellowPieces = this.state.pieces.filter(piece => {
@@ -2648,7 +2648,7 @@ class CubeSolver {
         });
         pieces.push(...yellowPieces.slice(0, 4)); // Highlight next 4 pieces
         break;
-        
+      
       case SolvingStage.PLL:
         // Highlight pieces that need permutation
         const topLayerPieces = this.state.pieces.filter(piece => {
@@ -2687,8 +2687,8 @@ class CubeSolver {
     
     const move = this.moveQueue.shift();
     if (move) {
-      this.applyMove(move);
-      return move;
+    this.applyMove(move);
+    return move;
     }
     return null;
   }
@@ -3589,21 +3589,21 @@ const RubiksCubeScene = () => {
         <div className="absolute top-2 sm:top-6 left-1/2 transform -translate-x-1/2 w-full max-w-sm sm:max-w-lg px-2">
           <div className="bg-background/90 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-xl">
             <div className="text-sm sm:text-lg font-semibold text-foreground text-center mb-2">{currentStage}</div>
-            {currentAlgorithm && (
+          {currentAlgorithm && (
               <div className="text-xs sm:text-sm text-muted-foreground text-center mb-2 font-mono break-all">
                 {currentAlgorithm}
               </div>
-            )}
-            {solverRef.current && (
+          )}
+          {solverRef.current && (
               <div className="text-xs text-muted-foreground text-center">
-                Moves remaining: {solverRef.current.getQueueLength()}
-              </div>
-            )}
-            {solveStats && (
+              Moves remaining: {solverRef.current.getQueueLength()}
+            </div>
+          )}
+          {solveStats && (
               <div className="text-xs text-blue-500 dark:text-blue-400 text-center mt-1">
-                Total: {solveStats.totalMoves} moves
-              </div>
-            )}
+              Total: {solveStats.totalMoves} moves
+            </div>
+          )}
           </div>
         </div>
       )}
@@ -3617,7 +3617,7 @@ const RubiksCubeScene = () => {
               <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">Cross:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.CROSS]} moves</span>
-              </div>
+            </div>
               <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">F2L:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.F2L]} moves</span>
@@ -3646,20 +3646,20 @@ const RubiksCubeScene = () => {
         <div className="bg-background/90 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-2xl">
           {/* Main Action Buttons */}
           <div className="flex gap-2 mb-3 sm:mb-4">
-            <button
-              onClick={startSolving}
-              disabled={isSolving}
+        <button
+          onClick={startSolving}
+          disabled={isSolving}
               className="flex-1 px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm"
-            >
-              {isSolving ? "Solving..." : "CFOP Solve"}
-            </button>
-            <button
-              onClick={resetCube}
+        >
+          {isSolving ? "Solving..." : "CFOP Solve"}
+        </button>
+        <button
+          onClick={resetCube}
               className="px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm"
-            >
-              Reset
-            </button>
-          </div>
+        >
+          Reset
+        </button>
+      </div>
 
           {/* Settings - Responsive Layout */}
           <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
