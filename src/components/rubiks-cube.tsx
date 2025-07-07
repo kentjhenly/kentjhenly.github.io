@@ -3082,22 +3082,16 @@ class CubeSolver {
 
   // Get expected colors for a piece at given position
   private getExpectedPieceColors(x: number, y: number, z: number): string[] {
+    // Every piece has the same color orientation in the solved state
+    // [top, bottom, left, right, front, back]
     const colors = [
-      INTERNAL_COLOR,
-      INTERNAL_COLOR,
-      INTERNAL_COLOR,
-      INTERNAL_COLOR,
-      INTERNAL_COLOR,
-      INTERNAL_COLOR,
+      this.COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
+      this.COLORS.white,   // The sticker on the -Y side of any piece is White
+      this.COLORS.green,   // The sticker on the -X side of any piece is Green
+      this.COLORS.blue,    // The sticker on the +X side of any piece is Blue
+      this.COLORS.red,     // The sticker on the +Z side of any piece is Red
+      this.COLORS.orange,  // The sticker on the -Z side of any piece is Orange
     ];
-    
-    // Set colors based on position
-    if (y === 1) colors[0] = this.COLORS.yellow;    // Top
-    if (y === -1) colors[1] = this.COLORS.white;    // Bottom
-    if (x === -1) colors[2] = this.COLORS.green;    // Left
-    if (x === 1) colors[3] = this.COLORS.blue;      // Right
-    if (z === 1) colors[4] = this.COLORS.red;       // Front
-    if (z === -1) colors[5] = this.COLORS.orange;   // Back
     
     return colors;
   }
@@ -3133,31 +3127,25 @@ const RubiksCubeScene = () => {
 
   const createSolvedState = (): CubeState => {
     const pieces: CubePiece[] = [];
-    
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          // CRITICAL FIX: Only assign colors to visible faces, use internal gray for hidden faces
-          // [top, bottom, left, right, front, back]
           
+          // This defines the color of each face of a cubie at position (x,y,z) in the solved state.
+          // The problem in the original code was that faces not on the surface were assigned a grey color.
+          // When these pieces were rotated, the grey faces became visible and broke the solver's logic.
+          // The fix is to define a "whole" piece with correctly colored faces on all sides.
+          // In a standard Rubik's Cube orientation, the Yellow face points up (+Y), White points down (-Y),
+          // Blue points right (+X), Green points left (-X), Red points front (+Z), and Orange points back (-Z).
+          // Every piece inherits this orientation in the solved state.
           const faceColors: string[] = [
-            // Top face (index 0): yellow only if on top face, otherwise internal gray
-            y === 1 ? COLORS.yellow : INTERNAL_COLOR,
-
-            // Bottom face (index 1): white only if on bottom face, otherwise internal gray
-            y === -1 ? COLORS.white : INTERNAL_COLOR,
-
-            // Left face (index 2): green only if on left face, otherwise internal gray
-            x === -1 ? COLORS.green : INTERNAL_COLOR,
-
-            // Right face (index 3): blue only if on right face, otherwise internal gray
-            x === 1 ? COLORS.blue : INTERNAL_COLOR,
-
-            // Front face (index 4): red only if on front face, otherwise internal gray
-            z === 1 ? COLORS.red : INTERNAL_COLOR,
-
-            // Back face (index 5): orange only if on back face, otherwise internal gray
-            z === -1 ? COLORS.orange : INTERNAL_COLOR
+            // [top, bottom, left, right, front, back]
+            COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
+            COLORS.white,   // The sticker on the -Y side of any piece is White
+            COLORS.green,   // The sticker on the -X side of any piece is Green
+            COLORS.blue,    // The sticker on the +X side of any piece is Blue
+            COLORS.red,     // The sticker on the +Z side of any piece is Red
+            COLORS.orange,  // The sticker on the -Z side of any piece is Orange
           ];
           
           pieces.push({
@@ -3243,7 +3231,7 @@ const RubiksCubeScene = () => {
   // Robust state verification function
   const isStateActuallySolved = (state: CubeState): boolean => {
     // Check if all pieces are in their correct positions with correct orientations
-    // Now uses the same logic as createSolvedState - no more black placeholders
+    // Now uses the same logic as createSolvedState - every piece has full colors
     
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
@@ -3255,19 +3243,15 @@ const RubiksCubeScene = () => {
           if (!piece) return false;
           
           // Expected colors based on position (same logic as createSolvedState)
+          // Every piece has the same color orientation in the solved state
           const expectedColors = [
-            // Top face: yellow only if on top face, otherwise internal gray
-            y === 1 ? COLORS.yellow : INTERNAL_COLOR,
-            // Bottom face: white only if on bottom face, otherwise internal gray
-            y === -1 ? COLORS.white : INTERNAL_COLOR,
-            // Left face: green only if on left face, otherwise internal gray
-            x === -1 ? COLORS.green : INTERNAL_COLOR,
-            // Right face: blue only if on right face, otherwise internal gray
-            x === 1 ? COLORS.blue : INTERNAL_COLOR,
-            // Front face: red only if on front face, otherwise internal gray
-            z === 1 ? COLORS.red : INTERNAL_COLOR,
-            // Back face: orange only if on back face, otherwise internal gray
-            z === -1 ? COLORS.orange : INTERNAL_COLOR
+            // [top, bottom, left, right, front, back]
+            COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
+            COLORS.white,   // The sticker on the -Y side of any piece is White
+            COLORS.green,   // The sticker on the -X side of any piece is Green
+            COLORS.blue,    // The sticker on the +X side of any piece is Blue
+            COLORS.red,     // The sticker on the +Z side of any piece is Red
+            COLORS.orange,  // The sticker on the -Z side of any piece is Orange
           ];
           
           // Check that all face colors match the expected colors
