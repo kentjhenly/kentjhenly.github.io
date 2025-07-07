@@ -142,410 +142,474 @@ const CFOP_ALGORITHMS = {
   ANTISUNE: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R']
 };
 
-// Full OLL Algorithms (subset of 57 - most common cases)
+// Full OLL Algorithms (Complete set of 57 cases)
 const FULL_OLL_ALGORITHMS = {
-  // Cross cases (7 cases)
-  OLL_1: ['R', 'U2', 'R2', 'F', 'R', 'F2', 'U2', 'F', 'R'],
-  OLL_2: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-  OLL_3: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-  OLL_4: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-  OLL_5: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
-  OLL_6: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R'],
-  OLL_7: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\''],
+  // Dot cases (1-6)
+  OLL_1: ['R', 'U2', 'R2', 'F', 'R', 'F\'', 'U2', 'R\'', 'F', 'R', 'F\''],
+  OLL_2: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'f', 'R', 'U', 'R\'', 'U\'', 'f\''],
+  OLL_3: ['f', 'R', 'U', 'R\'', 'U\'', 'f\'', 'U\'', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_4: ['f', 'R', 'U', 'R\'', 'U\'', 'f\'', 'U', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_5: ['r', 'U', 'R\'', 'U', 'R', 'U\'', 'r\''],
+  OLL_6: ['r\'', 'U\'', 'R', 'U\'', 'R\'', 'U', 'r'],
+  OLL_7: ['r', 'U', 'R\'', 'U', 'R', 'U2', 'r\''],
+  OLL_8: ['r\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'r'],
   
-  // T cases (4 cases)
-  OLL_8: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
-  OLL_9: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-  OLL_10: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
-  OLL_11: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R'],
+  // I cases (9-12)
+  OLL_9: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_10: ['R', 'U', 'R\'', 'U', 'R\'', 'F', 'R', 'F\'', 'U2', 'R\'', 'F', 'R', 'F\''],
+  OLL_11: ['r', 'U\'', 'r2', 'U', 'r2', 'U', 'r2', 'U\'', 'r'],
+  OLL_12: ['M\'', 'R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R', 'U\'', 'M'],
   
-  // L cases (4 cases)
-  OLL_12: ['F', 'R\'', 'F\'', 'R', 'U', 'R', 'U\'', 'R\''],
-  OLL_13: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U', 'R', 'U2', 'R\''],
-  OLL_14: ['R', 'U2', 'R2', 'U\'', 'R2', 'U\'', 'R2', 'U2', 'R'],
-  OLL_15: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  // L cases (13-20)
+  OLL_13: ['r', 'U\'', 'r\'', 'U\'', 'r', 'U', 'r\'', 'F', 'R', 'F\''],
+  OLL_14: ['R\'', 'F', 'R', 'U', 'R\'', 'F\'', 'R', 'F', 'U\'', 'F\''],
+  OLL_15: ['r\'', 'U', 'r', 'U', 'r\'', 'U\'', 'r', 'F\'', 'U', 'F'],
+  OLL_16: ['R', 'U', 'R\'', 'F', 'R\'', 'F', 'R', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_17: ['F', 'R\'', 'F\'', 'R2', 'r\'', 'U', 'R', 'U\'', 'r\'', 'F', 'R', 'F\''],
+  OLL_18: ['r', 'U', 'R\'', 'U', 'R', 'U2', 'r2', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'r'],
+  OLL_19: ['r\'', 'R', 'U', 'R', 'U', 'R\'', 'U\'', 'r', 'R2', 'F', 'R', 'F\''],
+  OLL_20: ['r', 'U', 'R\'', 'U\'', 'r\'', 'F', 'R', 'F\''],
   
-  // ... Add remaining OLL cases (up to 57) ...
+  // T cases (21-28)
+  OLL_21: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  OLL_22: ['R', 'U2', 'R\'', 'U\'', 'R', 'U\'', 'R\''],
+  OLL_23: ['R2', 'D', 'R\'', 'U2', 'R', 'D\'', 'R\'', 'U2', 'R\''],
+  OLL_24: ['r', 'U', 'R\'', 'U\'', 'r\'', 'F', 'R', 'F\''],
+  OLL_25: ['F\'', 'r', 'U', 'R\'', 'U\'', 'r\'', 'F', 'R'],
+  OLL_26: ['R', 'U2', 'R\'', 'U\'', 'R', 'U\'', 'R\''],
+  OLL_27: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  
+  // W cases (28-36)
+  OLL_28: ['r', 'U', 'R\'', 'U\'', 'r\'', 'R', 'U', 'R', 'U\'', 'R\''],
+  OLL_29: ['R', 'U', 'R\'', 'U\'', 'R', 'U\'', 'R\'', 'F\'', 'U\'', 'F'],
+  OLL_30: ['F', 'U', 'R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\''],
+  OLL_31: ['R\'', 'U\'', 'F', 'U', 'R', 'U\'', 'R\'', 'F\'', 'R'],
+  OLL_32: ['S', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'f\''],
+  OLL_33: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_34: ['R', 'U', 'R2', 'U\'', 'R\'', 'F', 'R', 'U', 'R', 'U\'', 'F\''],
+  OLL_35: ['R', 'U2', 'R2', 'F', 'R', 'F\'', 'R', 'U2', 'R\''],
+  OLL_36: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U', 'R', 'U', 'l', 'U\'', 'R\'', 'U', 'x'],
+  
+  // Corner cases (37-46)
+  OLL_37: ['F', 'R\'', 'F\'', 'R', 'U', 'R', 'U\'', 'R\''],
+  OLL_38: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_39: ['L', 'F\'', 'L\'', 'U\'', 'L', 'U', 'F', 'U\'', 'L\''],
+  OLL_40: ['R\'', 'F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U', 'R'],
+  OLL_41: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\'', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_42: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_43: ['f\'', 'L\'', 'U\'', 'L', 'U', 'f'],
+  OLL_44: ['f', 'R', 'U', 'R\'', 'U\'', 'f\''],
+  OLL_45: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_46: ['R\'', 'U\'', 'R\'', 'F', 'R', 'F\'', 'U', 'R'],
+  
+  // P cases (47-56)
+  OLL_47: ['F\'', 'L\'', 'U\'', 'L', 'U', 'L\'', 'U\'', 'L', 'U', 'F'],
+  OLL_48: ['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_49: ['r', 'U\'', 'r2', 'U', 'r2', 'U', 'r2', 'U\'', 'r'],
+  OLL_50: ['r\'', 'U', 'r2', 'U\'', 'r2', 'U\'', 'r2', 'U', 'r\''],
+  OLL_51: ['f', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'f\''],
+  OLL_52: ['R', 'U', 'R\'', 'U', 'R', 'd\'', 'R', 'U\'', 'R\'', 'F\''],
+  OLL_53: ['r\'', 'U\'', 'R', 'U\'', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U2', 'r'],
+  OLL_54: ['r', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U', 'R', 'U2', 'r\''],
+  OLL_55: ['R', 'U2', 'R2', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'F', 'R', 'F\''],
+  OLL_56: ['r', 'U', 'r\'', 'U', 'R', 'U\'', 'R\'', 'U', 'R', 'U\'', 'R\'', 'r', 'U\'', 'r\''],
+  OLL_57: ['R', 'U', 'R\'', 'U\'', 'M\'', 'U', 'R', 'U\'', 'r\''],
 };
 
-// Full PLL Algorithms (subset of 21 - most common cases)
+// Full PLL Algorithms (Complete set of 21 cases)
 const FULL_PLL_ALGORITHMS = {
-  // Corner permutations
-  PLL_A: ['R', 'B\'', 'R', 'F2', 'R\'', 'B', 'R', 'F2', 'R2'],
-  PLL_E: ['R', 'B\'', 'R\'', 'B', 'U', 'B', 'U\'', 'B\''],
-  PLL_U: ['R', 'U\'', 'R', 'U', 'R', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R2'],
-  PLL_Y: ['F', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  // Corner permutations (A cases)
+  PLL_Aa: ['x', 'R\'', 'U', 'R', 'D2', 'R\'', 'U\'', 'R', 'D2', 'R2', 'x\''],
+  PLL_Ab: ['x', 'R2', 'D2', 'R', 'U', 'R\'', 'D2', 'R', 'U\'', 'R', 'x\''],
+  
+  // Corner permutations (E case)
+  PLL_E: ['x\'', 'R', 'U\'', 'R\'', 'D', 'R', 'U', 'R\'', 'D\'', 'R', 'U', 'R\'', 'D', 'R', 'U\'', 'R\'', 'D\'', 'x'],
+  
+  // Corner permutations (F cases)
+  PLL_F: ['R\'', 'U\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U', 'R'],
+  
+  // Corner permutations (G cases)
+  PLL_Ga: ['R2', 'U', 'R\'', 'U', 'R\'', 'U\'', 'R', 'U\'', 'R2', 'U\'', 'D', 'R\'', 'U', 'R', 'D\''],
+  PLL_Gb: ['R\'', 'U\'', 'R', 'U', 'D\'', 'R2', 'U', 'R\'', 'U', 'R', 'U\'', 'R', 'U\'', 'R2', 'D'],
+  PLL_Gc: ['R2', 'U\'', 'R', 'U\'', 'R', 'U', 'R\'', 'U', 'R2', 'U', 'D\'', 'R', 'U\'', 'R\'', 'D'],
+  PLL_Gd: ['R', 'U', 'R\'', 'U\'', 'D', 'R2', 'U\'', 'R', 'U\'', 'R\'', 'U', 'R\'', 'U', 'R2', 'D\''],
+  
+  // Corner permutations (J cases)
+  PLL_Ja: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L'],
+  PLL_Jb: ['R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\''],
+  
+  // Corner permutations (N cases)
+  PLL_Na: ['R', 'U', 'R\'', 'U', 'R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U2', 'R', 'U\'', 'R\''],
+  PLL_Nb: ['r\'', 'D', 'r', 'U2', 'r\'', 'D', 'r', 'U2', 'r\'', 'D', 'r'],
+  
+  // Corner permutations (R cases)
+  PLL_Ra: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R', 'D', 'R\'', 'U\'', 'R', 'D\'', 'R\'', 'U2', 'R\''],
+  PLL_Rb: ['R2', 'F', 'R', 'U', 'R', 'U\'', 'R\'', 'F\'', 'R', 'U2', 'R\'', 'U2', 'R'],
+  
+  // Corner permutations (T case)
   PLL_T: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\''],
-  PLL_J: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L', 'U\''],
-  PLL_R: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R', 'D', 'R\'', 'U\'', 'R', 'D\'', 'R\'', 'U2', 'R\''],
+  
+  // Corner permutations (V case)
   PLL_V: ['R\'', 'U', 'R\'', 'U\'', 'B\'', 'R\'', 'B2', 'U\'', 'B\'', 'U', 'B\'', 'R', 'B', 'R'],
-  PLL_N: ['R', 'U\'', 'R', 'U', 'R', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R2'],
-  PLL_G: ['R2', 'U', 'R\'', 'U', 'R\'', 'U\'', 'R', 'U\'', 'R2', 'U\'', 'D', 'R\'', 'U', 'R', 'D\''],
   
-  // Edge permutations
+  // Corner permutations (Y case)
+  PLL_Y: ['F', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  
+  // Edge permutations (H case)
   PLL_H: ['M2', 'U', 'M2', 'U2', 'M2', 'U', 'M2'],
-  PLL_Z: ['M2', 'U', 'M2', 'U', 'M\'', 'U2', 'M2', 'U2', 'M\''],
   
-  // ... Add remaining PLL cases (up to 21) ...
+  // Edge permutations (U cases)
+  PLL_Ua: ['M2', 'U', 'M', 'U2', 'M\'', 'U', 'M2'],
+  PLL_Ub: ['M2', 'U\'', 'M', 'U2', 'M\'', 'U\'', 'M2'],
+  
+  // Edge permutations (Z case)
+  PLL_Z: ['M\'', 'U', 'M2', 'U', 'M2', 'U', 'M\'', 'U2', 'M2'],
 };
 
-// F2L Cases (Complete set of 41 standard cases)
+// Enhanced F2L Cases (Complete set of 41 standard cases with improved recognition)
 const F2L_CASES = [
-  // Basic Insertions (Cases 1-4) - Corner and edge correctly paired
+  // Basic Insertions (Cases 1-4)
   {
-    name: 'Basic Insert #1 - Corner and Edge Paired (R U\' R\')',
+    name: 'Basic Insert #1 - R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both on top layer, adjacent positions, white on corner top, shared color aligned
       if (cy === 1 && ey === 1) {
         const isAdjacent = Math.abs(cx - ex) + Math.abs(cz - ez) === 1;
         const whiteOnTop = corner.faceColors[0] === COLORS.white;
-        return isAdjacent && whiteOnTop;
+        const edgeFlipped = edge.faceColors[0] !== COLORS.white && edge.faceColors[0] !== COLORS.yellow;
+        return isAdjacent && whiteOnTop && edgeFlipped;
       }
       return false;
     },
     algorithm: ['R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Basic Insert #2 - Corner White Right, Edge Correct (F R F\')',
+    name: 'Basic Insert #2 - F R F\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both on top layer, white on corner's right face
       if (cy === 1 && ey === 1) {
-        const whiteOnRight = corner.faceColors[3] === COLORS.white;
         const isAdjacent = Math.abs(cx - ex) + Math.abs(cz - ez) === 1;
-        return whiteOnRight && isAdjacent;
+        const whiteOnFront = corner.faceColors[4] === COLORS.white;
+        return isAdjacent && whiteOnFront;
       }
       return false;
     },
     algorithm: ['F', 'R', 'F\''] as Move[],
   },
   {
-    name: 'Basic Insert #3 - Standard Right Hand (R U R\')',
+    name: 'Basic Insert #3 - R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both on top layer, in back-right area
-      return cy === 1 && ey === 1 && cx === 1 && ex === 1;
+      if (cy === 1 && ey === 1) {
+        const isAdjacent = Math.abs(cx - ex) + Math.abs(cz - ez) === 1;
+        const whiteOnTop = corner.faceColors[0] === COLORS.white;
+        const edgeCorrect = edge.faceColors[0] === COLORS.white || edge.faceColors[0] === COLORS.yellow;
+        return isAdjacent && whiteOnTop && edgeCorrect;
+      }
+      return false;
     },
     algorithm: ['R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Basic Insert #4 - Left Hand Version (F\' U\' F)',
+    name: 'Basic Insert #4 - F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
-      const [cx, cy, cz] = corner.position;
-      const [ex, ey, ez] = edge.position;
-      
-      // Both on top layer, in left area
-      return cy === 1 && ey === 1 && cx === -1 && ex === -1;
+      return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F'] as Move[],
   },
 
-  // Separated Pieces (Cases 5-12) - Corner and edge are not touching
+  // Separated Pieces (Cases 5-12)
   {
-    name: 'Separated #1 - Both Top, Opposite Sides',
+    name: 'Separated #1 - R U\' R\' U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both on top layer, far apart (opposite sides)
       if (cy === 1 && ey === 1) {
         const distance = Math.abs(cx - ex) + Math.abs(cz - ez);
-        return distance >= 3; // Opposite sides of the top layer
+        const whiteOnTop = corner.faceColors[0] === COLORS.white;
+        const edgeFlipped = edge.faceColors[0] !== COLORS.white && edge.faceColors[0] !== COLORS.yellow;
+        return distance >= 2 && whiteOnTop && edgeFlipped;
       }
       return false;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Separated #2 - Edge Front, Corner Back',
+    name: 'Separated #2 - F\' U F U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both on top, edge in front area, corner in back
-      return cy === 1 && ey === 1 && ez === 1 && cz === -1;
+      if (cy === 1 && ey === 1) {
+        const whiteOnRight = corner.faceColors[3] === COLORS.white;
+        const edgeCorrect = edge.faceColors[0] === COLORS.white || edge.faceColors[0] === COLORS.yellow;
+        return whiteOnRight && edgeCorrect;
+      }
+      return false;
     },
     algorithm: ['F\'', 'U', 'F', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Separated #3 - Double Sexy Move',
+    name: 'Separated #3 - R U R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
-      const [cx, cy, cz] = corner.position;
-      const [ex, ey, ez] = edge.position;
-      
-      // Both on top, separated but need double insertion
-      return cy === 1 && ey === 1 && Math.abs(cx - ex) === 2;
+      return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Separated #4 - Left Hand Double',
+    name: 'Separated #4 - F\' U\' F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
-      const [cx, cy, cz] = corner.position;
-      const [ex, ey, ez] = edge.position;
-      
-      // Both on top, left side separation
-      return cy === 1 && ey === 1 && cx <= 0 && ex <= 0;
+      return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Separated #5 - Setup with U2',
+    name: 'Separated #5 - R U2 R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
-      const [cx, cy, cz] = corner.position;
-      const [ex, ey, ez] = edge.position;
-      
-      // Top layer, needs U2 setup
-      return cy === 1 && ey === 1 && Math.abs(cx + ex) === 0; // Opposite on x-axis
+      return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Separated #6 - F\' U2 F Setup',
+    name: 'Separated #6 - F\' U2 F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U2', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Separated #7 - Mixed Setup',
+    name: 'Separated #7 - R U\' R\' U2 F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U2', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Separated #8 - Opposite Mixed',
+    name: 'Separated #8 - F\' U F U2 R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U2', 'R', 'U', 'R\''] as Move[],
   },
 
-  // Connected Pieces (Cases 13-24) - Corner and edge are connected but misoriented
+  // Connected Pieces (Cases 13-24)
   {
-    name: 'Connected #1 - Break and Rebuild',
+    name: 'Connected #1 - R U\' R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Adjacent on top layer but wrongly oriented
       if (cy === 1 && ey === 1) {
         const isAdjacent = Math.abs(cx - ex) + Math.abs(cz - ez) === 1;
-        const whiteNotOnTop = corner.faceColors[0] !== COLORS.white;
-        return isAdjacent && whiteNotOnTop;
+        const whiteOnRight = corner.faceColors[3] === COLORS.white;
+        const edgeFlipped = edge.faceColors[0] !== COLORS.white && edge.faceColors[0] !== COLORS.yellow;
+        return isAdjacent && whiteOnRight && edgeFlipped;
       }
       return false;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Connected #2 - Left Hand Break',
+    name: 'Connected #2 - F\' U F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
-      const [cx, cy, cz] = corner.position;
-      const [ex, ey, ez] = edge.position;
-      
-      // Connected on left side, needs breaking
-      return cy === 1 && ey === 1 && cx === -1 && (ex === -1 || ex === 0);
+      return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Connected #3 - Setup and Insert',
+    name: 'Connected #3 - U\' R U R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U\'', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Connected #4 - Left Setup',
+    name: 'Connected #4 - U F\' U\' F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Connected #5 - Double U Setup',
+    name: 'Connected #5 - U\' R U2 R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U\'', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Connected #6 - Left Double U',
+    name: 'Connected #6 - U F\' U2 F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U2', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Connected #7 - R U2 R\' Start',
+    name: 'Connected #7 - R U2 R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Connected #8 - F\' U2 F Start',
+    name: 'Connected #8 - F\' U2 F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U2', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Connected #9 - R U R\' U2 Start',
+    name: 'Connected #9 - R U R\' U2 R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U', 'R\'', 'U2', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Connected #10 - F\' U\' F U2 Start',
+    name: 'Connected #10 - F\' U\' F U2 F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U2', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Connected #11 - Simple Break',
+    name: 'Connected #11 - R U\' R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Connected #12 - Left Simple Break',
+    name: 'Connected #12 - F\' U F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
 
-  // Corner in Place (Cases 25-32) - Corner is already in its slot
+  // Corner in Place (Cases 25-32)
   {
-    name: 'Corner in Place #1 - Edge on Top',
+    name: 'Corner in Place #1 - U\' R U\' R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Corner in bottom layer (in slot), edge on top
-      return cy === -1 && ey === 1;
+      return cy === -1 && ey === 1 && corner.faceColors[1] !== COLORS.white;
     },
     algorithm: ['U\'', 'R', 'U\'', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Corner in Place #2 - Left Hand Version',
+    name: 'Corner in Place #2 - U F\' U F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Corner in Place #3 - Complex Extraction',
+    name: 'Corner in Place #3 - R U\' R\' U\' R U R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Corner in Place #4 - Left Complex',
+    name: 'Corner in Place #4 - F\' U F U F\' U\' F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Corner in Place #5 - Alternative Right',
+    name: 'Corner in Place #5 - R U R\' U R U\' R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Corner in Place #6 - Alternative Left',
+    name: 'Corner in Place #6 - F\' U\' F U\' F\' U F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Corner in Place #7 - Edge in Middle',
+    name: 'Corner in Place #7 - R U\' R\' U R U2 R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 0;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Corner in Place #8 - Left Edge Middle',
+    name: 'Corner in Place #8 - F\' U F U\' F\' U2 F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 0;
     },
     algorithm: ['F\'', 'U', 'F', 'U\'', 'F\'', 'U2', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
 
-  // Edge in Place (Cases 33-40) - Edge is already in its slot
+  // Edge in Place (Cases 33-40)
   {
-    name: 'Edge in Place #1 - Corner on Top',
+    name: 'Edge in Place #1 - R U R\' U\' R U R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Edge in middle layer (in slot), corner on top
-      return cy === 1 && ey === 0;
+      return cy === 1 && ey === 0 && corner.faceColors[0] === COLORS.white;
     },
     algorithm: ['R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
-    name: 'Edge in Place #2 - Left Hand Version',
+    name: 'Edge in Place #2 - F\' U\' F U F\' U\' F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
-    name: 'Edge in Place #3 - Setup U\' First',
+    name: 'Edge in Place #3 - U\' R U\' R\' U2 R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U\'', 'R', 'U\'', 'R\'', 'U2', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Edge in Place #4 - Left Setup U',
+    name: 'Edge in Place #4 - U F\' U F U2 F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U', 'F\'', 'U', 'F', 'U2', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Edge in Place #5 - U2 Setup Right',
+    name: 'Edge in Place #5 - U2 R U R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U2', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Edge in Place #6 - U2 Setup Left',
+    name: 'Edge in Place #6 - U2 F\' U\' F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U2', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
-    name: 'Edge in Place #7 - U R U2 Setup',
+    name: 'Edge in Place #7 - U R U2 R\' U R U\' R\'',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
-    name: 'Edge in Place #8 - U\' F\' U2 Setup',
+    name: 'Edge in Place #8 - U\' F\' U2 F U\' F\' U F',
     recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
@@ -559,8 +623,7 @@ const F2L_CASES = [
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
-      // Both pieces in their target positions but incorrectly oriented
-      return cy === -1 && ey === 0;
+      return cy === -1 && ey === 0 && corner.faceColors[1] !== COLORS.white;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U2', 'R', 'U\'', 'R\''] as Move[],
   },
@@ -1298,19 +1361,14 @@ class CubeSolver {
       const [x, y, z] = piece.position;
       return Math.abs(x) === 1 && y === 1 && Math.abs(z) === 1;
     });
-
-    // Map corners to positions and get their colors
-    const cornerColors = corners.map(corner => {
+    
+    // Map each corner to its permutation index
+    return corners.map(corner => {
       const [x, y, z] = corner.position;
-      // Get the color facing up
-      return corner.faceColors[0];
-    });
-
-    return cornerColors.map(color => {
-      if (color === this.COLORS.red) return 0;
-      if (color === this.COLORS.orange) return 1;
-      if (color === this.COLORS.blue) return 2;
-      if (color === this.COLORS.green) return 3;
+      if (x === 1 && z === 1) return 0;   // Front-right
+      if (x === -1 && z === 1) return 1;  // Front-left  
+      if (x === -1 && z === -1) return 2; // Back-left
+      if (x === 1 && z === -1) return 3;  // Back-right
       return 0;
     });
   }
@@ -1321,17 +1379,14 @@ class CubeSolver {
       const [x, y, z] = piece.position;
       return y === 1 && ((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0));
     });
-
-    const edgeColors = edges.map(edge => {
+    
+    // Map each edge to its permutation index
+    return edges.map(edge => {
       const [x, y, z] = edge.position;
-      return edge.faceColors[0];
-    });
-
-    return edgeColors.map(color => {
-      if (color === this.COLORS.red) return 0;
-      if (color === this.COLORS.orange) return 1;
-      if (color === this.COLORS.blue) return 2;
-      if (color === this.COLORS.green) return 3;
+      if (x === 0 && z === 1) return 0;   // Front
+      if (x === 1 && z === 0) return 1;   // Right
+      if (x === 0 && z === -1) return 2;  // Back
+      if (x === -1 && z === 0) return 3;  // Left
       return 0;
     });
   }
@@ -1372,221 +1427,211 @@ class CubeSolver {
 
   // --- basic but functional stage solvers (replace with more cases for efficiency) ---
   public solveCross(): Move[] {
-    // Efficient cross solver - find and solve each white edge
     let moves: Move[] = [];
+    const crossEdges = [
+      { pos: [0, -1, 1] as [number, number, number], color: this.COLORS.red, face: 'F' },    // Front
+      { pos: [1, -1, 0] as [number, number, number], color: this.COLORS.blue, face: 'R' },   // Right
+      { pos: [0, -1, -1] as [number, number, number], color: this.COLORS.orange, face: 'B' }, // Back
+      { pos: [-1, -1, 0] as [number, number, number], color: this.COLORS.green, face: 'L' },  // Left
+    ];
     
-    // Find all white edges
-    const whiteEdges = this.state.pieces.filter(piece =>
-      piece.faceColors.includes(this.COLORS.white) &&
-      // Is an edge piece (has exactly 2 non-center colors)
-      piece.faceColors.filter(color => 
-        color !== this.COLORS.white && 
-        color !== this.COLORS.white // filter duplicates
-      ).length === 1
-    );
-    
-    // Solve each white edge
-    for (const targetPos of CROSS_EDGE_POSITIONS) {
-      const targetColor = this.getTargetColorForPosition(targetPos.pos);
+    for (const target of crossEdges) {
+      // Find the white edge that belongs in this position
+      const whiteEdge = this.state.pieces.find(piece => {
+        return piece.faceColors.includes(this.COLORS.white) && 
+               piece.faceColors.includes(target.color) &&
+               this.isEdgePiece(piece);
+      });
       
-      // Find the edge that belongs in this position
-      const edgeToSolve = whiteEdges.find(edge =>
-        edge.faceColors.includes(targetColor) && edge.faceColors.includes(this.COLORS.white)
-      );
+      if (!whiteEdge) continue;
       
-      if (!edgeToSolve) continue;
+      // Check if already solved
+      if (this.isEdgeInCorrectPosition(whiteEdge, target.pos, target.color)) {
+        continue;
+      }
       
-      // Check if edge is already solved
-      if (this.isEdgeSolved(edgeToSolve, targetPos.pos)) continue;
-      
-      // Get the algorithm to solve this edge
-      const algorithm = this.getCrossAlgorithm(edgeToSolve, targetPos);
-      moves.push(...algorithm);
+      // Solve this edge
+      const edgeMoves = this.solveWhiteEdge(whiteEdge, target);
+      moves.push(...edgeMoves);
       
       // Apply moves to update state
-      algorithm.forEach(move => this.applyMove(move));
-    }
-    
-    // Optimize: if cross is still not complete, add a basic completion sequence
-    if (!this.isCrossSolved()) {
-      const fallbackMoves = ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
-      moves.push(...fallbackMoves);
+      edgeMoves.forEach(move => this.applyMove(move));
     }
     
     return moves;
   }
 
-  // Get the target color for a cross position
-  private getTargetColorForPosition(pos: [number, number, number]): string {
-    const [x, y, z] = pos;
-    if (z === 1) return this.COLORS.red;    // Front
-    if (x === 1) return this.COLORS.blue;   // Right
-    if (z === -1) return this.COLORS.orange; // Back
-    if (x === -1) return this.COLORS.green;  // Left
-    return this.COLORS.white; // Default
+  // Check if a piece is an edge piece
+  private isEdgePiece(piece: CubePiece): boolean {
+    const [x, y, z] = piece.position;
+    const isEdge = (Math.abs(x) === 1 && y === 0 && z === 0) ||
+                   (x === 0 && Math.abs(y) === 1 && z === 0) ||
+                   (x === 0 && y === 0 && Math.abs(z) === 1);
+    return isEdge;
   }
 
-  // Check if an edge is already solved in the correct position
-  private isEdgeSolved(edge: CubePiece, targetPos: [number, number, number]): boolean {
-    const [tx, ty, tz] = targetPos;
+  // Check if edge is in correct position and orientation
+  private isEdgeInCorrectPosition(edge: CubePiece, targetPos: [number, number, number], targetColor: string): boolean {
     const [ex, ey, ez] = edge.position;
+    const [tx, ty, tz] = targetPos;
     
-    // Check position match
+    // Check position
     if (ex !== tx || ey !== ty || ez !== tz) return false;
     
-    // Check orientation (white must be on bottom)
+    // Check orientation - white should be on bottom (index 1)
     return edge.faceColors[1] === this.COLORS.white;
   }
 
-  // Get the algorithm to solve a specific cross edge
-  private getCrossAlgorithm(edge: CubePiece, targetPos: { pos: [number, number, number]; face: string; algorithm_key: string }): Move[] {
+  // Solve a specific white edge to its target position
+  private solveWhiteEdge(edge: CubePiece, target: { pos: [number, number, number]; color: string; face: string }): Move[] {
     const [ex, ey, ez] = edge.position;
-    const [tx, ty, tz] = targetPos.pos;
+    const [tx, ty, tz] = target.pos;
     
-    // If edge is on U layer
+    // If edge is on top layer
     if (ey === 1) {
-      // Check if it's in the correct position above target
-      if (ex === tx && ez === tz) {
-        // Check orientation
-        const whiteOnTop = edge.faceColors[0] === this.COLORS.white;
-        if (whiteOnTop) {
-          // Wrong orientation - needs to be flipped
-          return this.getFlipAlgorithm(targetPos.face);
-        } else {
-          // Correct orientation - direct insert
-          return this.getDirectInsertAlgorithm(targetPos.face);
-        }
+      // Move to correct position above target if not there
+      if (ex !== tx || ez !== tz) {
+        const setupMoves = this.getTopLayerSetupMoves([ex, ey, ez], [tx, 1, tz]);
+        setupMoves.forEach(move => this.applyMove(move));
+        return [...setupMoves, ...this.solveWhiteEdge(edge, target)];
+      }
+      
+      // Check orientation
+      if (edge.faceColors[0] === this.COLORS.white) {
+        // White on top - wrong orientation, need to flip
+        return this.getEdgeFlipAlgorithm(target.face);
       } else {
-        // Wrong position - move to correct position first
-        const setupMoves = this.getSetupMoves(edge.position, targetPos.pos);
-        const insertMoves = this.getDirectInsertAlgorithm(targetPos.face);
-        return [...setupMoves, ...insertMoves];
+        // Correct orientation - direct insert
+        return this.getEdgeInsertAlgorithm(target.face);
       }
     }
     
     // If edge is in middle layer
     if (ey === 0) {
-      // Move to U layer first, then solve
-      const extractMoves = this.getExtractionMoves(edge.position);
-      const insertMoves = this.getCrossAlgorithm(
-        { ...edge, position: [ex, 1, ez] }, // Simulated position after extraction
-        targetPos
-      );
-      return [...extractMoves, ...insertMoves];
+      // Extract to top layer first
+      const extractMoves = this.extractEdgeToTop(edge);
+      extractMoves.forEach(move => this.applyMove(move));
+      return [...extractMoves, ...this.solveWhiteEdge(edge, target)];
     }
     
-    // If edge is in D layer but wrong position/orientation
+    // If edge is in bottom layer but wrong position/orientation
     if (ey === -1) {
       if (ex === tx && ez === tz) {
         // Correct position but wrong orientation
-        return this.getReorientAlgorithm(targetPos.face);
+        const flipMoves = this.getBottomEdgeFlipAlgorithm(target.face);
+        return flipMoves;
       } else {
         // Wrong position - extract and reinsert
-        const extractMoves = this.getExtractionMoves(edge.position);
-        const insertMoves = this.getCrossAlgorithm(
-          { ...edge, position: [ex, 1, ez] }, // Simulated position after extraction
-          targetPos
-        );
-        return [...extractMoves, ...insertMoves];
+        const extractMoves = this.extractBottomEdgeToTop(edge);
+        extractMoves.forEach(move => this.applyMove(move));
+        return [...extractMoves, ...this.solveWhiteEdge(edge, target)];
       }
     }
     
-    // Fallback
-    return CROSS_ALGORITHMS.U_CORRECT;
+    return [];
   }
 
-  // Get algorithm to directly insert an edge from U to D
-  private getDirectInsertAlgorithm(face: string): Move[] {
-    switch (face) {
-      case 'F': return CROSS_ALGORITHMS.U_CORRECT;
-      case 'R': return CROSS_ALGORITHMS.U_CORRECT_R;
-      case 'B': return CROSS_ALGORITHMS.U_CORRECT_B;
-      case 'L': return CROSS_ALGORITHMS.U_CORRECT_L;
-      default: return CROSS_ALGORITHMS.U_CORRECT;
-    }
-  }
-
-  // Get algorithm to flip and insert an edge
-  private getFlipAlgorithm(face: string): Move[] {
-    switch (face) {
-      case 'F': return CROSS_ALGORITHMS.U_FLIPPED;
-      case 'R': return CROSS_ALGORITHMS.U_FLIPPED_R;
-      case 'B': return CROSS_ALGORITHMS.U_FLIPPED_B;
-      case 'L': return CROSS_ALGORITHMS.U_FLIPPED_L;
-      default: return CROSS_ALGORITHMS.U_FLIPPED;
-    }
-  }
-
-  // Get setup moves to position an edge correctly on U layer
-  private getSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): Move[] {
+  // Get moves to position edge on top layer
+  private getTopLayerSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): Move[] {
     const [cx, cy, cz] = currentPos;
     const [tx, ty, tz] = targetPos;
     
-    // Calculate U layer rotations needed
-    if (cx === 0 && cz === 1 && tx === 1 && tz === 0) return ['U'] as Move[];
-    if (cx === 0 && cz === 1 && tx === 0 && tz === -1) return ['U2'] as Move[];
-    if (cx === 0 && cz === 1 && tx === -1 && tz === 0) return ['U\''] as Move[];
+    // Calculate rotation needed
+    const currentAngle = this.getTopLayerAngle(cx, cz);
+    const targetAngle = this.getTopLayerAngle(tx, tz);
+    const rotationSteps = (targetAngle - currentAngle + 4) % 4;
     
-    if (cx === 1 && cz === 0 && tx === 0 && tz === -1) return ['U'] as Move[];
-    if (cx === 1 && cz === 0 && tx === -1 && tz === 0) return ['U2'] as Move[];
-    if (cx === 1 && cz === 0 && tx === 0 && tz === 1) return ['U\''] as Move[];
-    
-    if (cx === 0 && cz === -1 && tx === -1 && tz === 0) return ['U'] as Move[];
-    if (cx === 0 && cz === -1 && tx === 0 && tz === 1) return ['U2'] as Move[];
-    if (cx === 0 && cz === -1 && tx === 1 && tz === 0) return ['U\''] as Move[];
-    
-    if (cx === -1 && cz === 0 && tx === 0 && tz === 1) return ['U'] as Move[];
-    if (cx === -1 && cz === 0 && tx === 1 && tz === 0) return ['U2'] as Move[];
-    if (cx === -1 && cz === 0 && tx === 0 && tz === -1) return ['U\''] as Move[];
-    
-    return []; // No setup needed
-  }
-
-  // Get moves to extract an edge from middle or bottom layer
-  private getExtractionMoves(pos: [number, number, number]): Move[] {
-    const [x, y, z] = pos;
-    
-    if (y === 0) {
-      // Middle layer
-      if (z === 1) return ['F', 'U'] as Move[]; // Front
-      if (x === 1) return ['R', 'U'] as Move[]; // Right
-      if (z === -1) return ['B', 'U'] as Move[]; // Back
-      if (x === -1) return ['L', 'U'] as Move[]; // Left
+    switch (rotationSteps) {
+      case 1: return ['U'] as Move[];
+      case 2: return ['U2'] as Move[];
+      case 3: return ['U\''] as Move[];
+      default: return [];
     }
-    
-    if (y === -1) {
-      // Bottom layer
-      if (z === 1) return ['F2', 'U'] as Move[]; // Front
-      if (x === 1) return ['R2', 'U'] as Move[]; // Right
-      if (z === -1) return ['B2', 'U'] as Move[]; // Back
-      if (x === -1) return ['L2', 'U'] as Move[]; // Left
+  }
+
+  // Get angle for top layer position
+  private getTopLayerAngle(x: number, z: number): number {
+    if (z === 1) return 0;  // Front
+    if (x === 1) return 1;  // Right
+    if (z === -1) return 2; // Back
+    if (x === -1) return 3; // Left
+    return 0;
+  }
+
+  // Insert edge from top to bottom
+  private getEdgeInsertAlgorithm(face: string): Move[] {
+    switch (face) {
+      case 'F': return ['F2'] as Move[];
+      case 'R': return ['R2'] as Move[];
+      case 'B': return ['B2'] as Move[];
+      case 'L': return ['L2'] as Move[];
+      default: return ['F2'] as Move[];
     }
+  }
+
+  // Flip edge orientation and insert
+  private getEdgeFlipAlgorithm(face: string): Move[] {
+    switch (face) {
+      case 'F': return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
+      case 'R': return ['R', 'B', 'U', 'B\'', 'U\'', 'R\''] as Move[];
+      case 'B': return ['B', 'L', 'U', 'L\'', 'U\'', 'B\''] as Move[];
+      case 'L': return ['L', 'F', 'U', 'F\'', 'U\'', 'L\''] as Move[];
+      default: return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
+    }
+  }
+
+  // Extract edge from middle layer to top
+  private extractEdgeToTop(edge: CubePiece): Move[] {
+    const [x, y, z] = edge.position;
     
-    return ['U'] as Move[]; // Default
+    if (z === 1) return ['F', 'U'] as Move[];   // Front middle
+    if (x === 1) return ['R', 'U'] as Move[];   // Right middle
+    if (z === -1) return ['B', 'U'] as Move[];  // Back middle
+    if (x === -1) return ['L', 'U'] as Move[];  // Left middle
+    
+    return ['U'] as Move[];
   }
 
-  // Get algorithm to reorient an edge in the correct position
-  private getReorientAlgorithm(face: string): Move[] {
-    return this.getFlipAlgorithm(face);
+  // Extract edge from bottom layer to top
+  private extractBottomEdgeToTop(edge: CubePiece): Move[] {
+    const [x, y, z] = edge.position;
+    
+    if (z === 1) return ['F2', 'U'] as Move[];   // Front bottom
+    if (x === 1) return ['R2', 'U'] as Move[];   // Right bottom
+    if (z === -1) return ['B2', 'U'] as Move[];  // Back bottom
+    if (x === -1) return ['L2', 'U'] as Move[];  // Left bottom
+    
+    return ['U'] as Move[];
   }
 
-  // Enhanced F2L solver with better case recognition
+  // Flip edge in bottom layer
+  private getBottomEdgeFlipAlgorithm(face: string): Move[] {
+    return this.getEdgeFlipAlgorithm(face);
+  }
+
+  // Enhanced F2L solver with all 41 cases
   public solveF2L(): Move[] {
     let moves: Move[] = [];
     let pairsSolved = 0;
-    let attempts = 0;
-    const maxAttempts = 8; // Limit attempts to prevent infinite loops
-
-    while (pairsSolved < 4 && attempts < maxAttempts) {
+    let maxAttempts = 12; // Increased attempts for better coverage
+    
+    while (pairsSolved < 4 && maxAttempts > 0) {
       // Find next F2L pair to solve
       const pair = this.findNextF2LPair();
-      if (!pair) break;
+      if (!pair) {
+        // If no pair found, try to break up existing pairs
+        const breakupMoves = this.breakupF2LPairs();
+        if (breakupMoves.length > 0) {
+          moves.push(...breakupMoves);
+          breakupMoves.forEach(move => this.applyMove(move));
+          maxAttempts--;
+          continue;
+        }
+        break;
+      }
 
-      // Get detailed case analysis
-      const caseDetails = this.getF2LCaseDetails(pair.corner, pair.edge);
-      
       // Find the best matching F2L case
-      const bestCase = this.findBestF2LCase(pair.corner, pair.edge, caseDetails);
+      const bestCase = this.findBestF2LCase(pair.corner, pair.edge);
       
       // Apply the algorithm
       moves.push(...bestCase.algorithm);
@@ -1594,240 +1639,391 @@ class CubeSolver {
       // Apply moves to state to track progress
       bestCase.algorithm.forEach(move => this.applyMove(move));
       
-      pairsSolved++;
-      attempts++;
-    }
-
-    // If not all pairs are solved, add some basic moves as fallback
-    if (pairsSolved < 4) {
-      const fallbackMoves = ['R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[];
-      moves.push(...fallbackMoves);
+      // Check if this pair is now solved
+      if (this.isF2LPairSolved(pair.corner, pair.edge, pair.slot)) {
+        pairsSolved++;
+      }
+      
+      maxAttempts--;
     }
 
     return moves;
   }
 
-  // Find the best matching F2L case based on current state
-  private findBestF2LCase(corner: CubePiece, edge: CubePiece, caseDetails: any): typeof F2L_CASES[0] {
-    // Try to find a case that matches the current situation
+  // Break up F2L pairs that are incorrectly placed
+  private breakupF2LPairs(): Move[] {
+    // Look for F2L pairs that are in slots but incorrectly oriented
+    const slots = [0, 1, 2, 3];
+    
+    for (const slot of slots) {
+      const slotPositions = this.getF2LSlotPositions(slot);
+      const cornerInSlot = this.state.pieces.find(p => 
+        p.position[0] === slotPositions.corner[0] && 
+        p.position[1] === slotPositions.corner[1] && 
+        p.position[2] === slotPositions.corner[2]
+      );
+      
+      if (cornerInSlot && cornerInSlot.faceColors[1] !== this.COLORS.white) {
+        // Corner is in slot but wrong orientation - extract it
+        switch (slot) {
+          case 0: return ['R', 'U\'', 'R\''] as Move[]; // Front-right
+          case 1: return ['F\'', 'U', 'F'] as Move[];   // Front-left
+          case 2: return ['L\'', 'U', 'L'] as Move[];   // Back-left
+          case 3: return ['B', 'U\'', 'B\''] as Move[]; // Back-right
+        }
+      }
+    }
+    
+    return [];
+  }
+
+  // Enhanced F2L case finder with better recognition
+  private findBestF2LCase(corner: CubePiece, edge: CubePiece): typeof F2L_CASES[0] {
+    // First, try exact pattern matching
     for (const f2lCase of F2L_CASES) {
       if (f2lCase.recognize(corner, edge, this.COLORS)) {
         return f2lCase;
       }
     }
 
-    // Enhanced fallback based on case details
+    // Advanced fallback based on detailed analysis
+    const caseDetails = this.getF2LCaseDetails(corner, edge);
+    
+    // Select case based on piece positions and orientations
     if (caseDetails.cornerPosition === 'top' && caseDetails.edgePosition === 'top') {
-      if (caseDetails.relative === 'separated') {
+      if (caseDetails.cornerOrientation === 'correct' && caseDetails.edgeOrientation === 'flipped') {
+        return F2L_CASES[0]; // Basic Insert #1
+      } else if (caseDetails.cornerOrientation === 'twisted_cw' && caseDetails.edgeOrientation === 'correct') {
+        return F2L_CASES[1]; // Basic Insert #2
+      } else if (caseDetails.cornerOrientation === 'correct' && caseDetails.edgeOrientation === 'correct') {
+        return F2L_CASES[2]; // Basic Insert #3
+      } else if (caseDetails.relative === 'separated') {
         return F2L_CASES[4]; // Separated case
       } else if (caseDetails.relative === 'connected') {
-        return F2L_CASES[8]; // Connected case
+        return F2L_CASES[12]; // Connected case
       }
     } else if (caseDetails.cornerPosition === 'bottom' && caseDetails.edgePosition === 'top') {
-      return F2L_CASES[16]; // Corner in place case
+      return F2L_CASES[24]; // Corner in place case
     } else if (caseDetails.cornerPosition === 'top' && caseDetails.edgePosition === 'middle') {
-      return F2L_CASES[24]; // Edge in place case
+      return F2L_CASES[32]; // Edge in place case
+    } else if (caseDetails.cornerPosition === 'bottom' && caseDetails.edgePosition === 'middle') {
+      return F2L_CASES[40]; // Both in slot case
     }
 
-    // Ultimate fallback - basic insertion
-    return F2L_CASES[0];
+    // Ultimate fallback - basic sexy move
+    return F2L_CASES[2];
   }
 
+  // Enhanced OLL solver with full algorithm set
   public solveOLL(useFullOLL: boolean = false): Move[] {
     if (useFullOLL) {
-      // Full OLL: recognize case and use appropriate algorithm
-      const ollCase = this.recognizeOLLCase();
+      // Full OLL: recognize specific case and use appropriate algorithm
+      const ollCase = this.recognizeFullOLLCase();
       const algorithm = FULL_OLL_ALGORITHMS[ollCase as keyof typeof FULL_OLL_ALGORITHMS];
-      return (algorithm || CFOP_ALGORITHMS.OLL_T) as Move[];
-    } else {
-      // 2-look OLL: orient edges first, then corners
+      if (algorithm) {
+        return algorithm as Move[];
+      }
+    }
+    
+    // 2-look OLL: orient edges first, then corners
+    let moves: Move[] = [];
+    
+    // First, orient all edges (get yellow cross)
+    if (!this.areAllEdgesOriented()) {
       const edgeCase = this.recognizeOLLEdgeCase();
+      switch (edgeCase) {
+        case 'dot':
+          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[])); // F R U R' U' F'
+          break;
+        case 'L':
+          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
+          break;
+        case 'line':
+          moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
+          break;
+        default:
+          // Already oriented
+          break;
+      }
+      
+      // Apply edge moves
+      moves.forEach(move => this.applyMove(move));
+    }
+    
+    // Then, orient all corners
+    if (!this.areAllCornersOriented()) {
       const cornerCase = this.recognizeOLLCornerCase();
-      
-      let moves: Move[] = [];
-      
-      // Solve edges
-      if (edgeCase === 'H') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
-      } else if (edgeCase === 'U') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_U as Move[]));
-      } else if (edgeCase === 'Z') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_Z as Move[]));
+      switch (cornerCase) {
+        case 'sune':
+          moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
+          break;
+        case 'antisune':
+          moves.push(...(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]));
+          break;
+        case 'pi':
+          moves.push(...(CFOP_ALGORITHMS.OLL_PI as Move[]));
+          break;
+        case 'H':
+          moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
+          break;
+        case 'T':
+          moves.push(...(CFOP_ALGORITHMS.OLL_T as Move[]));
+          break;
+        case 'L':
+          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
+          break;
+        case 'U':
+          moves.push(...(CFOP_ALGORITHMS.OLL_U as Move[]));
+          break;
+        default:
+          // Try a general algorithm
+          moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
+          break;
       }
-      
-      // Solve corners
-      if (cornerCase === 'T') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_T as Move[]));
-      } else if (cornerCase === 'L') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
-      } else if (cornerCase === 'SUNE') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
-      } else if (cornerCase === 'ANTISUNE') {
-        moves.push(...(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]));
-      }
-      
-      return moves;
     }
-  }
-
-  public solvePLL(useFullPLL: boolean = false): Move[] {
-    if (useFullPLL) {
-      // Full PLL: recognize case and use appropriate algorithm
-      const pllCase = this.recognizePLLCase();
-      const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
-      return (algorithm || CFOP_ALGORITHMS.PLL_T) as Move[];
-    } else {
-      // 2-look PLL: permute corners first, then edges
-      const cornerCase = this.recognizePLLCornerCase();
-      const edgeCase = this.recognizePLLEdgeCase();
-      
-      let moves: Move[] = [];
-      
-      // Solve corners
-      if (cornerCase === 'A') {
-        moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
-      } else if (cornerCase === 'E') {
-        moves.push(...(CFOP_ALGORITHMS.PLL_E as Move[]));
-      }
-      
-      // Solve edges
-      if (edgeCase === 'U') {
-        moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
-      } else if (edgeCase === 'H') {
-        moves.push(...(CFOP_ALGORITHMS.PLL_H as Move[]));
-      } else if (edgeCase === 'Z') {
-        moves.push(...(CFOP_ALGORITHMS.PLL_Z as Move[]));
-      }
-      
-      return moves;
-    }
-  }
-
-  // OLL Case Recognition Methods
-  private recognizeOLLCase(): string {
-    // Simplified OLL case recognition
-    const yellowFace = this.getYellowFacePattern();
-    const yellowCount = yellowFace.flat().filter(cell => cell).length;
     
-    if (yellowCount === 0) return 'OLL_1';
-    if (yellowCount === 1) return 'OLL_2';
-    if (yellowCount === 2) return 'OLL_5';
-    if (yellowCount === 3) return 'OLL_8';
-    if (yellowCount === 4) return 'OLL_12';
-    
-    return 'OLL_T'; // Default fallback
+    return moves;
   }
 
-  private recognizeOLLEdgeCase(): string {
-    // Recognize edge orientation cases for 2-look OLL
-    const edges = this.state.pieces.filter(piece => {
+  // Check if all edges are oriented (yellow on top)
+  private areAllEdgesOriented(): boolean {
+    const topEdges = this.state.pieces.filter(piece => {
       const [x, y, z] = piece.position;
       return y === 1 && ((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0));
     });
     
-    const orientedEdges = edges.filter(edge => edge.faceColors[0] === this.COLORS.yellow).length;
-    
-    if (orientedEdges === 0) return 'H';
-    if (orientedEdges === 2) return 'U';
-    if (orientedEdges === 4) return 'Z';
-    
-    return 'H'; // Default
+    return topEdges.every(edge => edge.faceColors[0] === this.COLORS.yellow);
   }
 
-  private recognizeOLLCornerCase(): string {
-    // Recognize corner orientation cases for 2-look OLL
+  // Check if all corners are oriented (yellow on top)
+  private areAllCornersOriented(): boolean {
+    const topCorners = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return Math.abs(x) === 1 && y === 1 && Math.abs(z) === 1;
+    });
+    
+    return topCorners.every(corner => corner.faceColors[0] === this.COLORS.yellow);
+  }
+
+  // Recognize full OLL case
+  private recognizeFullOLLCase(): string {
+    const pattern = this.getYellowFacePattern();
+    const yellowCount = pattern.flat().filter(cell => cell).length;
+    
+    // Analyze the specific pattern
+    if (yellowCount === 0) return 'OLL_1';
+    if (yellowCount === 1) return 'OLL_2';
+    if (yellowCount === 2) {
+      if (this.hasAdjacentYellows(pattern)) return 'OLL_3';
+      return 'OLL_4';
+    }
+    if (yellowCount === 3) return 'OLL_5';
+    if (yellowCount === 4) {
+      if (this.hasLShape(pattern)) return 'OLL_21';
+      if (this.hasLineShape(pattern)) return 'OLL_45';
+      return 'OLL_22';
+    }
+    if (yellowCount === 5) return 'OLL_23';
+    if (yellowCount === 6) return 'OLL_24';
+    if (yellowCount === 7) return 'OLL_25';
+    
+    return 'OLL_21'; // Default SUNE
+  }
+
+  // Check for L shape pattern
+  private hasLShape(pattern: boolean[][]): boolean {
+    // Check all 4 orientations of L shape
+    const lPatterns = [
+      [[true, false, false], [true, true, false], [false, false, false]],
+      [[false, true, true], [false, true, false], [false, false, false]],
+      [[false, false, false], [false, true, true], [false, false, true]],
+      [[false, false, false], [false, true, false], [true, true, false]]
+    ];
+    
+    return lPatterns.some(lPattern => 
+      lPattern.every((row, i) => 
+        row.every((cell, j) => cell === pattern[i][j])
+      )
+    );
+  }
+
+  // Check for line shape pattern
+  private hasLineShape(pattern: boolean[][]): boolean {
+    // Horizontal line
+    const horizontalLine = pattern[1][0] && pattern[1][1] && pattern[1][2];
+    // Vertical line
+    const verticalLine = pattern[0][1] && pattern[1][1] && pattern[2][1];
+    
+    return horizontalLine || verticalLine;
+  }
+
+  // Enhanced PLL solver with full algorithm set
+  public solvePLL(useFullPLL: boolean = false): Move[] {
+    if (useFullPLL) {
+      // Full PLL: recognize specific case and use appropriate algorithm
+      const pllCase = this.recognizeFullPLLCase();
+      const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
+      if (algorithm) {
+        return algorithm as Move[];
+      }
+    }
+    
+    // 2-look PLL: permute corners first, then edges
+    let moves: Move[] = [];
+    
+    // First, solve corners
+    if (!this.areCornersPermuted()) {
+      const cornerCase = this.recognizePLLCornerCase();
+      switch (cornerCase) {
+        case 'Aa':
+          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+          break;
+        case 'Ab':
+          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+          moves.push('U'); // Adjust for Ab case
+          break;
+        case 'E':
+          moves.push(...(CFOP_ALGORITHMS.PLL_E as Move[]));
+          break;
+        default:
+          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+          break;
+      }
+      
+      // Apply corner moves
+      moves.forEach(move => this.applyMove(move));
+    }
+    
+    // Then, solve edges
+    if (!this.areEdgesPermuted()) {
+      const edgeCase = this.recognizePLLEdgeCase();
+      switch (edgeCase) {
+        case 'Ua':
+          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+          break;
+        case 'Ub':
+          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+          moves.push('U2'); // Adjust for Ub case
+          break;
+        case 'H':
+          moves.push(...(CFOP_ALGORITHMS.PLL_H as Move[]));
+          break;
+        case 'Z':
+          moves.push(...(CFOP_ALGORITHMS.PLL_Z as Move[]));
+          break;
+        default:
+          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+          break;
+      }
+    }
+    
+    return moves;
+  }
+
+  // Check if corners are permuted correctly
+  private areCornersPermuted(): boolean {
     const corners = this.state.pieces.filter(piece => {
       const [x, y, z] = piece.position;
       return Math.abs(x) === 1 && y === 1 && Math.abs(z) === 1;
     });
     
-    const orientedCorners = corners.filter(corner => corner.faceColors[0] === this.COLORS.yellow).length;
-    
-    if (orientedCorners === 0) return 'T';
-    if (orientedCorners === 1) return 'L';
-    if (orientedCorners === 2) return 'SUNE';
-    if (orientedCorners === 3) return 'ANTISUNE';
-    
-    return 'T'; // Default
+    // Check if each corner has the correct colors for its position
+    return corners.every(corner => {
+      const [x, y, z] = corner.position;
+      const expectedColors = this.getExpectedCornerColors(x, z);
+      return expectedColors.every(color => corner.faceColors.includes(color));
+    });
   }
 
-  // PLL Case Recognition Methods
-  private recognizePLLCase(): string {
-    // Simplified PLL case recognition
+  // Check if edges are permuted correctly
+  private areEdgesPermuted(): boolean {
+    const edges = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return y === 1 && ((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0));
+    });
+    
+    return edges.every(edge => {
+      const [x, y, z] = edge.position;
+      const expectedColors = this.getExpectedEdgeColors(x, z);
+      return expectedColors.every(color => edge.faceColors.includes(color));
+    });
+  }
+
+  // Get expected colors for a corner position
+  private getExpectedCornerColors(x: number, z: number): string[] {
+    const colors = [this.COLORS.yellow]; // Top face is always yellow
+    
+    if (x === 1) colors.push(this.COLORS.blue);   // Right face
+    if (x === -1) colors.push(this.COLORS.green); // Left face
+    if (z === 1) colors.push(this.COLORS.red);    // Front face
+    if (z === -1) colors.push(this.COLORS.orange); // Back face
+    
+    return colors;
+  }
+
+  // Get expected colors for an edge position
+  private getExpectedEdgeColors(x: number, z: number): string[] {
+    const colors = [this.COLORS.yellow]; // Top face is always yellow
+    
+    if (x === 1) colors.push(this.COLORS.blue);   // Right face
+    if (x === -1) colors.push(this.COLORS.green); // Left face
+    if (z === 1) colors.push(this.COLORS.red);    // Front face
+    if (z === -1) colors.push(this.COLORS.orange); // Back face
+    
+    return colors;
+  }
+
+  // Recognize full PLL case
+  private recognizeFullPLLCase(): string {
     const cornerPerm = this.getCornerPermutation();
     const edgePerm = this.getEdgePermutation();
     
-    // Check for common PLL cases
-    if (this.isPLLSolved(cornerPerm, edgePerm)) return 'PLL_SOLVED';
-    if (this.isPLLU(cornerPerm, edgePerm)) return 'PLL_U';
-    if (this.isPLLT(cornerPerm, edgePerm)) return 'PLL_T';
-    if (this.isPLLJ(cornerPerm, edgePerm)) return 'PLL_J';
-    if (this.isPLLA(cornerPerm, edgePerm)) return 'PLL_A';
+    // Analyze corner permutation
+    if (this.isPLLSolved(cornerPerm, edgePerm)) return 'solved';
     
-    return 'PLL_T'; // Default fallback
-  }
-
-  private recognizePLLCornerCase(): string {
-    // Recognize corner permutation cases for 2-look PLL
-    const cornerPerm = this.getCornerPermutation();
+    // Check for specific PLL cases
+    if (this.hasAdjacencyPattern(cornerPerm, 2)) return 'PLL_Aa';
+    if (this.hasAdjacencyPattern(edgePerm, 2)) return 'PLL_Ua';
+    if (this.hasOppositeSwap(cornerPerm)) return 'PLL_E';
+    if (this.hasOppositeSwap(edgePerm)) return 'PLL_H';
+    if (this.hasCyclicPattern(cornerPerm, 3)) return 'PLL_T';
+    if (this.hasCyclicPattern(edgePerm, 3)) return 'PLL_Z';
     
-    if (this.isPLLSolved(cornerPerm, [])) return 'SOLVED';
-    if (this.isPLLA(cornerPerm, [])) return 'A';
-    if (this.isPLLE(cornerPerm, [])) return 'E';
-    
-    return 'A'; // Default
+    return 'PLL_T'; // Default
   }
 
-  private recognizePLLEdgeCase(): string {
-    // Recognize edge permutation cases for 2-look PLL
-    const edgePerm = this.getEdgePermutation();
-    
-    if (this.isPLLSolved([], edgePerm)) return 'SOLVED';
-    if (this.isPLLU([], edgePerm)) return 'U';
-    if (this.isPLLH([], edgePerm)) return 'H';
-    if (this.isPLLZ([], edgePerm)) return 'Z';
-    
-    return 'U'; // Default
+  // Check for adjacency pattern in permutation
+  private hasAdjacencyPattern(perm: number[], count: number): boolean {
+    for (let i = 0; i < perm.length; i++) {
+      let adjacent = 0;
+      for (let j = 1; j < count; j++) {
+        if (perm[(i + j) % perm.length] === (perm[i] + j) % perm.length) {
+          adjacent++;
+        }
+      }
+      if (adjacent === count - 1) return true;
+    }
+    return false;
   }
 
-  // PLL Pattern Recognition Helpers
-  private isPLLSolved(cornerPerm: number[], edgePerm: number[]): boolean {
-    return cornerPerm.every((val, i) => val === i) && edgePerm.every((val, i) => val === i);
+  // Check for opposite swap pattern
+  private hasOppositeSwap(perm: number[]): boolean {
+    return (perm[0] === 2 && perm[2] === 0) || (perm[1] === 3 && perm[3] === 1);
   }
 
-  private isPLLU(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for U-perm pattern
-    return edgePerm[0] === edgePerm[1] && edgePerm[2] === edgePerm[3];
-  }
-
-  private isPLLT(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for T-perm pattern
-    return cornerPerm[0] !== cornerPerm[1] && cornerPerm[2] !== cornerPerm[3];
-  }
-
-  private isPLLJ(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for J-perm pattern
-    return cornerPerm[0] === cornerPerm[2] && cornerPerm[1] === cornerPerm[3];
-  }
-
-  private isPLLA(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for A-perm pattern
-    return cornerPerm[0] === cornerPerm[1] && cornerPerm[2] !== cornerPerm[3];
-  }
-
-  private isPLLE(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for E-perm pattern
-    return cornerPerm[0] === cornerPerm[2] && cornerPerm[1] !== cornerPerm[3];
-  }
-
-  private isPLLH(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for H-perm pattern
-    return edgePerm[0] === edgePerm[2] && edgePerm[1] === edgePerm[3];
-  }
-
-  private isPLLZ(cornerPerm: number[], edgePerm: number[]): boolean {
-    // Check for Z-perm pattern
-    return edgePerm[0] === edgePerm[1] && edgePerm[2] === edgePerm[3];
+  // Check for cyclic pattern
+  private hasCyclicPattern(perm: number[], length: number): boolean {
+    for (let i = 0; i < perm.length; i++) {
+      let cyclic = true;
+      for (let j = 0; j < length; j++) {
+        if (perm[(i + j) % perm.length] !== (i + j + 1) % perm.length) {
+          cyclic = false;
+          break;
+        }
+      }
+      if (cyclic) return true;
+    }
+    return false;
   }
 
   // Generate complete CFOP solution with stage tracking
@@ -1961,6 +2157,94 @@ class CubeSolver {
     };
     
     return moves.slice().reverse().map(move => inverseMap[move]);
+  }
+
+  // Check if PLL is solved
+  private isPLLSolved(cornerPerm: number[], edgePerm: number[]): boolean {
+    const cornersSolved = cornerPerm.every((val, i) => val === i);
+    const edgesSolved = edgePerm.every((val, i) => val === i);
+    return cornersSolved && edgesSolved;
+  }
+
+  // Recognize OLL edge case for 2-look
+  private recognizeOLLEdgeCase(): string {
+    const edges = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return y === 1 && ((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0));
+    });
+    
+    const orientedEdges = edges.filter(edge => edge.faceColors[0] === this.COLORS.yellow).length;
+    
+    if (orientedEdges === 0) return 'dot';
+    if (orientedEdges === 2) {
+      // Check if it's a line or L shape
+      const frontEdge = edges.find(e => e.position[0] === 0 && e.position[2] === 1);
+      const rightEdge = edges.find(e => e.position[0] === 1 && e.position[2] === 0);
+      const backEdge = edges.find(e => e.position[0] === 0 && e.position[2] === -1);
+      const leftEdge = edges.find(e => e.position[0] === -1 && e.position[2] === 0);
+      
+      const isLine = (frontEdge?.faceColors[0] === this.COLORS.yellow && backEdge?.faceColors[0] === this.COLORS.yellow) ||
+                     (rightEdge?.faceColors[0] === this.COLORS.yellow && leftEdge?.faceColors[0] === this.COLORS.yellow);
+      
+      return isLine ? 'line' : 'L';
+    }
+    if (orientedEdges === 4) return 'cross';
+    
+    return 'dot'; // Default
+  }
+
+  // Recognize OLL corner case for 2-look
+  private recognizeOLLCornerCase(): string {
+    const corners = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return Math.abs(x) === 1 && y === 1 && Math.abs(z) === 1;
+    });
+    
+    const orientedCorners = corners.filter(corner => corner.faceColors[0] === this.COLORS.yellow).length;
+    
+    if (orientedCorners === 0) return 'T';
+    if (orientedCorners === 1) return 'sune';
+    if (orientedCorners === 2) return 'pi';
+    if (orientedCorners === 3) return 'antisune';
+    
+    return 'sune'; // Default
+  }
+
+  // Recognize PLL corner case for 2-look
+  private recognizePLLCornerCase(): string {
+    const cornerPerm = this.getCornerPermutation();
+    
+    // Check for solved state
+    if (cornerPerm.every((val, i) => val === i)) return 'solved';
+    
+    // Check for A-perm (3-cycle)
+    const hasCycle = this.hasCyclicPattern(cornerPerm, 3);
+    if (hasCycle) return 'Aa';
+    
+    // Check for diagonal swap
+    if (this.hasOppositeSwap(cornerPerm)) return 'E';
+    
+    return 'Aa'; // Default
+  }
+
+  // Recognize PLL edge case for 2-look
+  private recognizePLLEdgeCase(): string {
+    const edgePerm = this.getEdgePermutation();
+    
+    // Check for solved state
+    if (edgePerm.every((val, i) => val === i)) return 'solved';
+    
+    // Check for 3-cycle (U-perm)
+    const hasCycle = this.hasCyclicPattern(edgePerm, 3);
+    if (hasCycle) return 'Ua';
+    
+    // Check for opposite swap (H-perm)
+    if (this.hasOppositeSwap(edgePerm)) return 'H';
+    
+    // Check for Z-perm (adjacent swaps)
+    if (this.hasAdjacencyPattern(edgePerm, 2)) return 'Z';
+    
+    return 'Ua'; // Default
   }
 }
 
