@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Grid3X3, ArrowLeft } from "lucide-react";
 
 interface TechStackProps {
   delay?: number;
@@ -23,7 +24,7 @@ const techStack: TechItem[] = [
   { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
   { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
   { name: "Next.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-line.svg" },
-  { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
+  { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
   { name: "TensorFlow", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" },
   { name: "PyTorch", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" },
   { name: "Pandas", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" },
@@ -130,14 +131,16 @@ export const TechStack = ({ delay = 0 }: TechStackProps) => {
             </motion.div>
           </div>
           
-          {/* Show All Button */}
+          {/* Icon-only Show All Button */}
           <div className="flex justify-center">
             <Button
               variant="outline"
+              size="icon"
               onClick={() => setShowAll(true)}
-              className="text-sm"
+              className="h-10 w-10"
+              title="Show all technologies"
             >
-              Show All Technologies
+              <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
         </>
@@ -157,14 +160,16 @@ export const TechStack = ({ delay = 0 }: TechStackProps) => {
             ))}
           </div>
           
-          {/* Back to Scrolling Button */}
+          {/* Icon-only Back Button */}
           <div className="flex justify-center">
             <Button
               variant="outline"
+              size="icon"
               onClick={() => setShowAll(false)}
-              className="text-sm"
+              className="h-10 w-10"
+              title="Back to scrolling view"
             >
-              Back to Scrolling View
+              <ArrowLeft className="h-4 w-4" />
             </Button>
           </div>
         </>
