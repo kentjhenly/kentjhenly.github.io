@@ -717,15 +717,16 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (x === 1) {
-          // Rotate the piece position around +X axis
-          piece.position = [x, z, -y];
+          // Rotate the piece position around +X axis (clockwise when looking from +X)
+          piece.position = [x, -z, y];
           
           // Rotate face colors: [top, bottom, left, right, front, back]
-          const temp = piece.faceColors[0]; // top
-          piece.faceColors[0] = piece.faceColors[5]; // back -> top
-          piece.faceColors[5] = piece.faceColors[1]; // bottom -> back
-          piece.faceColors[1] = piece.faceColors[4]; // front -> bottom
-          piece.faceColors[4] = temp; // top -> front
+          // For R rotation: front->top, top->back, back->bottom, bottom->front
+          const temp = piece.faceColors[4]; // front
+          piece.faceColors[4] = piece.faceColors[1]; // bottom -> front
+          piece.faceColors[1] = piece.faceColors[5]; // back -> bottom
+          piece.faceColors[5] = piece.faceColors[0]; // top -> back
+          piece.faceColors[0] = temp; // front -> top
         }
       });
     }
@@ -737,13 +738,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (x === -1) {
-          piece.position = [x, -z, y];
+          // Rotate the piece position around -X axis (clockwise when looking from -X)
+          piece.position = [x, z, -y];
           
-          const temp = piece.faceColors[0];
-          piece.faceColors[0] = piece.faceColors[4];
-          piece.faceColors[4] = piece.faceColors[1];
-          piece.faceColors[1] = piece.faceColors[5];
-          piece.faceColors[5] = temp;
+          // For L rotation: front->bottom, bottom->back, back->top, top->front
+          const temp = piece.faceColors[4]; // front
+          piece.faceColors[4] = piece.faceColors[0]; // top -> front
+          piece.faceColors[0] = piece.faceColors[5]; // back -> top
+          piece.faceColors[5] = piece.faceColors[1]; // bottom -> back
+          piece.faceColors[1] = temp; // front -> bottom
         }
       });
     }
@@ -755,13 +758,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (y === 1) {
+          // Rotate the piece position around +Y axis (clockwise when looking from +Y)
           piece.position = [-z, y, x];
           
-          const temp = piece.faceColors[2];
-          piece.faceColors[2] = piece.faceColors[5];
-          piece.faceColors[5] = piece.faceColors[3];
-          piece.faceColors[3] = piece.faceColors[4];
-          piece.faceColors[4] = temp;
+          // For U rotation: front->right, right->back, back->left, left->front
+          const temp = piece.faceColors[4]; // front
+          piece.faceColors[4] = piece.faceColors[2]; // left -> front
+          piece.faceColors[2] = piece.faceColors[5]; // back -> left
+          piece.faceColors[5] = piece.faceColors[3]; // right -> back
+          piece.faceColors[3] = temp; // front -> right
         }
       });
     }
@@ -773,13 +778,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (y === -1) {
+          // Rotate the piece position around -Y axis (clockwise when looking from -Y)
           piece.position = [z, y, -x];
           
-          const temp = piece.faceColors[2];
-          piece.faceColors[2] = piece.faceColors[4];
-          piece.faceColors[4] = piece.faceColors[3];
-          piece.faceColors[3] = piece.faceColors[5];
-          piece.faceColors[5] = temp;
+          // For D rotation: front->left, left->back, back->right, right->front
+          const temp = piece.faceColors[4]; // front
+          piece.faceColors[4] = piece.faceColors[3]; // right -> front
+          piece.faceColors[3] = piece.faceColors[5]; // back -> right
+          piece.faceColors[5] = piece.faceColors[2]; // left -> back
+          piece.faceColors[2] = temp; // front -> left
         }
       });
     }
@@ -791,13 +798,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (z === 1) {
-          piece.position = [x, -z, y];
+          // Rotate the piece position around +Z axis (clockwise when looking from +Z)
+          piece.position = [-y, x, z];
           
-          const temp = piece.faceColors[0];
-          piece.faceColors[0] = piece.faceColors[2];
-          piece.faceColors[2] = piece.faceColors[1];
-          piece.faceColors[1] = piece.faceColors[3];
-          piece.faceColors[3] = temp;
+          // For F rotation: top->right, right->bottom, bottom->left, left->top
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[2]; // left -> top
+          piece.faceColors[2] = piece.faceColors[1]; // bottom -> left
+          piece.faceColors[1] = piece.faceColors[3]; // right -> bottom
+          piece.faceColors[3] = temp; // top -> right
         }
       });
     }
@@ -809,13 +818,15 @@ class CubeSolver {
       state.pieces.forEach(piece => {
         const [x, y, z] = piece.position;
         if (z === -1) {
-          piece.position = [x, z, -y];
+          // Rotate the piece position around -Z axis (clockwise when looking from -Z)
+          piece.position = [y, -x, z];
           
-          const temp = piece.faceColors[0];
-          piece.faceColors[0] = piece.faceColors[3];
-          piece.faceColors[3] = piece.faceColors[1];
-          piece.faceColors[1] = piece.faceColors[2];
-          piece.faceColors[2] = temp;
+          // For B rotation: top->left, left->bottom, bottom->right, right->top
+          const temp = piece.faceColors[0]; // top
+          piece.faceColors[0] = piece.faceColors[3]; // right -> top
+          piece.faceColors[3] = piece.faceColors[1]; // bottom -> right
+          piece.faceColors[1] = piece.faceColors[2]; // left -> bottom
+          piece.faceColors[2] = temp; // top -> left
         }
       });
     }
@@ -2338,18 +2349,18 @@ const RubiksCubeScene = () => {
       {/* CFOP Stage Display */}
       {currentStage && (
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-xl">
-            <div className="text-lg font-semibold text-white text-center mb-2">{currentStage}</div>
+          <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-xl">
+            <div className="text-lg font-semibold text-foreground text-center mb-2">{currentStage}</div>
             {currentAlgorithm && (
-              <div className="text-sm text-white/80 text-center mb-2 font-mono">{currentAlgorithm}</div>
+              <div className="text-sm text-muted-foreground text-center mb-2 font-mono">{currentAlgorithm}</div>
             )}
             {solverRef.current && (
-              <div className="text-xs text-white/70 text-center">
+              <div className="text-xs text-muted-foreground text-center">
                 Moves remaining: {solverRef.current.getQueueLength()}
               </div>
             )}
             {solveStats && (
-              <div className="text-xs text-blue-300 text-center mt-1">
+              <div className="text-xs text-blue-500 dark:text-blue-400 text-center mt-1">
                 Total: {solveStats.totalMoves} moves
               </div>
             )}
@@ -2360,29 +2371,29 @@ const RubiksCubeScene = () => {
       {/* Solve Statistics */}
       {solveStats && !isSolving && (
         <div className="absolute top-6 right-6">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-xl">
-            <div className="text-sm font-semibold text-white mb-3 text-center">Solve Statistics</div>
+          <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-xl">
+            <div className="text-sm font-semibold text-foreground mb-3 text-center">Solve Statistics</div>
             <div className="text-xs space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-white/80">Cross:</span>
-                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.CROSS]} moves</span>
+                <span className="text-muted-foreground">Cross:</span>
+                <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.CROSS]} moves</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-white/80">F2L:</span>
-                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.F2L]} moves</span>
+                <span className="text-muted-foreground">F2L:</span>
+                <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.F2L]} moves</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-white/80">OLL:</span>
-                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.OLL]} moves</span>
+                <span className="text-muted-foreground">OLL:</span>
+                <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.OLL]} moves</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-white/80">PLL:</span>
-                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.PLL]} moves</span>
+                <span className="text-muted-foreground">PLL:</span>
+                <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.PLL]} moves</span>
               </div>
-              <div className="border-t border-white/20 pt-2 mt-2">
+              <div className="border-t border-border pt-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-blue-300 font-semibold">Total:</span>
-                  <span className="text-blue-300 font-semibold font-mono">{solveStats.totalMoves} moves</span>
+                  <span className="text-blue-500 dark:text-blue-400 font-semibold">Total:</span>
+                  <span className="text-blue-500 dark:text-blue-400 font-semibold font-mono">{solveStats.totalMoves} moves</span>
                 </div>
               </div>
             </div>
@@ -2392,7 +2403,7 @@ const RubiksCubeScene = () => {
       
       {/* Controls */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 shadow-2xl">
+        <div className="bg-background/80 backdrop-blur-md border border-border rounded-xl p-4 shadow-2xl">
           {/* Main Action Buttons */}
           <div className="flex gap-2 mb-4">
             <button
@@ -2414,7 +2425,7 @@ const RubiksCubeScene = () => {
           <div className="flex items-center gap-6">
             {/* Animation Speed Control */}
             <div className="flex items-center gap-2">
-              <label htmlFor="speed-slider" className="text-xs font-medium text-white/90 whitespace-nowrap">
+              <label htmlFor="speed-slider" className="text-xs font-medium text-foreground whitespace-nowrap">
                 Speed
               </label>
               <div className="flex items-center gap-1">
@@ -2426,10 +2437,10 @@ const RubiksCubeScene = () => {
                   step={10}
                   value={animationSpeed}
                   onChange={e => setAnimationSpeed(Number(e.target.value))}
-                  className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                  className="w-16 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
                   disabled={isSolving}
                 />
-                <span className="text-xs text-white/70 font-mono w-8">
+                <span className="text-xs text-muted-foreground font-mono w-8">
                   {Math.round(animationSpeed/10)/10}s
                 </span>
               </div>
@@ -2437,7 +2448,7 @@ const RubiksCubeScene = () => {
 
             {/* Full OLL Toggle */}
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-white/90 whitespace-nowrap">
+              <label className="text-xs font-medium text-foreground whitespace-nowrap">
                 Full OLL
               </label>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -2448,13 +2459,13 @@ const RubiksCubeScene = () => {
                   disabled={isSolving}
                   className="sr-only peer"
                 />
-                <div className="w-8 h-4 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-8 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
               </label>
             </div>
 
             {/* Full PLL Toggle */}
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-white/90 whitespace-nowrap">
+              <label className="text-xs font-medium text-foreground whitespace-nowrap">
                 Full PLL
               </label>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -2465,7 +2476,7 @@ const RubiksCubeScene = () => {
                   disabled={isSolving}
                   className="sr-only peer"
                 />
-                <div className="w-8 h-4 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-8 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
               </label>
             </div>
           </div>
@@ -2479,7 +2490,7 @@ const RubiksCubeScene = () => {
           height: 12px;
           width: 12px;
           border-radius: 50%;
-          background: #3b82f6;
+          background: hsl(var(--primary));
           cursor: pointer;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
@@ -2487,17 +2498,17 @@ const RubiksCubeScene = () => {
           height: 12px;
           width: 12px;
           border-radius: 50%;
-          background: #3b82f6;
+          background: hsl(var(--primary));
           cursor: pointer;
           border: none;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         .slider:disabled::-webkit-slider-thumb {
-          background: #9ca3af;
+          background: hsl(var(--muted-foreground));
           cursor: not-allowed;
         }
         .slider:disabled::-moz-range-thumb {
-          background: #9ca3af;
+          background: hsl(var(--muted-foreground));
           cursor: not-allowed;
         }
       `}</style>
