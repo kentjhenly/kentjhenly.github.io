@@ -85,7 +85,7 @@ const TimelineItem = ({
       variants={itemVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      className="relative pl-6 pb-8 last:pb-0"
+      className="relative pl-6 pb-4 last:pb-0"
     >
       {/* Minimal timeline line */}
       {!isLast && (

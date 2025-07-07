@@ -91,7 +91,7 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
         <div className="w-full max-w-4xl">
           <Safari 
             url="en.wikipedia.org/wiki/MediSafe_controversy"
-            imageSrc="/wikipedia-medisafe.png"
+            imageSrc="/wikipedia.png"
             className="w-full h-auto shadow-2xl"
           />
         </div>
