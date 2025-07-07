@@ -105,131 +105,95 @@ type RotationMove = 'x' | 'x\'' | 'x2' | 'y' | 'y\'' | 'y2' | 'z' | 'z\'' | 'z2'
 // Complete move type
 type Move = BasicMove | SliceMove | WideMove | RotationMove;
 
-// Move conversion utility - converts advanced moves to basic move sequences
+// Move conversion utility - now with proper cube rotation support
 const convertMoveToBasic = (move: Move): BasicMove[] => {
   switch (move) {
-    // Slice moves (middle layer moves) - using commutator approach
+    // Slice moves - these require cube rotations which we'll handle differently
     case 'M': 
-      // M move: equivalent to R' L x' (but using only basic moves)
-      return ['R\'', 'L'] as BasicMove[];
+      return ['CUBE_ROTATION_X_CCW', 'R', 'L\''] as any[];
     case 'M\'': 
-      // M' move: equivalent to R L' x (but using only basic moves)
-      return ['R', 'L\''] as BasicMove[];
+      return ['CUBE_ROTATION_X_CW', 'R\'', 'L'] as any[];
     case 'M2': 
-      // M2 move: double middle slice
-      return ['R\'', 'L', 'R\'', 'L'] as BasicMove[];
+      return ['CUBE_ROTATION_X2', 'R2', 'L2'] as any[];
     
     case 'E': 
-      // E move: equivalent to U' D y' (but using only basic moves)
-      return ['U\'', 'D'] as BasicMove[];
+      return ['CUBE_ROTATION_Y_CCW', 'U', 'D\''] as any[];
     case 'E\'': 
-      // E' move: equivalent to U D' y (but using only basic moves)
-      return ['U', 'D\''] as BasicMove[];
+      return ['CUBE_ROTATION_Y_CW', 'U\'', 'D'] as any[];
     case 'E2': 
-      // E2 move: double equatorial slice
-      return ['U\'', 'D', 'U\'', 'D'] as BasicMove[];
+      return ['CUBE_ROTATION_Y2', 'U2', 'D2'] as any[];
     
     case 'S': 
-      // S move: equivalent to F B' z (but using only basic moves)
-      return ['F', 'B\''] as BasicMove[];
+      return ['CUBE_ROTATION_Z_CW', 'F\'', 'B'] as any[];
     case 'S\'': 
-      // S' move: equivalent to F' B z' (but using only basic moves)
-      return ['F\'', 'B'] as BasicMove[];
+      return ['CUBE_ROTATION_Z_CCW', 'F', 'B\''] as any[];
     case 'S2': 
-      // S2 move: double standing slice
-      return ['F', 'B\'', 'F', 'B\''] as BasicMove[];
+      return ['CUBE_ROTATION_Z2', 'F2', 'B2'] as any[];
     
-    // Wide moves (two layers) - using only basic moves
+    // Wide moves - combine basic moves with slice moves
     case 'r': 
-      // r move: R + M' (avoiding circular reference by using basic equivalent)
-      return ['R', 'R\'', 'L'] as BasicMove[]; // R + (R L')
+      return ['R', ...convertMoveToBasic('M\'')] as any[];
     case 'r\'': 
-      // r' move: R' + M (avoiding circular reference)
-      return ['R\'', 'R', 'L\''] as BasicMove[]; // R' + (R' L)
+      return ['R\'', ...convertMoveToBasic('M')] as any[];
     case 'r2': 
-      // r2 move: R2 + M2
-      return ['R2', 'R\'', 'L', 'R\'', 'L'] as BasicMove[]; // R2 + M2 equivalent
+      return ['R2', ...convertMoveToBasic('M2')] as any[];
     
     case 'l': 
-      // l move: L + M
-      return ['L', 'R\'', 'L'] as BasicMove[]; // L + (R' L)
+      return ['L', ...convertMoveToBasic('M')] as any[];
     case 'l\'': 
-      // l' move: L' + M'
-      return ['L\'', 'R', 'L\''] as BasicMove[]; // L' + (R L')
+      return ['L\'', ...convertMoveToBasic('M\'')] as any[];
     case 'l2': 
-      // l2 move: L2 + M2
-      return ['L2', 'R\'', 'L', 'R\'', 'L'] as BasicMove[]; // L2 + M2 equivalent
+      return ['L2', ...convertMoveToBasic('M2')] as any[];
     
     case 'u': 
-      // u move: U + E'
-      return ['U', 'U', 'D\''] as BasicMove[]; // U + (U D')
+      return ['U', ...convertMoveToBasic('E\'')] as any[];
     case 'u\'': 
-      // u' move: U' + E
-      return ['U\'', 'U\'', 'D'] as BasicMove[]; // U' + (U' D)
+      return ['U\'', ...convertMoveToBasic('E')] as any[];
     case 'u2': 
-      // u2 move: U2 + E2
-      return ['U2', 'U\'', 'D', 'U\'', 'D'] as BasicMove[]; // U2 + E2 equivalent
+      return ['U2', ...convertMoveToBasic('E2')] as any[];
     
     case 'd': 
-      // d move: D + E
-      return ['D', 'U\'', 'D'] as BasicMove[]; // D + (U' D)
+      return ['D', ...convertMoveToBasic('E')] as any[];
     case 'd\'': 
-      // d' move: D' + E'
-      return ['D\'', 'U', 'D\''] as BasicMove[]; // D' + (U D')
+      return ['D\'', ...convertMoveToBasic('E\'')] as any[];
     case 'd2': 
-      // d2 move: D2 + E2
-      return ['D2', 'U\'', 'D', 'U\'', 'D'] as BasicMove[]; // D2 + E2 equivalent
+      return ['D2', ...convertMoveToBasic('E2')] as any[];
     
     case 'f': 
-      // f move: F + S
-      return ['F', 'F', 'B\''] as BasicMove[]; // F + (F B')
+      return ['F', ...convertMoveToBasic('S')] as any[];
     case 'f\'': 
-      // f' move: F' + S'
-      return ['F\'', 'F\'', 'B'] as BasicMove[]; // F' + (F' B)
+      return ['F\'', ...convertMoveToBasic('S\'')] as any[];
     case 'f2': 
-      // f2 move: F2 + S2
-      return ['F2', 'F', 'B\'', 'F', 'B\''] as BasicMove[]; // F2 + S2 equivalent
+      return ['F2', ...convertMoveToBasic('S2')] as any[];
     
     case 'b': 
-      // b move: B + S'
-      return ['B', 'F\'', 'B'] as BasicMove[]; // B + (F' B)
+      return ['B', ...convertMoveToBasic('S\'')] as any[];
     case 'b\'': 
-      // b' move: B' + S
-      return ['B\'', 'F', 'B\''] as BasicMove[]; // B' + (F B')
+      return ['B\'', ...convertMoveToBasic('S')] as any[];
     case 'b2': 
-      // b2 move: B2 + S2
-      return ['B2', 'F', 'B\'', 'F', 'B\''] as BasicMove[]; // B2 + S2 equivalent
+      return ['B2', ...convertMoveToBasic('S2')] as any[];
     
-    // Rotation moves (whole cube rotations) - using basic move equivalents
+    // Rotation moves - direct cube rotations
     case 'x': 
-      // x rotation: rotate entire cube like R
-      return ['R', 'R\'', 'L', 'L\''] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_X_CW'] as any[];
     case 'x\'': 
-      // x' rotation: rotate entire cube like R'
-      return ['R\'', 'R', 'L\'', 'L'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_X_CCW'] as any[];
     case 'x2': 
-      // x2 rotation: double x rotation
-      return ['R2', 'L2'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_X2'] as any[];
     
     case 'y': 
-      // y rotation: rotate entire cube like U
-      return ['U', 'U\'', 'D', 'D\''] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Y_CW'] as any[];
     case 'y\'': 
-      // y' rotation: rotate entire cube like U'
-      return ['U\'', 'U', 'D\'', 'D'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Y_CCW'] as any[];
     case 'y2': 
-      // y2 rotation: double y rotation
-      return ['U2', 'D2'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Y2'] as any[];
     
     case 'z': 
-      // z rotation: rotate entire cube like F
-      return ['F', 'F\'', 'B', 'B\''] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Z_CW'] as any[];
     case 'z\'': 
-      // z' rotation: rotate entire cube like F'
-      return ['F\'', 'F', 'B\'', 'B'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Z_CCW'] as any[];
     case 'z2': 
-      // z2 rotation: double z rotation
-      return ['F2', 'B2'] as BasicMove[]; // Simplified representation
+      return ['CUBE_ROTATION_Z2'] as any[];
     
     // Basic moves pass through unchanged
     default:
@@ -247,28 +211,28 @@ const isBasicMove = (move: Move): move is BasicMove => {
   return basicMoves.includes(move as BasicMove);
 };
 
-// Enhanced move queue processor that converts all moves to basic moves
-const processAdvancedMoves = (moves: Move[], depth: number = 0): BasicMove[] => {
+// Enhanced move queue processor that converts all moves to basic moves and cube rotations
+const processAdvancedMoves = (moves: Move[], depth: number = 0): (BasicMove | string)[] => {
   // Prevent infinite recursion
   if (depth > 5) {
     console.warn('Max recursion depth reached in processAdvancedMoves');
     return [];
   }
   
-  const basicMoves: BasicMove[] = [];
+  const processedMoves: (BasicMove | string)[] = [];
   
   for (const move of moves) {
     if (isBasicMove(move)) {
-      basicMoves.push(move);
+      processedMoves.push(move);
     } else {
       const converted = convertMoveToBasic(move);
       // Recursively process the converted moves
-      const recursivelyProcessed = processAdvancedMoves(converted, depth + 1);
-      basicMoves.push(...recursivelyProcessed);
+      const recursivelyProcessed = processAdvancedMoves(converted as Move[], depth + 1);
+      processedMoves.push(...recursivelyProcessed);
     }
   }
   
-  return basicMoves;
+  return processedMoves;
 };
 
 // CFOP Algorithm Definitions
@@ -866,7 +830,7 @@ const CROSS_EDGE_POSITIONS = [
 // CubeSolver now takes COLORS as a constructor argument
 class CubeSolver {
   private state: CubeState;
-  private moveQueue: BasicMove[] = [];
+  private moveQueue: (BasicMove | string)[] = [];
   private animationSpeed = 300; // ms per move
   public stages?: { stage: SolvingStage; startIndex: number; endIndex: number }[];
   public totalMoves: number = 0;
@@ -878,13 +842,20 @@ class CubeSolver {
   }
 
   // Apply a single move to the cube state
-  private applyMove(move: BasicMove): void {
+  private applyMove(move: BasicMove | string): void {
     const newState: CubeState = {
       pieces: this.state.pieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }))
     };
+
+    // Handle cube rotations first
+    if (typeof move === 'string' && move.startsWith('CUBE_ROTATION_')) {
+      this.applyCubeRotation(newState, move);
+      this.state = newState;
+      return;
+    }
 
     // Apply the move based on cube notation
     switch (move) {
@@ -947,125 +918,306 @@ class CubeSolver {
     this.state = newState;
   }
 
-  // Apply right face rotation - Now properly rotates pieces
+  // Apply cube rotations - this is crucial for proper advanced move handling
+  private applyCubeRotation(state: CubeState, rotationType: string): void {
+    for (let piece of state.pieces) {
+      const [x, y, z] = piece.position;
+      let newPosition: [number, number, number];
+      let newFaceColors: string[];
+
+      switch (rotationType) {
+        case 'CUBE_ROTATION_X_CW': // x move
+          newPosition = [x, -z, y];
+          newFaceColors = [
+            piece.faceColors[4], // top <- front
+            piece.faceColors[5], // bottom <- back  
+            piece.faceColors[2], // left (unchanged)
+            piece.faceColors[3], // right (unchanged)
+            piece.faceColors[1], // front <- bottom
+            piece.faceColors[0]  // back <- top
+          ];
+          break;
+        case 'CUBE_ROTATION_X_CCW': // x' move
+          newPosition = [x, z, -y];
+          newFaceColors = [
+            piece.faceColors[5], // top <- back
+            piece.faceColors[4], // bottom <- front
+            piece.faceColors[2], // left (unchanged)
+            piece.faceColors[3], // right (unchanged) 
+            piece.faceColors[0], // front <- top
+            piece.faceColors[1]  // back <- bottom
+          ];
+          break;
+        case 'CUBE_ROTATION_X2': // x2 move
+          newPosition = [x, -y, -z];
+          newFaceColors = [
+            piece.faceColors[1], // top <- bottom
+            piece.faceColors[0], // bottom <- top
+            piece.faceColors[2], // left (unchanged)
+            piece.faceColors[3], // right (unchanged)
+            piece.faceColors[5], // front <- back
+            piece.faceColors[4]  // back <- front
+          ];
+          break;
+        case 'CUBE_ROTATION_Y_CW': // y move
+          newPosition = [z, y, -x];
+          newFaceColors = [
+            piece.faceColors[0], // top (unchanged)
+            piece.faceColors[1], // bottom (unchanged)
+            piece.faceColors[4], // left <- front
+            piece.faceColors[5], // right <- back
+            piece.faceColors[3], // front <- right
+            piece.faceColors[2]  // back <- left
+          ];
+          break;
+        case 'CUBE_ROTATION_Y_CCW': // y' move
+          newPosition = [-z, y, x];
+          newFaceColors = [
+            piece.faceColors[0], // top (unchanged)
+            piece.faceColors[1], // bottom (unchanged)
+            piece.faceColors[5], // left <- back
+            piece.faceColors[4], // right <- front
+            piece.faceColors[2], // front <- left
+            piece.faceColors[3]  // back <- right
+          ];
+          break;
+        case 'CUBE_ROTATION_Y2': // y2 move
+          newPosition = [-x, y, -z];
+          newFaceColors = [
+            piece.faceColors[0], // top (unchanged)
+            piece.faceColors[1], // bottom (unchanged)
+            piece.faceColors[3], // left <- right
+            piece.faceColors[2], // right <- left
+            piece.faceColors[5], // front <- back
+            piece.faceColors[4]  // back <- front
+          ];
+          break;
+        case 'CUBE_ROTATION_Z_CW': // z move
+          newPosition = [-y, x, z];
+          newFaceColors = [
+            piece.faceColors[2], // top <- left
+            piece.faceColors[3], // bottom <- right
+            piece.faceColors[1], // left <- bottom
+            piece.faceColors[0], // right <- top
+            piece.faceColors[4], // front (unchanged)
+            piece.faceColors[5]  // back (unchanged)
+          ];
+          break;
+        case 'CUBE_ROTATION_Z_CCW': // z' move
+          newPosition = [y, -x, z];
+          newFaceColors = [
+            piece.faceColors[3], // top <- right
+            piece.faceColors[2], // bottom <- left
+            piece.faceColors[0], // left <- top
+            piece.faceColors[1], // right <- bottom
+            piece.faceColors[4], // front (unchanged)
+            piece.faceColors[5]  // back (unchanged)
+          ];
+          break;
+        case 'CUBE_ROTATION_Z2': // z2 move
+          newPosition = [-x, -y, z];
+          newFaceColors = [
+            piece.faceColors[1], // top <- bottom
+            piece.faceColors[0], // bottom <- top
+            piece.faceColors[3], // left <- right
+            piece.faceColors[2], // right <- left
+            piece.faceColors[4], // front (unchanged)
+            piece.faceColors[5]  // back (unchanged)
+          ];
+          break;
+        default:
+          console.warn(`Unknown cube rotation: ${rotationType}`);
+          return;
+      }
+
+      piece.position = newPosition;
+      piece.faceColors = newFaceColors;
+    }
+  }
+
+  // Apply right face rotation - completely rewritten for correctness
   private applyRightRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      // Rotate pieces on the right face (x = 1)
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (x === 1) {
-          // Rotate the piece position around +X axis (clockwise when looking from +X)
-          piece.position = [x, -z, y];
-          
-          // Rotate face colors: [top, bottom, left, right, front, back]
-          // For R rotation: front->top, top->back, back->bottom, bottom->front
-          const temp = piece.faceColors[4]; // front
-          piece.faceColors[4] = piece.faceColors[1]; // bottom -> front
-          piece.faceColors[1] = piece.faceColors[5]; // back -> bottom
-          piece.faceColors[5] = piece.faceColors[0]; // top -> back
-          piece.faceColors[0] = temp; // front -> top
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by R move (x = 1)
+      const rightPieces = state.pieces.filter(piece => piece.position[0] === 1);
+      
+      // Store original positions and face colors
+      const originalData = rightPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: clockwise when viewed from right face
+      for (let i = 0; i < rightPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        rightPieces[i].position = [x, -z, y];
+        
+        // Rotate face colors: right face rotates clockwise, other faces shift
+        const oldColors = originalData[i].faceColors;
+        rightPieces[i].faceColors = [
+          oldColors[4], // top <- front
+          oldColors[5], // bottom <- back
+          oldColors[2], // left (unchanged)
+          oldColors[3], // right (unchanged) 
+          oldColors[1], // front <- bottom
+          oldColors[0]  // back <- top
+        ];
+      }
     }
   }
 
-  // Apply left face rotation
+  // Apply left face rotation - rewritten for correctness
   private applyLeftRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (x === -1) {
-          // Rotate the piece position around -X axis (clockwise when looking from -X)
-          piece.position = [x, z, -y];
-          
-          // For L rotation: front->bottom, bottom->back, back->top, top->front
-          const temp = piece.faceColors[4]; // front
-          piece.faceColors[4] = piece.faceColors[0]; // top -> front
-          piece.faceColors[0] = piece.faceColors[5]; // back -> top
-          piece.faceColors[5] = piece.faceColors[1]; // bottom -> back
-          piece.faceColors[1] = temp; // front -> bottom
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by L move (x = -1)
+      const leftPieces = state.pieces.filter(piece => piece.position[0] === -1);
+      
+      // Store original positions and face colors
+      const originalData = leftPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: counterclockwise when viewed from left face  
+      for (let i = 0; i < leftPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        leftPieces[i].position = [x, z, -y];
+        
+        // Rotate face colors: left face rotates counterclockwise
+        const oldColors = originalData[i].faceColors;
+        leftPieces[i].faceColors = [
+          oldColors[5], // top <- back
+          oldColors[4], // bottom <- front
+          oldColors[2], // left (unchanged)
+          oldColors[3], // right (unchanged)
+          oldColors[0], // front <- top  
+          oldColors[1]  // back <- bottom
+        ];
+      }
     }
   }
 
-  // Apply up face rotation
+  // Apply up face rotation - rewritten for correctness
   private applyUpRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (y === 1) {
-          // Rotate the piece position around +Y axis (clockwise when looking from +Y)
-          piece.position = [-z, y, x];
-          
-          // For U rotation: front->right, right->back, back->left, left->front
-          const temp = piece.faceColors[4]; // front
-          piece.faceColors[4] = piece.faceColors[2]; // left -> front
-          piece.faceColors[2] = piece.faceColors[5]; // back -> left
-          piece.faceColors[5] = piece.faceColors[3]; // right -> back
-          piece.faceColors[3] = temp; // front -> right
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by U move (y = 1)
+      const upPieces = state.pieces.filter(piece => piece.position[1] === 1);
+      
+      // Store original positions and face colors
+      const originalData = upPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: clockwise when viewed from above
+      for (let i = 0; i < upPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        upPieces[i].position = [-z, y, x];
+        
+        // Rotate face colors: top face rotates clockwise, side faces shift
+        const oldColors = originalData[i].faceColors;
+        upPieces[i].faceColors = [
+          oldColors[0], // top (unchanged)
+          oldColors[1], // bottom (unchanged)
+          oldColors[4], // left <- front
+          oldColors[5], // right <- back  
+          oldColors[3], // front <- right
+          oldColors[2]  // back <- left
+        ];
+      }
     }
   }
 
-  // Apply down face rotation
+  // Apply down face rotation - rewritten for correctness
   private applyDownRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (y === -1) {
-          // Rotate the piece position around -Y axis (clockwise when looking from -Y)
-          piece.position = [z, y, -x];
-          
-          // For D rotation: front->left, left->back, back->right, right->front
-          const temp = piece.faceColors[4]; // front
-          piece.faceColors[4] = piece.faceColors[3]; // right -> front
-          piece.faceColors[3] = piece.faceColors[5]; // back -> right
-          piece.faceColors[5] = piece.faceColors[2]; // left -> back
-          piece.faceColors[2] = temp; // front -> left
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by D move (y = -1)
+      const downPieces = state.pieces.filter(piece => piece.position[1] === -1);
+      
+      // Store original positions and face colors
+      const originalData = downPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: counterclockwise when viewed from below 
+      for (let i = 0; i < downPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        downPieces[i].position = [z, y, -x];
+        
+        // Rotate face colors: bottom face rotates counterclockwise
+        const oldColors = originalData[i].faceColors;
+        downPieces[i].faceColors = [
+          oldColors[0], // top (unchanged)
+          oldColors[1], // bottom (unchanged)
+          oldColors[5], // left <- back
+          oldColors[4], // right <- front
+          oldColors[2], // front <- left
+          oldColors[3]  // back <- right
+        ];
+      }
     }
   }
 
-  // Apply front face rotation
+  // Apply front face rotation - rewritten for correctness
   private applyFrontRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (z === 1) {
-          // Rotate the piece position around +Z axis (clockwise when looking from +Z)
-          piece.position = [-y, x, z];
-          
-          // For F rotation: top->right, right->bottom, bottom->left, left->top
-          const temp = piece.faceColors[0]; // top
-          piece.faceColors[0] = piece.faceColors[2]; // left -> top
-          piece.faceColors[2] = piece.faceColors[1]; // bottom -> left
-          piece.faceColors[1] = piece.faceColors[3]; // right -> bottom
-          piece.faceColors[3] = temp; // top -> right
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by F move (z = 1)
+      const frontPieces = state.pieces.filter(piece => piece.position[2] === 1);
+      
+      // Store original positions and face colors
+      const originalData = frontPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: clockwise when viewed from front
+      for (let i = 0; i < frontPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        frontPieces[i].position = [-y, x, z];
+        
+        // Rotate face colors: front face rotates clockwise
+        const oldColors = originalData[i].faceColors;
+        frontPieces[i].faceColors = [
+          oldColors[2], // top <- left
+          oldColors[3], // bottom <- right
+          oldColors[1], // left <- bottom
+          oldColors[0], // right <- top
+          oldColors[4], // front (unchanged)
+          oldColors[5]  // back (unchanged)
+        ];
+      }
     }
   }
 
-  // Apply back face rotation
+  // Apply back face rotation - rewritten for correctness
   private applyBackRotation(state: CubeState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      state.pieces.forEach(piece => {
-        const [x, y, z] = piece.position;
-        if (z === -1) {
-          // Rotate the piece position around -Z axis (clockwise when looking from -Z)
-          piece.position = [y, -x, z];
-          
-          // For B rotation: top->left, left->bottom, bottom->right, right->top
-          const temp = piece.faceColors[0]; // top
-          piece.faceColors[0] = piece.faceColors[3]; // right -> top
-          piece.faceColors[3] = piece.faceColors[1]; // bottom -> right
-          piece.faceColors[1] = piece.faceColors[2]; // left -> bottom
-          piece.faceColors[2] = temp; // top -> left
-        }
-      });
+    for (let rotation = 0; rotation < count; rotation++) {
+      // Get all pieces that are affected by B move (z = -1)
+      const backPieces = state.pieces.filter(piece => piece.position[2] === -1);
+      
+      // Store original positions and face colors
+      const originalData = backPieces.map(piece => ({
+        position: [...piece.position] as [number, number, number],
+        faceColors: [...piece.faceColors]
+      }));
+      
+      // Rotate positions: counterclockwise when viewed from back (looking towards front)
+      for (let i = 0; i < backPieces.length; i++) {
+        const [x, y, z] = originalData[i].position;
+        backPieces[i].position = [y, -x, z];
+        
+        // Rotate face colors: back face rotates counterclockwise 
+        const oldColors = originalData[i].faceColors;
+        backPieces[i].faceColors = [
+          oldColors[3], // top <- right
+          oldColors[2], // bottom <- left  
+          oldColors[0], // left <- top
+          oldColors[1], // right <- bottom
+          oldColors[4], // front (unchanged)
+          oldColors[5]  // back (unchanged)
+        ];
+      }
     }
   }
 
@@ -1600,8 +1752,8 @@ class CubeSolver {
   }
 
   // --- basic but functional stage solvers (replace with more cases for efficiency) ---
-  public solveCross(): BasicMove[] {
-    let moves: BasicMove[] = [];
+  public solveCross(): (BasicMove | string)[] {
+    let moves: (BasicMove | string)[] = [];
     const crossEdges = [
       { pos: [0, -1, 1] as [number, number, number], color: this.COLORS.red, face: 'F' },    // Front
       { pos: [1, -1, 0] as [number, number, number], color: this.COLORS.blue, face: 'R' },   // Right
@@ -1657,7 +1809,7 @@ class CubeSolver {
   }
 
   // Solve a specific white edge to its target position
-  private solveWhiteEdge(edge: CubePiece, target: { pos: [number, number, number]; color: string; face: string }): BasicMove[] {
+  private solveWhiteEdge(edge: CubePiece, target: { pos: [number, number, number]; color: string; face: string }): (BasicMove | string)[] {
     const [ex, ey, ez] = edge.position;
     const [tx, ty, tz] = target.pos;
     
@@ -1706,7 +1858,7 @@ class CubeSolver {
   }
 
   // Get moves to position edge on top layer
-  private getTopLayerSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): BasicMove[] {
+  private getTopLayerSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): (BasicMove | string)[] {
     const [cx, cy, cz] = currentPos;
     const [tx, ty, tz] = targetPos;
     
@@ -1716,9 +1868,9 @@ class CubeSolver {
     const rotationSteps = (targetAngle - currentAngle + 4) % 4;
     
     switch (rotationSteps) {
-      case 1: return ['U'] as BasicMove[];
-      case 2: return ['U2'] as BasicMove[];
-      case 3: return ['U\''] as BasicMove[];
+      case 1: return ['U'] as (BasicMove | string)[];
+      case 2: return ['U2'] as (BasicMove | string)[];
+      case 3: return ['U\''] as (BasicMove | string)[];
       default: return [];
     }
   }
@@ -1733,58 +1885,58 @@ class CubeSolver {
   }
 
   // Insert edge from top to bottom
-  private getEdgeInsertAlgorithm(face: string): BasicMove[] {
+  private getEdgeInsertAlgorithm(face: string): (BasicMove | string)[] {
     switch (face) {
-      case 'F': return ['F2'] as BasicMove[];
-      case 'R': return ['R2'] as BasicMove[];
-      case 'B': return ['B2'] as BasicMove[];
-      case 'L': return ['L2'] as BasicMove[];
-      default: return ['F2'] as BasicMove[];
+      case 'F': return ['F2'] as (BasicMove | string)[];
+      case 'R': return ['R2'] as (BasicMove | string)[];
+      case 'B': return ['B2'] as (BasicMove | string)[];
+      case 'L': return ['L2'] as (BasicMove | string)[];
+      default: return ['F2'] as (BasicMove | string)[];
     }
   }
 
   // Flip edge orientation and insert
-  private getEdgeFlipAlgorithm(face: string): BasicMove[] {
+  private getEdgeFlipAlgorithm(face: string): (BasicMove | string)[] {
     switch (face) {
-      case 'F': return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as BasicMove[];
-      case 'R': return ['R', 'B', 'U', 'B\'', 'U\'', 'R\''] as BasicMove[];
-      case 'B': return ['B', 'L', 'U', 'L\'', 'U\'', 'B\''] as BasicMove[];
-      case 'L': return ['L', 'F', 'U', 'F\'', 'U\'', 'L\''] as BasicMove[];
-      default: return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as BasicMove[];
+      case 'F': return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[];
+      case 'R': return ['R', 'B', 'U', 'B\'', 'U\'', 'R\''] as (BasicMove | string)[];
+      case 'B': return ['B', 'L', 'U', 'L\'', 'U\'', 'B\''] as (BasicMove | string)[];
+      case 'L': return ['L', 'F', 'U', 'F\'', 'U\'', 'L\''] as (BasicMove | string)[];
+      default: return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[];
     }
   }
 
   // Extract edge from middle layer to top
-  private extractEdgeToTop(edge: CubePiece): BasicMove[] {
+  private extractEdgeToTop(edge: CubePiece): (BasicMove | string)[] {
     const [x, y, z] = edge.position;
     
-    if (z === 1) return ['F', 'U'] as BasicMove[];   // Front middle
-    if (x === 1) return ['R', 'U'] as BasicMove[];   // Right middle
-    if (z === -1) return ['B', 'U'] as BasicMove[];  // Back middle
-    if (x === -1) return ['L', 'U'] as BasicMove[];  // Left middle
+    if (z === 1) return ['F', 'U'] as (BasicMove | string)[];   // Front middle
+    if (x === 1) return ['R', 'U'] as (BasicMove | string)[];   // Right middle
+    if (z === -1) return ['B', 'U'] as (BasicMove | string)[];  // Back middle
+    if (x === -1) return ['L', 'U'] as (BasicMove | string)[];  // Left middle
     
-    return ['U'] as BasicMove[];
+    return ['U'] as (BasicMove | string)[];
   }
 
   // Extract edge from bottom layer to top
-  private extractBottomEdgeToTop(edge: CubePiece): BasicMove[] {
+  private extractBottomEdgeToTop(edge: CubePiece): (BasicMove | string)[] {
     const [x, y, z] = edge.position;
     
-    if (z === 1) return ['F2', 'U'] as BasicMove[];   // Front bottom
-    if (x === 1) return ['R2', 'U'] as BasicMove[];   // Right bottom
-    if (z === -1) return ['B2', 'U'] as BasicMove[];  // Back bottom
-    if (x === -1) return ['L2', 'U'] as BasicMove[];  // Left bottom
+    if (z === 1) return ['F2', 'U'] as (BasicMove | string)[];   // Front bottom
+    if (x === 1) return ['R2', 'U'] as (BasicMove | string)[];   // Right bottom
+    if (z === -1) return ['B2', 'U'] as (BasicMove | string)[];  // Back bottom
+    if (x === -1) return ['L2', 'U'] as (BasicMove | string)[];  // Left bottom
     
-    return ['U'] as BasicMove[];
+    return ['U'] as (BasicMove | string)[];
   }
 
   // Flip edge in bottom layer
-  private getBottomEdgeFlipAlgorithm(face: string): BasicMove[] {
+  private getBottomEdgeFlipAlgorithm(face: string): (BasicMove | string)[] {
     return this.getEdgeFlipAlgorithm(face);
   }
 
   // Break up F2L pairs that are incorrectly placed
-  private breakupF2LPairs(): BasicMove[] {
+  private breakupF2LPairs(): (BasicMove | string)[] {
     // Look for F2L pairs that are in slots but incorrectly oriented
     const slots = [0, 1, 2, 3];
     
@@ -1799,10 +1951,10 @@ class CubeSolver {
       if (cornerInSlot && cornerInSlot.faceColors[1] !== this.COLORS.white) {
         // Corner is in slot but wrong orientation - extract it
         switch (slot) {
-          case 0: return ['R', 'U\'', 'R\''] as BasicMove[]; // Front-right
-          case 1: return ['F\'', 'U', 'F'] as BasicMove[];   // Front-left
-          case 2: return ['L\'', 'U', 'L'] as BasicMove[];   // Back-left
-          case 3: return ['B', 'U\'', 'B\''] as BasicMove[]; // Back-right
+          case 0: return ['R', 'U\'', 'R\''] as (BasicMove | string)[]; // Front-right
+          case 1: return ['F\'', 'U', 'F'] as (BasicMove | string)[];   // Front-left
+          case 2: return ['L\'', 'U', 'L'] as (BasicMove | string)[];   // Back-left
+          case 3: return ['B', 'U\'', 'B\''] as (BasicMove | string)[]; // Back-right
         }
       }
     }
@@ -1848,8 +2000,8 @@ class CubeSolver {
   }
 
   // Enhanced F2L solver with all 41 cases
-  public solveF2L(): BasicMove[] {
-    let moves: BasicMove[] = [];
+  public solveF2L(): (BasicMove | string)[] {
+    let moves: (BasicMove | string)[] = [];
     let pairsSolved = 0;
     let maxAttempts = 12; // Increased attempts for better coverage
     
@@ -1892,18 +2044,18 @@ class CubeSolver {
   }
 
   // Enhanced OLL solver with full algorithm set
-  public solveOLL(useFullOLL: boolean = false): BasicMove[] {
+  public solveOLL(useFullOLL: boolean = false): (BasicMove | string)[] {
     if (useFullOLL) {
       // Full OLL: recognize specific case and use appropriate algorithm
       const ollCase = this.recognizeFullOLLCase();
       const algorithm = FULL_OLL_ALGORITHMS[ollCase as keyof typeof FULL_OLL_ALGORITHMS];
       if (algorithm) {
-        return processAdvancedMoves(algorithm as Move[]);
+        return processAdvancedMoves(algorithm as (BasicMove | string)[]);
       }
     }
     
     // Enhanced 2-look OLL: orient edges first, then corners
-    let moves: BasicMove[] = [];
+    let moves: (BasicMove | string)[] = [];
     
     // First, orient all edges (get yellow cross)
     if (!this.areAllEdgesOriented()) {
@@ -1911,41 +2063,41 @@ class CubeSolver {
       switch (edgeCase) {
         case 'dot':
           // For dot case, use F R U R' U' F' to get L shape, then solve L shape
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
           moves.forEach(move => this.applyMove(move));
           // Now solve the resulting L shape
           const afterDotCase = this.recognizeOLLEdgeCase();
           if (afterDotCase === 'L') {
-            const lMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]);
+            const lMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]);
             moves.push(...lMoves);
             lMoves.forEach(move => this.applyMove(move));
           }
           break;
         case 'L':
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
           break;
         case 'line':
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
           break;
         case 'diagonal':
           // For diagonal case, use algorithm to get line, then solve line
-          moves.push(...processAdvancedMoves(['F', 'U', 'R', 'U\'', 'R\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'U', 'R', 'U\'', 'R\'', 'F\''] as (BasicMove | string)[]));
           moves.forEach(move => this.applyMove(move));
           // Check result and solve accordingly
           const afterDiagonalCase = this.recognizeOLLEdgeCase();
           if (afterDiagonalCase === 'line') {
-            const lineMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]);
+            const lineMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]);
             moves.push(...lineMoves);
             lineMoves.forEach(move => this.applyMove(move));
           }
           break;
         case 'single':
           // Single edge oriented - use algorithm to get better case
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
           break;
         case 'three':
           // Three edges oriented - one more move should complete
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
           break;
         default:
           // Already have cross or unknown case
@@ -1956,35 +2108,35 @@ class CubeSolver {
     // Then, orient all corners
     if (!this.areAllCornersOriented()) {
       const cornerCase = this.recognizeOLLCornerCase();
-      let cornerMoves: BasicMove[] = [];
+      let cornerMoves: (BasicMove | string)[] = [];
       switch (cornerCase) {
         case 'sune':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as (BasicMove | string)[]);
           break;
         case 'antisune':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_ANTISUNE as (BasicMove | string)[]);
           break;
         case 'pi':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_PI as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_PI as (BasicMove | string)[]);
           break;
         case 'H':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as (BasicMove | string)[]);
           break;
         case 'T':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_T as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_T as (BasicMove | string)[]);
           break;
         case 'L':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as (BasicMove | string)[]);
           break;
         case 'U':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_U as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_U as (BasicMove | string)[]);
           break;
         case 'solved':
           // Corners already oriented
           break;
         default:
           // Fallback to SUNE for unknown cases
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as (BasicMove | string)[]);
           break;
       }
       moves.push(...cornerMoves);
@@ -2066,36 +2218,36 @@ class CubeSolver {
   }
 
   // Enhanced PLL solver with full algorithm set
-  public solvePLL(useFullPLL: boolean = false): BasicMove[] {
+  public solvePLL(useFullPLL: boolean = false): (BasicMove | string)[] {
     if (useFullPLL) {
       // Full PLL: recognize specific case and use appropriate algorithm
       const pllCase = this.recognizeFullPLLCase();
       const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
       if (algorithm) {
-        return processAdvancedMoves(algorithm as Move[]);
+        return processAdvancedMoves(algorithm as (BasicMove | string)[]);
       }
     }
     
     // 2-look PLL: permute corners first, then edges
-    let moves: BasicMove[] = [];
+    let moves: (BasicMove | string)[] = [];
     
     // First, solve corners
     if (!this.areCornersPermuted()) {
       const cornerCase = this.recognizePLLCornerCase();
-      let cornerMoves: BasicMove[] = [];
+      let cornerMoves: (BasicMove | string)[] = [];
       switch (cornerCase) {
         case 'Aa':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
           break;
         case 'Ab':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
           cornerMoves.push('U'); // Adjust for Ab case
           break;
         case 'E':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_E as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_E as (BasicMove | string)[]);
           break;
         default:
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
           break;
       }
       moves.push(...cornerMoves);
@@ -2107,23 +2259,23 @@ class CubeSolver {
     // Then, solve edges
     if (!this.areEdgesPermuted()) {
       const edgeCase = this.recognizePLLEdgeCase();
-      let edgeMoves: BasicMove[] = [];
+      let edgeMoves: (BasicMove | string)[] = [];
       switch (edgeCase) {
         case 'Ua':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
           break;
         case 'Ub':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
           edgeMoves.push('U2'); // Adjust for Ub case
           break;
         case 'H':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_H as Move[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_H as (BasicMove | string)[]);
           break;
         case 'Z':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_Z as Move[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_Z as (BasicMove | string)[]);
           break;
         default:
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
           break;
       }
       moves.push(...edgeMoves);
@@ -2239,8 +2391,8 @@ class CubeSolver {
   }
 
   // Generate complete CFOP solution with stage tracking
-  public generateCFOPSolution(useFullOLL: boolean = false, useFullPLL: boolean = false): { moves: BasicMove[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
-    const allMoves: BasicMove[] = [];
+  public generateCFOPSolution(useFullOLL: boolean = false, useFullPLL: boolean = false): { moves: (BasicMove | string)[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
+    const allMoves: (BasicMove | string)[] = [];
     const stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] = [];
     
     // Solve cross
@@ -2316,17 +2468,28 @@ class CubeSolver {
   }
 
   // Public methods for move queue management
-  public addMoves(moves: Move[]): void {
-    // Convert all moves to basic moves before adding to queue
-    const basicMoves = processAdvancedMoves(moves);
-    this.moveQueue.push(...basicMoves);
+  public addMoves(moves: (Move | BasicMove | string)[]): void {
+    const processedMoves = moves.flatMap(move => {
+      if (typeof move === 'string' && move.startsWith('CUBE_ROTATION_')) {
+        return [move]; // Already a cube rotation
+      } else if (isBasicMove(move)) {
+        return [move]; // Already a basic move
+      } else {
+        return processAdvancedMoves([move as Move]); // Convert advanced move
+      }
+    });
+    this.moveQueue.push(...processedMoves as (BasicMove | string)[]);
   }
 
-  public executeNextMove(): BasicMove | null {
+  public executeNextMove(): BasicMove | string | null {
     if (this.moveQueue.length === 0) return null;
-    const move = this.moveQueue.shift()!;
-    this.applyMove(move);
-    return move;
+    
+    const move = this.moveQueue.shift();
+    if (move) {
+      this.applyMove(move);
+      return move;
+    }
+    return null;
   }
 
   public getState(): CubeState {
@@ -2373,8 +2536,8 @@ class CubeSolver {
   }
 
   // Legacy method for backward compatibility
-  public static generateInverseSequence(moves: BasicMove[]): BasicMove[] {
-    const inverseMap: Record<BasicMove, BasicMove> = {
+  public static generateInverseSequence(moves: (BasicMove | string)[]): (BasicMove | string)[] {
+    const inverseMap: Record<BasicMove | string, BasicMove | string> = {
       'R': 'R\'', 'R\'': 'R', 'R2': 'R2',
       'L': 'L\'', 'L\'': 'L', 'L2': 'L2',
       'U': 'U\'', 'U\'': 'U', 'U2': 'U2',
