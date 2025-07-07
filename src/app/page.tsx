@@ -10,6 +10,7 @@ const BlurFade = dynamic(() => import("@/components/magicui/blur-fade").then(mod
 const BlurFadeText = dynamic(() => import("@/components/magicui/blur-fade-text").then(mod => mod.default), { ssr: false });
 const ProjectCard = dynamic(() => import("@/components/project-card").then(mod => mod.ProjectCard), { ssr: false });
 const ResumeCard = dynamic(() => import("@/components/resume-card").then(mod => mod.ResumeCard), { ssr: false });
+const TimelineItem = dynamic(() => import("@/components/resume-card").then(mod => mod.TimelineItem), { ssr: false });
 const BookCard = dynamic(() => import("@/components/book-card").then(mod => mod.BookCard), { ssr: false });
 const TableOfContents = dynamic(() => import("@/components/table-of-contents").then(mod => mod.TableOfContents), { ssr: false });
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -90,52 +91,56 @@ export default function Page() {
       </section>
 
       <section id="work" className="mb-section-lg">
-        <div className="flex min-h-0 flex-col gap-y-3">
+        <div className="space-y-8">
           <BlurFade delay={BLUR_FADE_DELAY * 16}>
             <h2 className="text-xl font-bold">Technical Experience</h2>
           </BlurFade>
-          {DATA.technicalExperience.map((work, id) => (
-            <BlurFade
-              key={work.company}
-              delay={BLUR_FADE_DELAY * 17 + id * 0.05}
-            >
-              <ResumeCard
+          <div className="relative">
+            {DATA.technicalExperience.map((work, id) => (
+              <BlurFade
                 key={work.company}
-                logoUrl={work.logoUrl}
-                altText={work.company}
-                title={work.company}
-                subtitle={work.title}
-                href={work.href}
-                badges={work.badges}
-                period={`${work.start} - ${work.end ?? "Present"}`}
-                bullets={work.bullets}
-              />
-            </BlurFade>
-          ))}
+                delay={BLUR_FADE_DELAY * 17 + id * 0.05}
+              >
+                <TimelineItem
+                  logoUrl={work.logoUrl}
+                  altText={work.company}
+                  title={work.company}
+                  subtitle={work.title}
+                  href={work.href}
+                  badges={work.badges}
+                  period={`${work.start} - ${work.end ?? "Present"}`}
+                  bullets={work.bullets}
+                  isLast={id === DATA.technicalExperience.length - 1}
+                />
+              </BlurFade>
+            ))}
+          </div>
         </div>
       </section>
 
       <section id="education" className="mb-section-lg">
-        <div className="flex min-h-0 flex-col gap-y-3">
+        <div className="space-y-8">
           <BlurFade delay={BLUR_FADE_DELAY * 18}>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
-          {DATA.education.map((education, id) => (
-            <BlurFade
-              key={education.school}
-              delay={BLUR_FADE_DELAY * 19 + id * 0.05}
-            >
-              <ResumeCard
+          <div className="relative">
+            {DATA.education.map((education, id) => (
+              <BlurFade
                 key={education.school}
-                href={education.href}
-                logoUrl={education.logoUrl}
-                altText={education.school}
-                title={education.school}
-                subtitle={education.degree}
-                period={`${education.start} - ${education.end}`}
-              />
-            </BlurFade>
-          ))}
+                delay={BLUR_FADE_DELAY * 19 + id * 0.05}
+              >
+                <TimelineItem
+                  href={education.href}
+                  logoUrl={education.logoUrl}
+                  altText={education.school}
+                  title={education.school}
+                  subtitle={education.degree}
+                  period={`${education.start} - ${education.end}`}
+                  isLast={id === DATA.education.length - 1}
+                />
+              </BlurFade>
+            ))}
+          </div>
         </div>
       </section>
 

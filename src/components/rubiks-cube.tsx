@@ -3567,50 +3567,52 @@ const RubiksCubeScene = () => {
       
       {/* CFOP Stage Display */}
       {currentStage && (
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-          <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-xl">
-            <div className="text-lg font-semibold text-foreground text-center mb-2">{currentStage}</div>
-          {currentAlgorithm && (
-              <div className="text-sm text-muted-foreground text-center mb-2 font-mono">{currentAlgorithm}</div>
-          )}
-          {solverRef.current && (
+        <div className="absolute top-2 sm:top-6 left-1/2 transform -translate-x-1/2 w-full max-w-sm sm:max-w-lg px-2">
+          <div className="bg-background/90 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-xl">
+            <div className="text-sm sm:text-lg font-semibold text-foreground text-center mb-2">{currentStage}</div>
+            {currentAlgorithm && (
+              <div className="text-xs sm:text-sm text-muted-foreground text-center mb-2 font-mono break-all">
+                {currentAlgorithm}
+              </div>
+            )}
+            {solverRef.current && (
               <div className="text-xs text-muted-foreground text-center">
-              Moves remaining: {solverRef.current.getQueueLength()}
-            </div>
-          )}
-          {solveStats && (
+                Moves remaining: {solverRef.current.getQueueLength()}
+              </div>
+            )}
+            {solveStats && (
               <div className="text-xs text-blue-500 dark:text-blue-400 text-center mt-1">
-              Total: {solveStats.totalMoves} moves
-            </div>
-          )}
+                Total: {solveStats.totalMoves} moves
+              </div>
+            )}
           </div>
         </div>
       )}
       
       {/* Solve Statistics */}
       {solveStats && !isSolving && (
-        <div className="absolute top-6 right-6">
-          <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-xl">
-            <div className="text-sm font-semibold text-foreground mb-3 text-center">Solve Statistics</div>
-            <div className="text-xs space-y-2">
-              <div className="flex justify-between items-center">
+        <div className="absolute top-2 sm:top-6 right-2 sm:right-6 w-40 sm:w-auto">
+          <div className="bg-background/90 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-xl">
+            <div className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3 text-center">Solve Statistics</div>
+            <div className="text-xs space-y-1 sm:space-y-2">
+              <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">Cross:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.CROSS]} moves</span>
-            </div>
-              <div className="flex justify-between items-center">
+              </div>
+              <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">F2L:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.F2L]} moves</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">OLL:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.OLL]} moves</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center gap-2">
                 <span className="text-muted-foreground">PLL:</span>
                 <span className="text-foreground font-mono">{solveStats.stageMoves[SolvingStage.PLL]} moves</span>
               </div>
-              <div className="border-t border-border pt-2 mt-2">
-                <div className="flex justify-between items-center">
+              <div className="border-t border-border pt-1 sm:pt-2 mt-1 sm:mt-2">
+                <div className="flex justify-between items-center gap-2">
                   <span className="text-blue-500 dark:text-blue-400 font-semibold">Total:</span>
                   <span className="text-blue-500 dark:text-blue-400 font-semibold font-mono">{solveStats.totalMoves} moves</span>
                 </div>
@@ -3621,33 +3623,33 @@ const RubiksCubeScene = () => {
       )}
       
       {/* Controls */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <div className="bg-background/80 backdrop-blur-md border border-border rounded-xl p-4 shadow-2xl">
+      <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-md px-2">
+        <div className="bg-background/90 backdrop-blur-md border border-border rounded-xl p-3 sm:p-4 shadow-2xl">
           {/* Main Action Buttons */}
-          <div className="flex gap-2 mb-4">
-        <button
-          onClick={startSolving}
-          disabled={isSolving}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-sm"
-        >
-          {isSolving ? "Solving..." : "CFOP Solve"}
-        </button>
-        <button
-          onClick={resetCube}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-sm"
-        >
-          Reset
-        </button>
-      </div>
+          <div className="flex gap-2 mb-3 sm:mb-4">
+            <button
+              onClick={startSolving}
+              disabled={isSolving}
+              className="flex-1 px-3 sm:px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm"
+            >
+              {isSolving ? "Solving..." : "CFOP Solve"}
+            </button>
+            <button
+              onClick={resetCube}
+              className="px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm"
+            >
+              Reset
+            </button>
+          </div>
 
-          {/* Settings - Horizontal Layout */}
-          <div className="flex items-center gap-6">
+          {/* Settings - Responsive Layout */}
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
             {/* Animation Speed Control */}
             <div className="flex items-center gap-2">
               <label htmlFor="speed-slider" className="text-xs font-medium text-foreground whitespace-nowrap">
                 Speed
               </label>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-1 sm:flex-initial">
                 <input
                   id="speed-slider"
                   type="range"
@@ -3656,47 +3658,50 @@ const RubiksCubeScene = () => {
                   step={10}
                   value={animationSpeed}
                   onChange={e => setAnimationSpeed(Number(e.target.value))}
-                  className="w-16 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                  className="w-16 sm:w-20 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
                   disabled={isSolving}
                 />
-                <span className="text-xs text-muted-foreground font-mono w-8">
+                <span className="text-xs text-muted-foreground font-mono w-8 text-center">
                   {Math.round(animationSpeed/10)/10}s
                 </span>
               </div>
             </div>
 
-            {/* Full OLL Toggle */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-foreground whitespace-nowrap">
-                Full OLL
-              </label>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={useFullOLL}
-                  onChange={e => setUseFullOLL(e.target.checked)}
-                  disabled={isSolving}
-                  className="sr-only peer"
-                />
-                <div className="w-8 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
-              </label>
-            </div>
+            {/* Algorithm Options */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Full OLL Toggle */}
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium text-foreground whitespace-nowrap">
+                  Full OLL
+                </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useFullOLL}
+                    onChange={e => setUseFullOLL(e.target.checked)}
+                    disabled={isSolving}
+                    className="sr-only peer"
+                  />
+                  <div className="w-7 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+              </div>
 
-            {/* Full PLL Toggle */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-foreground whitespace-nowrap">
-                Full PLL
-              </label>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={useFullPLL}
-                  onChange={e => setUseFullPLL(e.target.checked)}
-                  disabled={isSolving}
-                  className="sr-only peer"
-                />
-                <div className="w-8 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
-              </label>
+              {/* Full PLL Toggle */}
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium text-foreground whitespace-nowrap">
+                  Full PLL
+                </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useFullPLL}
+                    onChange={e => setUseFullPLL(e.target.checked)}
+                    disabled={isSolving}
+                    className="sr-only peer"
+                  />
+                  <div className="w-7 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-background after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+              </div>
             </div>
           </div>
         </div>
