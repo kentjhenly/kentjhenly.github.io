@@ -777,8 +777,13 @@ enum SolvingStage {
 
 // Cube State Management - Now tracks actual piece positions
 interface CubePiece {
+  id: string; // e.g., "WRB" for white-red-blue corner
+  currentPosition: [number, number, number];
+  homePosition: [number, number, number];
+  orientation: number; // 0, 1, or 2 for corners; 0 or 1 for edges
+  faceColors: string[];
+  // Legacy support for existing code
   position: [number, number, number];
-  faceColors: string[]; // [top, bottom, left, right, front, back]
 }
 
 interface CubeState {
@@ -844,8 +849,12 @@ class CubeSolver {
   private applyMove(move: BasicMove | string): void {
     const newState: CubeState = {
       pieces: this.state.pieces.map(piece => ({
-        position: [...piece.position] as [number, number, number],
-        faceColors: [...piece.faceColors]
+        id: piece.id,
+        currentPosition: [...piece.currentPosition] as [number, number, number],
+        homePosition: [...piece.homePosition] as [number, number, number],
+        orientation: piece.orientation,
+        faceColors: [...piece.faceColors],
+        position: [...piece.position] as [number, number, number] // Legacy support
       }))
     };
 
@@ -1030,6 +1039,7 @@ class CubeSolver {
       }
 
       piece.position = newPosition;
+      piece.currentPosition = newPosition;
       piece.faceColors = newFaceColors;
     }
   }
@@ -1037,34 +1047,35 @@ class CubeSolver {
   // Apply right face rotation - completely rewritten for correctness
   private applyRightRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
-      // Get all pieces that are affected by R move (x = 1)
       const rightPieces = state.pieces.filter(piece => piece.position[0] === 1);
       
-      // Store original data to avoid mutation during iteration
-      const originalData = rightPieces.map(piece => ({
-        position: [...piece.position] as [number, number, number],
-        faceColors: [...piece.faceColors]
-      }));
+      // Create a map to track new positions and colors
+      const updates = new Map<CubePiece, { position: [number, number, number], faceColors: string[] }>();
       
-      // For R move: pieces rotate clockwise when viewed from the right face
-      // Position transformation: (x,y,z) -> (x,z,-y)
-      for (let i = 0; i < rightPieces.length; i++) {
-        const [x, y, z] = originalData[i].position;
-        rightPieces[i].position = [x, z, -y];
+      rightPieces.forEach(piece => {
+        const [x, y, z] = piece.position;
+        const newPosition: [number, number, number] = [x, -z, y];
         
-        // Face color transformation for R move:
-        // - Right face (index 3) rotates internally 
-        // - Adjacent faces shift: top->back, front->top, bottom->front, back->bottom
-        const oldColors = originalData[i].faceColors;
-        rightPieces[i].faceColors = [
+        // Correct face color rotation for R move
+        const oldColors = piece.faceColors;
+        const newFaceColors = [
           oldColors[4], // top <- front
-          oldColors[5], // bottom <- back  
+          oldColors[5], // bottom <- back
           oldColors[2], // left (unchanged)
-          oldColors[3], // right face (unchanged in this implementation)
+          oldColors[3], // right (unchanged)
           oldColors[1], // front <- bottom
           oldColors[0]  // back <- top
         ];
-      }
+        
+        updates.set(piece, { position: newPosition, faceColors: newFaceColors });
+      });
+      
+      // Apply all updates
+      updates.forEach((update, piece) => {
+        piece.position = update.position;
+        piece.currentPosition = update.position;
+        piece.faceColors = update.faceColors;
+      });
     }
   }
 
@@ -2747,6 +2758,63 @@ class CubeSolver {
     return moves.slice().reverse().map(move => inverseMap[move]);
   }
 
+  // Optimize move sequences by removing cancellations and combining moves
+  public static optimizeMoveSequence(moves: (BasicMove | string)[]): (BasicMove | string)[] {
+    const optimized: (BasicMove | string)[] = [];
+    
+    for (let i = 0; i < moves.length; i++) {
+      const current = moves[i];
+      const next = moves[i + 1];
+      
+      if (next && CubeSolver.canCancel(current, next)) {
+        // R R' cancels to nothing
+        i++; // Skip next move
+      } else if (next && CubeSolver.canCombine(current, next)) {
+        // R R becomes R2
+        const combined = CubeSolver.combineMoves(current, next);
+        if (combined) optimized.push(combined);
+        i++; // Skip next move
+      } else {
+        optimized.push(current);
+      }
+    }
+    
+    return optimized;
+  }
+
+  // Check if two moves can cancel each other
+  private static canCancel(move1: BasicMove | string, move2: BasicMove | string): boolean {
+    const inverseMap: Record<string, string> = {
+      'R': 'R\'', 'R\'': 'R', 'L': 'L\'', 'L\'': 'L',
+      'U': 'U\'', 'U\'': 'U', 'D': 'D\'', 'D\'': 'D',
+      'F': 'F\'', 'F\'': 'F', 'B': 'B\'', 'B\'': 'B'
+    };
+    
+    return inverseMap[move1 as string] === move2;
+  }
+
+  // Check if two moves can be combined
+  private static canCombine(move1: BasicMove | string, move2: BasicMove | string): boolean {
+    const face1 = (move1 as string).charAt(0);
+    const face2 = (move2 as string).charAt(0);
+    return face1 === face2 && !move1.includes('2') && !move2.includes('2');
+  }
+
+  // Combine two moves of the same face
+  private static combineMoves(move1: BasicMove | string, move2: BasicMove | string): BasicMove | string | null {
+    const face = (move1 as string).charAt(0);
+    const modifier1 = (move1 as string).includes('\'') ? 3 : 1;
+    const modifier2 = (move2 as string).includes('\'') ? 3 : 1;
+    const total = (modifier1 + modifier2) % 4;
+    
+    if (total === 0) return null; // Would cancel out
+    if (total === 1) return face as BasicMove;
+    if (total === 2) return `${face}2` as BasicMove;
+    if (total === 3) return `${face}'` as BasicMove;
+    
+    return move1; // Fallback
+  }
+
   // Check if PLL is solved
   private isPLLSolved(cornerPerm: number[], edgePerm: number[]): boolean {
     const cornersSolved = cornerPerm.every((val, i) => val === i);
@@ -3091,6 +3159,74 @@ class CubeSolver {
     
     return colors;
   }
+
+  // Validate cube state to ensure scrambles are solvable
+  public validateCubeState(state: CubeState): boolean {
+    // Check piece count
+    const corners = state.pieces.filter(p => this.isCorner(p));
+    const edges = state.pieces.filter(p => this.isEdge(p));
+    if (corners.length !== 8 || edges.length !== 12) return false;
+    
+    // Check permutation parity
+    const cornerParity = this.getPermutationParity(corners);
+    const edgeParity = this.getPermutationParity(edges);
+    if (cornerParity !== edgeParity) return false;
+    
+    // Check orientation parity
+    const cornerOrientationSum = this.getCornerOrientationSum(corners);
+    if (cornerOrientationSum % 3 !== 0) return false;
+    
+    const edgeOrientationSum = this.getEdgeOrientationSum(edges);
+    if (edgeOrientationSum % 2 !== 0) return false;
+    
+    return true;
+  }
+
+  // Check if a piece is a corner
+  private isCorner(piece: CubePiece): boolean {
+    const [x, y, z] = piece.currentPosition;
+    return Math.abs(x) === 1 && Math.abs(y) === 1 && Math.abs(z) === 1;
+  }
+
+  // Check if a piece is an edge
+  private isEdge(piece: CubePiece): boolean {
+    const [x, y, z] = piece.currentPosition;
+    const nonZeroCount = [x, y, z].filter(coord => Math.abs(coord) === 1).length;
+    return nonZeroCount === 2;
+  }
+
+  // Calculate permutation parity for a set of pieces
+  private getPermutationParity(pieces: CubePiece[]): number {
+    let parity = 0;
+    const positions = pieces.map(p => p.currentPosition);
+    const homePositions = pieces.map(p => p.homePosition);
+    
+    for (let i = 0; i < positions.length; i++) {
+      const currentIndex = homePositions.findIndex(home => 
+        home[0] === positions[i][0] && home[1] === positions[i][1] && home[2] === positions[i][2]
+      );
+      
+      for (let j = i + 1; j < positions.length; j++) {
+        const nextIndex = homePositions.findIndex(home => 
+          home[0] === positions[j][0] && home[1] === positions[j][1] && home[2] === positions[j][2]
+        );
+        
+        if (currentIndex > nextIndex) parity++;
+      }
+    }
+    
+    return parity % 2;
+  }
+
+  // Calculate corner orientation sum
+  private getCornerOrientationSum(corners: CubePiece[]): number {
+    return corners.reduce((sum, corner) => sum + corner.orientation, 0);
+  }
+
+  // Calculate edge orientation sum
+  private getEdgeOrientationSum(edges: CubePiece[]): number {
+    return edges.reduce((sum, edge) => sum + edge.orientation, 0);
+  }
 }
 
 const RubiksCubeScene = () => {
@@ -3151,9 +3287,17 @@ const RubiksCubeScene = () => {
             z === -1 ? COLORS.orange : '#000000'
           ];
           
+          // Generate piece ID based on visible colors
+          const visibleColors = faceColors.filter(color => color !== '#000000');
+          const pieceId = visibleColors.sort().join('');
+          
           pieces.push({
-            position: [x, y, z],
-            faceColors
+            id: pieceId || `INTERNAL_${x}_${y}_${z}`,
+            currentPosition: [x, y, z],
+            homePosition: [x, y, z],
+            orientation: 0, // All pieces start in correct orientation
+            faceColors,
+            position: [x, y, z] // Legacy support
           });
         }
       }
@@ -3378,7 +3522,10 @@ const RubiksCubeScene = () => {
     setCurrentStage(SolvingStage.CROSS);
     setCurrentAlgorithm("Generating CFOP solution...");
     
-    const { moves: cfopSolution, stages } = solverRef.current.generateCFOPSolution(useFullOLL, useFullPLL);
+    let { moves: cfopSolution, stages } = solverRef.current.generateCFOPSolution(useFullOLL, useFullPLL);
+    
+    // Optimize the solution by removing cancellations and combining moves
+    cfopSolution = CubeSolver.optimizeMoveSequence(cfopSolution);
     solverRef.current.addMoves(cfopSolution);
     
     // Store stages for tracking
