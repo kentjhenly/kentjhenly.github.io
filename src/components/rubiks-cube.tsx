@@ -2313,21 +2313,34 @@ class CubeSolver {
   }
 
   public isSolved(): boolean {
-    // Check if all faces are solved
-    const faces = [
-      { pieces: this.state.pieces.filter(p => p.position[1] === 1), color: this.COLORS.yellow }, // Top
-      { pieces: this.state.pieces.filter(p => p.position[1] === -1), color: this.COLORS.white }, // Bottom
-      { pieces: this.state.pieces.filter(p => p.position[2] === 1), color: this.COLORS.red }, // Front
-      { pieces: this.state.pieces.filter(p => p.position[2] === -1), color: this.COLORS.orange }, // Back
-      { pieces: this.state.pieces.filter(p => p.position[0] === 1), color: this.COLORS.blue }, // Right
-      { pieces: this.state.pieces.filter(p => p.position[0] === -1), color: this.COLORS.green } // Left
-    ];
-
-    return faces.every(face => 
-      face.pieces.every(piece => 
-        piece.faceColors.some(color => color === face.color)
-      )
-    );
+    // Check if all faces are solved by verifying that the correct color 
+    // is on the correct visible face of each piece
+    
+    // Check top face (yellow)
+    const topPieces = this.state.pieces.filter(p => p.position[1] === 1);
+    if (!topPieces.every(piece => piece.faceColors[0] === this.COLORS.yellow)) return false;
+    
+    // Check bottom face (white)  
+    const bottomPieces = this.state.pieces.filter(p => p.position[1] === -1);
+    if (!bottomPieces.every(piece => piece.faceColors[1] === this.COLORS.white)) return false;
+    
+    // Check front face (red)
+    const frontPieces = this.state.pieces.filter(p => p.position[2] === 1);
+    if (!frontPieces.every(piece => piece.faceColors[4] === this.COLORS.red)) return false;
+    
+    // Check back face (orange)
+    const backPieces = this.state.pieces.filter(p => p.position[2] === -1);
+    if (!backPieces.every(piece => piece.faceColors[5] === this.COLORS.orange)) return false;
+    
+    // Check right face (blue)
+    const rightPieces = this.state.pieces.filter(p => p.position[0] === 1);
+    if (!rightPieces.every(piece => piece.faceColors[3] === this.COLORS.blue)) return false;
+    
+    // Check left face (green)
+    const leftPieces = this.state.pieces.filter(p => p.position[0] === -1);
+    if (!leftPieces.every(piece => piece.faceColors[2] === this.COLORS.green)) return false;
+    
+    return true;
   }
 
   // Legacy method for backward compatibility
@@ -2469,26 +2482,26 @@ const RubiksCubeScene = () => {
         for (let z = -1; z <= 1; z++) {
           // Initialize face colors based on position
           // [top, bottom, left, right, front, back]
-          const faceColors: string[] = [];
+          // Only assign colors to visible faces (on the outer surface of the cube)
+          const faceColors: string[] = ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080'];
           
-          // Set face colors for each face - use the center color for that face
-          // Top face (y = 1): yellow, else use adjacent center color or white
-          faceColors[0] = y === 1 ? COLORS.yellow : COLORS.white;
+          // Top face (y = 1): yellow
+          if (y === 1) faceColors[0] = COLORS.yellow;
           
-          // Bottom face (y = -1): white, else use adjacent center color or yellow  
-          faceColors[1] = y === -1 ? COLORS.white : COLORS.yellow;
+          // Bottom face (y = -1): white  
+          if (y === -1) faceColors[1] = COLORS.white;
           
-          // Left face (x = -1): green, else use adjacent center color or blue
-          faceColors[2] = x === -1 ? COLORS.green : COLORS.blue;
+          // Left face (x = -1): green
+          if (x === -1) faceColors[2] = COLORS.green;
           
-          // Right face (x = 1): blue, else use adjacent center color or green
-          faceColors[3] = x === 1 ? COLORS.blue : COLORS.green;
+          // Right face (x = 1): blue
+          if (x === 1) faceColors[3] = COLORS.blue;
           
-          // Front face (z = 1): red, else use adjacent center color or orange
-          faceColors[4] = z === 1 ? COLORS.red : COLORS.orange;
+          // Front face (z = 1): red
+          if (z === 1) faceColors[4] = COLORS.red;
           
-          // Back face (z = -1): orange, else use adjacent center color or red
-          faceColors[5] = z === -1 ? COLORS.orange : COLORS.red;
+          // Back face (z = -1): orange
+          if (z === -1) faceColors[5] = COLORS.orange;
           
           pieces.push({
             position: [x, y, z],
@@ -2505,6 +2518,9 @@ const RubiksCubeScene = () => {
     const state = createSolvedState();
     const moves: BasicMove[] = [];
     const possibleMoves: BasicMove[] = ['R', 'R\'', 'R2', 'L', 'L\'', 'L2', 'U', 'U\'', 'U2', 'D', 'D\'', 'D2', 'F', 'F\'', 'F2', 'B', 'B\'', 'B2'];
+    
+    // Create a single solver for scrambling to avoid state corruption
+    const scramblingSolver = new CubeSolver(state, COLORS);
     
     // Generate a proper scramble with quality checks
     let lastMove: BasicMove | '' = '';
@@ -2536,14 +2552,13 @@ const RubiksCubeScene = () => {
       secondLastMove = lastMove;
       lastMove = randomMove;
       
-      // Apply the move to the state
-      const solver = new CubeSolver(state, COLORS);
-      solver.addMoves([randomMove]);
-      solver.executeNextMove();
-      Object.assign(state, solver.getState());
+      // Apply each scramble move to the solver
+      scramblingSolver.addMoves([randomMove]);
+      scramblingSolver.executeNextMove();
     }
     
-    return { state, moves };
+    // Get the final scrambled state
+    return { state: scramblingSolver.getState(), moves };
   };
 
 
@@ -2635,11 +2650,15 @@ const RubiksCubeScene = () => {
     
     // Create scrambled state and store scramble moves
     const { state: scrambledState, moves: newScrambleMoves } = createScrambledState();
+    console.log("Scramble moves:", newScrambleMoves);
     setCubeState(scrambledState);
     setScrambleMoves(newScrambleMoves);
     
     // Initialize solver with scrambled state and COLORS
     solverRef.current = new CubeSolver(scrambledState, COLORS);
+    
+    // Check if cube is already solved before generating solution
+    console.log("Is cube solved after scrambling?", solverRef.current.isSolved());
     
     // Generate CFOP solution
     setCurrentStage(SolvingStage.CROSS);
