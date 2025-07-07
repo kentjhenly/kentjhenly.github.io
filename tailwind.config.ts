@@ -22,6 +22,17 @@ const config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      spacing: {
+        // Custom spacing scale for consistent layout
+        'section-sm': '3rem',    // 48px - Small section spacing
+        'section-md': '4rem',    // 64px - Medium section spacing  
+        'section-lg': '5rem',    // 80px - Large section spacing
+        'section-xl': '6rem',    // 96px - Extra large section spacing
+        'content-sm': '1rem',    // 16px - Small content spacing
+        'content-md': '1.5rem',  // 24px - Medium content spacing
+        'content-lg': '2rem',    // 32px - Large content spacing
+        'container-padding': '1.5rem', // 24px - Standard container padding
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

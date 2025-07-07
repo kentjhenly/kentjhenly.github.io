@@ -78,6 +78,39 @@
   }
 }
 
+@layer utilities {
+  /* Consistent section spacing utilities */
+  .section-spacing {
+    @apply mb-section-lg;
+  }
+  
+  .content-spacing-sm {
+    @apply space-y-content-sm;
+  }
+  
+  .content-spacing-md {
+    @apply space-y-content-md;
+  }
+  
+  .content-spacing-lg {
+    @apply space-y-content-lg;
+  }
+
+  /* Layout utilities for consistent containers */
+  .page-container {
+    @apply max-w-2xl mx-auto px-container-padding;
+  }
+  
+  .section-container {
+    @apply w-full;
+  }
+  
+  /* Typography spacing utilities */
+  .prose-spacing {
+    @apply space-y-content-sm;
+  }
+}
+
   h3 code {
     @apply !text-lg md:!text-xl;
   }

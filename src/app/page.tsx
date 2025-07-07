@@ -21,10 +21,11 @@ const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
   return (
-    <main className="flex flex-col min-h-[100dvh] space-y-10">
+    <main className="flex flex-col min-h-[100dvh] py-section-md">
       <TableOfContents />
-      <section id="hero">
-        <div className="mx-auto w-full max-w-2xl space-y-8">
+      
+      <section id="hero" className="mb-section-lg">
+        <div className="w-full space-y-content-lg">
           <div className="gap-2 flex justify-between items-center">
             <div className="flex-col flex flex-1 space-y-1.5">
               <BlurFadeText
@@ -49,43 +50,46 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 3D Rubik's Cube Solver Section */}
-      <section id="rubiks-cube">
+      <section id="rubiks-cube" className="mb-section-lg">
         <RubiksCube delay={BLUR_FADE_DELAY * 4} />
       </section>
 
-      <section id="about">
-        <BlurFade delay={BLUR_FADE_DELAY * 10}>
-          <h2 className="text-xl font-bold">About</h2>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 11}>
-          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-            I&apos;m a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
-          </p>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 12}>
-          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            Before university, I was that kid obsessed with biology and completely hooked on the Olympiad. I loved exploring the mysteries of life. But after countless hours pipetting in the lab, I started to feel burnt out. I realized I loved biology, just not the endless wet lab work.
-          </p>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 13}>
-          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: &ldquo;What if I could use math and code to solve big biology questions instead?&rdquo; That idea completely changed my path.
-          </p>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 14}>
-          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            And so, here I am, merging my love for biology with the power of math and computation.
-          </p>
-        </BlurFade>
-        <BlurFade delay={BLUR_FADE_DELAY * 15}>
-          <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert mt-4">
-            When I&apos;m not coding or solving equations, you&apos;ll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it&apos;s always &ldquo;No.1&rdquo; at Comebuytea.
-          </p>
-        </BlurFade>
+      <section id="about" className="mb-section-lg">
+        <div className="space-y-content-md">
+          <BlurFade delay={BLUR_FADE_DELAY * 10}>
+            <h2 className="text-xl font-bold">About</h2>
+          </BlurFade>
+          <div className="space-y-content-sm">
+            <BlurFade delay={BLUR_FADE_DELAY * 11}>
+              <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+                I&apos;m a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
+              </p>
+            </BlurFade>
+            <BlurFade delay={BLUR_FADE_DELAY * 12}>
+              <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+                Before university, I was that kid obsessed with biology and completely hooked on the Olympiad. I loved exploring the mysteries of life. But after countless hours pipetting in the lab, I started to feel burnt out. I realized I loved biology, just not the endless wet lab work.
+              </p>
+            </BlurFade>
+            <BlurFade delay={BLUR_FADE_DELAY * 13}>
+              <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+                At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: &ldquo;What if I could use math and code to solve big biology questions instead?&rdquo; That idea completely changed my path.
+              </p>
+            </BlurFade>
+            <BlurFade delay={BLUR_FADE_DELAY * 14}>
+              <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+                And so, here I am, merging my love for biology with the power of math and computation.
+              </p>
+            </BlurFade>
+            <BlurFade delay={BLUR_FADE_DELAY * 15}>
+              <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
+                When I&apos;m not coding or solving equations, you&apos;ll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it&apos;s always &ldquo;No.1&rdquo; at Comebuytea.
+              </p>
+            </BlurFade>
+          </div>
+        </div>
       </section>
 
-      <section id="work">
+      <section id="work" className="mb-section-lg">
         <div className="flex min-h-0 flex-col gap-y-3">
           <BlurFade delay={BLUR_FADE_DELAY * 16}>
             <h2 className="text-xl font-bold">Technical Experience</h2>
@@ -110,7 +114,8 @@ export default function Page() {
           ))}
         </div>
       </section>
-      <section id="education">
+
+      <section id="education" className="mb-section-lg">
         <div className="flex min-h-0 flex-col gap-y-3">
           <BlurFade delay={BLUR_FADE_DELAY * 18}>
             <h2 className="text-xl font-bold">Education</h2>
@@ -134,8 +139,8 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="projects">
-        <div className="space-y-12 w-full py-12">
+      <section id="projects" className="mb-section-lg">
+        <div className="space-y-content-lg">
           <BlurFade delay={BLUR_FADE_DELAY * 20}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -172,10 +177,13 @@ export default function Page() {
           </div>
         </div>
       </section>
-      {/* Responsive GitHub Contributions Graph */}
-      <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 22} />
-      <section id="books">
-        <div className="space-y-12 w-full py-12">
+
+      <section id="github" className="mb-section-lg">
+        <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 22} />
+      </section>
+
+      <section id="books" className="mb-section-lg">
+        <div className="space-y-content-lg">
           <BlurFade delay={BLUR_FADE_DELAY * 23}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -189,9 +197,9 @@ export default function Page() {
             </div>
           </BlurFade>
           <BlurFade delay={BLUR_FADE_DELAY * 24}>
-            <div className="space-y-8">
+            <div className="space-y-content-lg">
               {DATA.books.map((themeGroup, themeId) => (
-                <div key={themeGroup.theme} className="space-y-4">
+                <div key={themeGroup.theme} className="space-y-content-sm">
                   <BlurFade delay={BLUR_FADE_DELAY * 25 + themeId * 0.1}>
                     <h3 className="text-lg font-semibold text-muted-foreground">
                       {themeGroup.theme}
@@ -218,40 +226,44 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="hong-kong">
-        <BlurFade delay={BLUR_FADE_DELAY * 27}>
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Best parts of Hong Kong.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                A collection of my favorite spots and activities in the city I call home.
-              </p>
+      <section id="hong-kong" className="mb-section-lg">
+        <div className="space-y-content-lg">
+          <BlurFade delay={BLUR_FADE_DELAY * 27}>
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Best parts of Hong Kong.
+                </h2>
+                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  A collection of my favorite spots and activities in the city I call home.
+                </p>
+              </div>
             </div>
-          </div>
-        </BlurFade>
-        <HongKongMap delay={BLUR_FADE_DELAY * 28} />
+          </BlurFade>
+          <HongKongMap delay={BLUR_FADE_DELAY * 28} />
+        </div>
       </section>
 
-      <section id="world">
-        <BlurFade delay={BLUR_FADE_DELAY * 29}>
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                World Map.
-              </h2>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Countries I&apos;ve visited and want to visit.
-              </p>
+      <section id="world" className="mb-section-lg">
+        <div className="space-y-content-lg">
+          <BlurFade delay={BLUR_FADE_DELAY * 29}>
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  World Map.
+                </h2>
+                <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Countries I&apos;ve visited and want to visit.
+                </p>
+              </div>
             </div>
-          </div>
-        </BlurFade>
-        <WorldMap delay={BLUR_FADE_DELAY * 30} />
+          </BlurFade>
+          <WorldMap delay={BLUR_FADE_DELAY * 30} />
+        </div>
       </section>
 
       <section id="contact">
-        <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full py-12">
+        <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full">
           <BlurFade delay={BLUR_FADE_DELAY * 31}>
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
