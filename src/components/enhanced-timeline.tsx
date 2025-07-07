@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -25,6 +26,17 @@ interface EnhancedTimelineProps {
 export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+
+  const toggleExpanded = (index: number) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedItems(newExpanded);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -59,7 +71,7 @@ export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) =>
       className="relative"
     >
       {/* Vertical timeline line */}
-      <div className="absolute left-6 top-0 bottom-0 w-px bg-border" />
+      <div className="absolute left-8 top-0 bottom-0 w-px bg-border" />
       
       {/* Timeline items */}
       <div className="space-y-8">
@@ -69,21 +81,21 @@ export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) =>
             variants={itemVariants}
             className="relative flex items-start"
           >
-            {/* Timeline dot with integrated logo */}
+            {/* Timeline dot with larger integrated logo */}
             <div className="relative z-10 flex-shrink-0">
-              <div className="w-12 h-12 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center overflow-hidden">
+              <div className="w-16 h-16 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center overflow-hidden">
                 <Image
                   src={item.logoUrl}
                   alt={item.altText}
-                  width={24}
-                  height={24}
+                  width={40}
+                  height={40}
                   className="rounded-sm object-cover"
                 />
               </div>
             </div>
 
             {/* Content section */}
-            <div className="ml-6 flex-1 min-w-0">
+            <div className="ml-8 flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4">
                 {/* Left content */}
                 <div className="flex-1 min-w-0">
@@ -110,9 +122,17 @@ export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) =>
                     </p>
                   </div>
 
+                  {/* Timeline-style date */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="w-2 h-2 rounded-full bg-primary/60" />
+                    <span className="text-sm text-muted-foreground font-medium">
+                      {item.period}
+                    </span>
+                  </div>
+
                   {/* Badges */}
                   {item.badges && item.badges.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-1 mt-3">
                       {item.badges.map((badge, badgeIndex) => (
                         <Badge
                           key={badgeIndex}
@@ -125,27 +145,47 @@ export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) =>
                     </div>
                   )}
 
-                  {/* Bullets */}
+                  {/* Show/Hide bullets button */}
                   {item.bullets && item.bullets.length > 0 && (
-                    <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-                      {item.bullets.map((bullet, bulletIndex) => (
-                        <li key={bulletIndex} className="flex items-start gap-2">
-                          <span className="w-1 h-1 rounded-full bg-muted-foreground/60 mt-2 flex-shrink-0" />
-                          <span className="leading-relaxed">{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <button
+                      onClick={() => toggleExpanded(index)}
+                      className="flex items-center gap-2 mt-3 text-sm text-primary hover:text-primary/80 transition-colors group"
+                    >
+                      <span>
+                        {expandedItems.has(index) ? 'Hide details' : 'Show details'}
+                      </span>
+                      {expandedItems.has(index) ? (
+                        <ChevronUp className="size-4 group-hover:translate-y-[-1px] transition-transform" />
+                      ) : (
+                        <ChevronDown className="size-4 group-hover:translate-y-[1px] transition-transform" />
+                      )}
+                    </button>
                   )}
-                </div>
 
-                {/* Right content - Date badge */}
-                <div className="flex-shrink-0">
-                  <Badge 
-                    variant="outline" 
-                    className="text-xs text-muted-foreground border-muted-foreground/30 bg-muted/30 font-normal px-3 py-1"
-                  >
-                    {item.period}
-                  </Badge>
+                  {/* Collapsible bullets */}
+                  {item.bullets && item.bullets.length > 0 && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{
+                        height: expandedItems.has(index) ? "auto" : 0,
+                        opacity: expandedItems.has(index) ? 1 : 0,
+                      }}
+                      transition={{
+                        duration: 0.3,
+                        ease: [0.4, 0, 0.2, 1],
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                        {item.bullets.map((bullet, bulletIndex) => (
+                          <li key={bulletIndex} className="flex items-start gap-2">
+                            <span className="w-1 h-1 rounded-full bg-muted-foreground/60 mt-2 flex-shrink-0" />
+                            <span className="leading-relaxed">{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
                 </div>
               </div>
             </div>
