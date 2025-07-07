@@ -5,14 +5,24 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import BlurFade from "./magicui/blur-fade";
 
-// Monochromatic blue color scheme
-const COLORS = {
-  white: '#CAF0F8', // Pale Blue
-  yellow: '#ADE8F4', // Slightly darker pale blue
-  red: '#90E0EF', // Light Blue
-  orange: '#48CAE4', // Medium light blue
-  blue: '#0077B6', // Medium Blue
-  green: '#023E8A', // Dark Blue
+// Color Schemes
+const COLOR_SCHEMES = {
+  standard: {
+    white: '#FFFFFF',
+    yellow: '#FFFF00',
+    red: '#FF0000',
+    orange: '#FF8000',
+    blue: '#0000FF',
+    green: '#00FF00',
+  },
+  monochrome: {
+    white: '#CAF0F8', // Pale Blue
+    yellow: '#ADE8F4', // Slightly darker pale blue
+    red: '#90E0EF', // Light Blue
+    orange: '#48CAE4', // Medium light blue
+    blue: '#0077B6', // Medium Blue
+    green: '#023E8A', // Dark Blue
+  }
 };
 
 interface CubeProps {
@@ -114,6 +124,7 @@ const CFOP_ALGORITHMS = {
   OLL_PI: ['R', 'U2', 'R2', 'U\'', 'R2', 'U\'', 'R2', 'U2', 'R'],
   OLL_SUNE: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
   OLL_ANTISUNE: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R'],
+  OLL_Z: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
   
   // PLL algorithms - 2-Look PLL
   PLL_T: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\''],
@@ -122,6 +133,8 @@ const CFOP_ALGORITHMS = {
   PLL_J: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L', 'U\''],
   PLL_A: ['R', 'B\'', 'R', 'F2', 'R\'', 'B', 'R', 'F2', 'R2'],
   PLL_E: ['R', 'B\'', 'R\'', 'B', 'U', 'B', 'U\'', 'B\''],
+  PLL_H: ['M2', 'U', 'M2', 'U2', 'M2', 'U', 'M2'],
+  PLL_Z: ['M2', 'U', 'M2', 'U', 'M\'', 'U2', 'M2', 'U2', 'M\''],
   
   // Trigger moves
   SEXY_MOVE: ['R', 'U', 'R\'', 'U\''],
@@ -129,6 +142,67 @@ const CFOP_ALGORITHMS = {
   SUNE: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
   ANTISUNE: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R']
 };
+
+// Full OLL Algorithms (subset of 57 - most common cases)
+const FULL_OLL_ALGORITHMS = {
+  // Cross cases (7 cases)
+  OLL_1: ['R', 'U2', 'R2', 'F', 'R', 'F2', 'U2', 'F', 'R'],
+  OLL_2: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_3: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_4: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_5: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  OLL_6: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R'],
+  OLL_7: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\''],
+  
+  // T cases (4 cases)
+  OLL_8: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  OLL_9: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
+  OLL_10: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  OLL_11: ['R\'', 'U\'', 'R', 'U\'', 'R\'', 'U2', 'R'],
+  
+  // L cases (4 cases)
+  OLL_12: ['F', 'R\'', 'F\'', 'R', 'U', 'R', 'U\'', 'R\''],
+  OLL_13: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U', 'R', 'U2', 'R\''],
+  OLL_14: ['R', 'U2', 'R2', 'U\'', 'R2', 'U\'', 'R2', 'U2', 'R'],
+  OLL_15: ['R', 'U', 'R\'', 'U', 'R', 'U2', 'R\''],
+  
+  // ... Add remaining OLL cases (up to 57) ...
+};
+
+// Full PLL Algorithms (subset of 21 - most common cases)
+const FULL_PLL_ALGORITHMS = {
+  // Corner permutations
+  PLL_A: ['R', 'B\'', 'R', 'F2', 'R\'', 'B', 'R', 'F2', 'R2'],
+  PLL_E: ['R', 'B\'', 'R\'', 'B', 'U', 'B', 'U\'', 'B\''],
+  PLL_U: ['R', 'U\'', 'R', 'U', 'R', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R2'],
+  PLL_Y: ['F', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R', 'F\''],
+  PLL_T: ['R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'F\''],
+  PLL_J: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L', 'U\''],
+  PLL_R: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R', 'D', 'R\'', 'U\'', 'R', 'D\'', 'R\'', 'U2', 'R\''],
+  PLL_V: ['R\'', 'U', 'R\'', 'U\'', 'B\'', 'R\'', 'B2', 'U\'', 'B\'', 'U', 'B\'', 'R', 'B', 'R'],
+  PLL_N: ['R', 'U\'', 'R', 'U', 'R', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R2'],
+  PLL_G: ['R2', 'U', 'R\'', 'U', 'R\'', 'U\'', 'R', 'U\'', 'R2', 'U\'', 'D', 'R\'', 'U', 'R', 'D\''],
+  
+  // Edge permutations
+  PLL_H: ['M2', 'U', 'M2', 'U2', 'M2', 'U', 'M2'],
+  PLL_Z: ['M2', 'U', 'M2', 'U', 'M\'', 'U2', 'M2', 'U2', 'M\''],
+  
+  // ... Add remaining PLL cases (up to 21) ...
+};
+
+// F2L Cases (placeholder: only a few, but structure for all 41)
+const F2L_CASES = [
+  {
+    name: 'Basic Pair',
+    // Recognition: both pieces in U layer, not paired
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+      // Placeholder: both on top layer
+      return corner.position[1] === 1 && edge.position[1] === 1;
+    },
+    algorithm: ['U', 'R', 'U"', 'R"'] as Move[],
+  },
+  // ... Add all 41 F2L cases here ...
+];
 
 // CFOP Solving Stages
 enum SolvingStage {
@@ -156,15 +230,52 @@ interface F2LPair {
   slot: number; // 0-3 for the four F2L slots
 }
 
+// Cross solving patterns and algorithms
+const CROSS_ALGORITHMS = {
+  // Direct insertion (edge already in correct position)
+  DIRECT_INSERT: [] as Move[],
+  
+  // Edge on U face, correct orientation
+  U_CORRECT: ['F2'] as Move[],
+  U_CORRECT_R: ['R2'] as Move[],
+  U_CORRECT_B: ['B2'] as Move[],
+  U_CORRECT_L: ['L2'] as Move[],
+  
+  // Edge on U face, flipped
+  U_FLIPPED: ['F', 'R', 'U', 'R\'', 'F\''] as Move[],
+  U_FLIPPED_R: ['R', 'B', 'U', 'B\'', 'R\''] as Move[],
+  U_FLIPPED_B: ['B', 'L', 'U', 'L\'', 'B\''] as Move[],
+  U_FLIPPED_L: ['L', 'F', 'U', 'F\'', 'L\''] as Move[],
+  
+  // Edge in middle layer
+  M_CORRECT: ['R', 'U', 'R\'', 'F2'] as Move[],
+  M_FLIPPED: ['R', 'U\'', 'R\'', 'F', 'R', 'U', 'R\'', 'F\''] as Move[],
+  
+  // Edge in D layer, wrong position
+  D_WRONG_POS: ['F2', 'U', 'R', 'U\'', 'R\'', 'F2'] as Move[],
+  D_WRONG_ORIENT: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[],
+};
+
+// Cross edge positions on the D face
+const CROSS_EDGE_POSITIONS = [
+  { pos: [0, -1, 1] as [number, number, number], face: 'F', algorithm_key: 'U_CORRECT' },    // Front
+  { pos: [1, -1, 0] as [number, number, number], face: 'R', algorithm_key: 'U_CORRECT_R' },  // Right
+  { pos: [0, -1, -1] as [number, number, number], face: 'B', algorithm_key: 'U_CORRECT_B' }, // Back
+  { pos: [-1, -1, 0] as [number, number, number], face: 'L', algorithm_key: 'U_CORRECT_L' }, // Left
+];
+
+// CubeSolver now takes COLORS as a constructor argument
 class CubeSolver {
   private state: CubeState;
   private moveQueue: Move[] = [];
   private animationSpeed = 300; // ms per move
   public stages?: { stage: SolvingStage; startIndex: number; endIndex: number }[];
   public totalMoves: number = 0;
+  private COLORS: typeof COLOR_SCHEMES.standard;
 
-  constructor(initialState: CubeState) {
+  constructor(initialState: CubeState, COLORS: typeof COLOR_SCHEMES.standard) {
     this.state = JSON.parse(JSON.stringify(initialState));
+    this.COLORS = COLORS;
   }
 
   // Apply a single move to the cube state
@@ -353,10 +464,10 @@ class CubeSolver {
   private isCrossSolved(): boolean {
     // Check all four white edges are on the D face and match their adjacent centers.
     const whiteEdges = [
-      { pos: [0, -1, 1], color: COLORS.red },    // D-F
-      { pos: [1, -1, 0], color: COLORS.blue },   // D-R
-      { pos: [0, -1, -1], color: COLORS.orange },// D-B
-      { pos: [-1, -1, 0], color: COLORS.green }, // D-L
+      { pos: [0, -1, 1], color: this.COLORS.red },    // D-F
+      { pos: [1, -1, 0], color: this.COLORS.blue },   // D-R
+      { pos: [0, -1, -1], color: this.COLORS.orange },// D-B
+      { pos: [-1, -1, 0], color: this.COLORS.green }, // D-L
     ];
 
     return whiteEdges.every(({ pos, color }) => {
@@ -365,7 +476,7 @@ class CubeSolver {
       );
       if (!piece) return false;
       // White must be on the D face (index 1) and the adjacent colour must match the centre colour.
-      return piece.faceColors[1] === COLORS.white && piece.faceColors.includes(color);
+      return piece.faceColors[1] === this.COLORS.white && piece.faceColors.includes(color);
     });
   }
 
@@ -379,7 +490,7 @@ class CubeSolver {
              (x === -1 && y === -1 && z === 0);
     });
 
-    return whiteEdges.filter(edge => edge.faceColors[1] === COLORS.white).length;
+    return whiteEdges.filter(edge => edge.faceColors[1] === this.COLORS.white).length;
   }
 
   // Detect the next corner/edge pair to solve (very simplified – improve by adding all 41 cases)
@@ -397,7 +508,7 @@ class CubeSolver {
       for (const edge of edges) {
         if (corner.position[1] === 1 && edge.position[1] === 1) {
           const shared = corner.faceColors.find(c =>
-            c !== COLORS.white && c !== COLORS.yellow && edge.faceColors.includes(c)
+            c !== this.COLORS.white && c !== this.COLORS.yellow && edge.faceColors.includes(c)
           );
           if (shared) {
             return { corner, edge, slot: 0 }; // Slot detection omitted for brevity
@@ -463,8 +574,8 @@ class CubeSolver {
   // Check if a corner and edge form a valid F2L pair
   private isValidF2LPair(corner: CubePiece, edge: CubePiece): boolean {
     // Simplified logic - check if they share colors and are in valid positions
-    const cornerColors = corner.faceColors.filter(color => color !== COLORS.white && color !== COLORS.yellow);
-    const edgeColors = edge.faceColors.filter(color => color !== COLORS.white && color !== COLORS.yellow);
+    const cornerColors = corner.faceColors.filter(color => color !== this.COLORS.white && color !== this.COLORS.yellow);
+    const edgeColors = edge.faceColors.filter(color => color !== this.COLORS.white && color !== this.COLORS.yellow);
     
     return cornerColors.some(color => edgeColors.includes(color));
   }
@@ -482,7 +593,7 @@ class CubeSolver {
 
   // 2-look OLL recognition: orient edges first, then corners.
   private getOLLCase(): string {
-    const upEdges = this.state.pieces.filter(p => p.position[1] === 1 && p.faceColors[0] === COLORS.yellow);
+    const upEdges = this.state.pieces.filter(p => p.position[1] === 1 && p.faceColors[0] === this.COLORS.yellow);
     return upEdges.length === 8 ? 'corners' : 'edges';
   }
 
@@ -525,7 +636,7 @@ class CubeSolver {
     // Mark yellow stickers
     topPieces.forEach(piece => {
       const [x, y, z] = piece.position;
-      if (piece.faceColors[0] === COLORS.yellow) {
+      if (piece.faceColors[0] === this.COLORS.yellow) {
         const row = 1 - z; // Convert z coordinate to row
         const col = x + 1; // Convert x coordinate to column
         if (row >= 0 && row < 3 && col >= 0 && col < 3) {
@@ -600,7 +711,7 @@ class CubeSolver {
     const upCorners = this.state.pieces.filter(p =>
       Math.abs(p.position[0]) === 1 && p.position[1] === 1 && Math.abs(p.position[2]) === 1
     );
-    const allCornersCorrect = upCorners.every(c => c.faceColors[0] === COLORS.yellow);
+    const allCornersCorrect = upCorners.every(c => c.faceColors[0] === this.COLORS.yellow);
     return allCornersCorrect ? 'edges' : 'corners';
   }
 
@@ -656,10 +767,10 @@ class CubeSolver {
     });
 
     return cornerColors.map(color => {
-      if (color === COLORS.red) return 0;
-      if (color === COLORS.orange) return 1;
-      if (color === COLORS.blue) return 2;
-      if (color === COLORS.green) return 3;
+      if (color === this.COLORS.red) return 0;
+      if (color === this.COLORS.orange) return 1;
+      if (color === this.COLORS.blue) return 2;
+      if (color === this.COLORS.green) return 3;
       return 0;
     });
   }
@@ -677,10 +788,10 @@ class CubeSolver {
     });
 
     return edgeColors.map(color => {
-      if (color === COLORS.red) return 0;
-      if (color === COLORS.orange) return 1;
-      if (color === COLORS.blue) return 2;
-      if (color === COLORS.green) return 3;
+      if (color === this.COLORS.red) return 0;
+      if (color === this.COLORS.orange) return 1;
+      if (color === this.COLORS.blue) return 2;
+      if (color === this.COLORS.green) return 3;
       return 0;
     });
   }
@@ -716,33 +827,434 @@ class CubeSolver {
     });
 
     // Check if all corners have yellow on top
-    return corners.every(corner => corner.faceColors[0] === COLORS.yellow);
+    return corners.every(corner => corner.faceColors[0] === this.COLORS.yellow);
   }
 
   // --- basic but functional stage solvers (replace with more cases for efficiency) ---
   public solveCross(): Move[] {
-    // Simple beginner cross sequence (works from solved orientation). Extend for real cross solving.
-    return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''];
+    // Efficient cross solver - find and solve each white edge
+    let moves: Move[] = [];
+    
+    // Find all white edges
+    const whiteEdges = this.state.pieces.filter(piece =>
+      piece.faceColors.includes(this.COLORS.white) &&
+      // Is an edge piece (has exactly 2 non-center colors)
+      piece.faceColors.filter(color => 
+        color !== this.COLORS.white && 
+        color !== this.COLORS.white // filter duplicates
+      ).length === 1
+    );
+    
+    // Solve each white edge
+    for (const targetPos of CROSS_EDGE_POSITIONS) {
+      const targetColor = this.getTargetColorForPosition(targetPos.pos);
+      
+      // Find the edge that belongs in this position
+      const edgeToSolve = whiteEdges.find(edge =>
+        edge.faceColors.includes(targetColor) && edge.faceColors.includes(this.COLORS.white)
+      );
+      
+      if (!edgeToSolve) continue;
+      
+      // Check if edge is already solved
+      if (this.isEdgeSolved(edgeToSolve, targetPos.pos)) continue;
+      
+      // Get the algorithm to solve this edge
+      const algorithm = this.getCrossAlgorithm(edgeToSolve, targetPos);
+      moves.push(...algorithm);
+      
+      // Apply moves to update state
+      algorithm.forEach(move => this.applyMove(move));
+    }
+    
+    // Optimize: if cross is still not complete, add a basic completion sequence
+    if (!this.isCrossSolved()) {
+      const fallbackMoves = ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
+      moves.push(...fallbackMoves);
+    }
+    
+    return moves;
+  }
+
+  // Get the target color for a cross position
+  private getTargetColorForPosition(pos: [number, number, number]): string {
+    const [x, y, z] = pos;
+    if (z === 1) return this.COLORS.red;    // Front
+    if (x === 1) return this.COLORS.blue;   // Right
+    if (z === -1) return this.COLORS.orange; // Back
+    if (x === -1) return this.COLORS.green;  // Left
+    return this.COLORS.white; // Default
+  }
+
+  // Check if an edge is already solved in the correct position
+  private isEdgeSolved(edge: CubePiece, targetPos: [number, number, number]): boolean {
+    const [tx, ty, tz] = targetPos;
+    const [ex, ey, ez] = edge.position;
+    
+    // Check position match
+    if (ex !== tx || ey !== ty || ez !== tz) return false;
+    
+    // Check orientation (white must be on bottom)
+    return edge.faceColors[1] === this.COLORS.white;
+  }
+
+  // Get the algorithm to solve a specific cross edge
+  private getCrossAlgorithm(edge: CubePiece, targetPos: { pos: [number, number, number]; face: string; algorithm_key: string }): Move[] {
+    const [ex, ey, ez] = edge.position;
+    const [tx, ty, tz] = targetPos.pos;
+    
+    // If edge is on U layer
+    if (ey === 1) {
+      // Check if it's in the correct position above target
+      if (ex === tx && ez === tz) {
+        // Check orientation
+        const whiteOnTop = edge.faceColors[0] === this.COLORS.white;
+        if (whiteOnTop) {
+          // Wrong orientation - needs to be flipped
+          return this.getFlipAlgorithm(targetPos.face);
+        } else {
+          // Correct orientation - direct insert
+          return this.getDirectInsertAlgorithm(targetPos.face);
+        }
+      } else {
+        // Wrong position - move to correct position first
+        const setupMoves = this.getSetupMoves(edge.position, targetPos.pos);
+        const insertMoves = this.getDirectInsertAlgorithm(targetPos.face);
+        return [...setupMoves, ...insertMoves];
+      }
+    }
+    
+    // If edge is in middle layer
+    if (ey === 0) {
+      // Move to U layer first, then solve
+      const extractMoves = this.getExtractionMoves(edge.position);
+      const insertMoves = this.getCrossAlgorithm(
+        { ...edge, position: [ex, 1, ez] }, // Simulated position after extraction
+        targetPos
+      );
+      return [...extractMoves, ...insertMoves];
+    }
+    
+    // If edge is in D layer but wrong position/orientation
+    if (ey === -1) {
+      if (ex === tx && ez === tz) {
+        // Correct position but wrong orientation
+        return this.getReorientAlgorithm(targetPos.face);
+      } else {
+        // Wrong position - extract and reinsert
+        const extractMoves = this.getExtractionMoves(edge.position);
+        const insertMoves = this.getCrossAlgorithm(
+          { ...edge, position: [ex, 1, ez] }, // Simulated position after extraction
+          targetPos
+        );
+        return [...extractMoves, ...insertMoves];
+      }
+    }
+    
+    // Fallback
+    return CROSS_ALGORITHMS.U_CORRECT;
+  }
+
+  // Get algorithm to directly insert an edge from U to D
+  private getDirectInsertAlgorithm(face: string): Move[] {
+    switch (face) {
+      case 'F': return CROSS_ALGORITHMS.U_CORRECT;
+      case 'R': return CROSS_ALGORITHMS.U_CORRECT_R;
+      case 'B': return CROSS_ALGORITHMS.U_CORRECT_B;
+      case 'L': return CROSS_ALGORITHMS.U_CORRECT_L;
+      default: return CROSS_ALGORITHMS.U_CORRECT;
+    }
+  }
+
+  // Get algorithm to flip and insert an edge
+  private getFlipAlgorithm(face: string): Move[] {
+    switch (face) {
+      case 'F': return CROSS_ALGORITHMS.U_FLIPPED;
+      case 'R': return CROSS_ALGORITHMS.U_FLIPPED_R;
+      case 'B': return CROSS_ALGORITHMS.U_FLIPPED_B;
+      case 'L': return CROSS_ALGORITHMS.U_FLIPPED_L;
+      default: return CROSS_ALGORITHMS.U_FLIPPED;
+    }
+  }
+
+  // Get setup moves to position an edge correctly on U layer
+  private getSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): Move[] {
+    const [cx, cy, cz] = currentPos;
+    const [tx, ty, tz] = targetPos;
+    
+    // Calculate U layer rotations needed
+    if (cx === 0 && cz === 1 && tx === 1 && tz === 0) return ['U'] as Move[];
+    if (cx === 0 && cz === 1 && tx === 0 && tz === -1) return ['U2'] as Move[];
+    if (cx === 0 && cz === 1 && tx === -1 && tz === 0) return ['U\''] as Move[];
+    
+    if (cx === 1 && cz === 0 && tx === 0 && tz === -1) return ['U'] as Move[];
+    if (cx === 1 && cz === 0 && tx === -1 && tz === 0) return ['U2'] as Move[];
+    if (cx === 1 && cz === 0 && tx === 0 && tz === 1) return ['U\''] as Move[];
+    
+    if (cx === 0 && cz === -1 && tx === -1 && tz === 0) return ['U'] as Move[];
+    if (cx === 0 && cz === -1 && tx === 0 && tz === 1) return ['U2'] as Move[];
+    if (cx === 0 && cz === -1 && tx === 1 && tz === 0) return ['U\''] as Move[];
+    
+    if (cx === -1 && cz === 0 && tx === 0 && tz === 1) return ['U'] as Move[];
+    if (cx === -1 && cz === 0 && tx === 1 && tz === 0) return ['U2'] as Move[];
+    if (cx === -1 && cz === 0 && tx === 0 && tz === -1) return ['U\''] as Move[];
+    
+    return []; // No setup needed
+  }
+
+  // Get moves to extract an edge from middle or bottom layer
+  private getExtractionMoves(pos: [number, number, number]): Move[] {
+    const [x, y, z] = pos;
+    
+    if (y === 0) {
+      // Middle layer
+      if (z === 1) return ['F', 'U'] as Move[]; // Front
+      if (x === 1) return ['R', 'U'] as Move[]; // Right
+      if (z === -1) return ['B', 'U'] as Move[]; // Back
+      if (x === -1) return ['L', 'U'] as Move[]; // Left
+    }
+    
+    if (y === -1) {
+      // Bottom layer
+      if (z === 1) return ['F2', 'U'] as Move[]; // Front
+      if (x === 1) return ['R2', 'U'] as Move[]; // Right
+      if (z === -1) return ['B2', 'U'] as Move[]; // Back
+      if (x === -1) return ['L2', 'U'] as Move[]; // Left
+    }
+    
+    return ['U'] as Move[]; // Default
+  }
+
+  // Get algorithm to reorient an edge in the correct position
+  private getReorientAlgorithm(face: string): Move[] {
+    return this.getFlipAlgorithm(face);
   }
 
   public solveF2L(): Move[] {
-    // Repeat a basic insert four times – placeholder for full F2L case set.
-    const seq: Move[] = ['U', 'R', 'U\'', 'R\''];
-    return [...seq, ...seq, ...seq, ...seq];
+    // New: Try to solve all 4 F2L pairs using case recognition
+    let moves: Move[] = [];
+    let pairsSolved = 0;
+    let attempts = 0;
+    // For demo, just repeat up to 4 pairs
+    while (pairsSolved < 4 && attempts < 10) {
+      // Find next F2L pair
+      const pair = this.findNextF2LPair();
+      if (!pair) break;
+      // Recognize case
+      let caseFound = F2L_CASES.find(f2lCase => f2lCase.recognize(pair.corner, pair.edge, this.COLORS));
+      if (!caseFound) {
+        // Default to basic insert
+        caseFound = F2L_CASES[0];
+      }
+      moves.push(...caseFound.algorithm);
+      // Apply moves to state
+      caseFound.algorithm.forEach(move => this.applyMove(move));
+      pairsSolved++;
+      attempts++;
+    }
+    // TODO: Expand F2L_CASES to all 41 cases with real recognition and algorithms
+    return moves;
   }
 
-  public solveOLL(): Move[] {
-    // Always use T-OLL for demo; swap based on case for full implementation.
-    return CFOP_ALGORITHMS.OLL_T as Move[];
+  public solveOLL(useFullOLL: boolean = false): Move[] {
+    if (useFullOLL) {
+      // Full OLL: recognize case and use appropriate algorithm
+      const ollCase = this.recognizeOLLCase();
+      const algorithm = FULL_OLL_ALGORITHMS[ollCase as keyof typeof FULL_OLL_ALGORITHMS];
+      return (algorithm || CFOP_ALGORITHMS.OLL_T) as Move[];
+    } else {
+      // 2-look OLL: orient edges first, then corners
+      const edgeCase = this.recognizeOLLEdgeCase();
+      const cornerCase = this.recognizeOLLCornerCase();
+      
+      let moves: Move[] = [];
+      
+      // Solve edges
+      if (edgeCase === 'H') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
+      } else if (edgeCase === 'U') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_U as Move[]));
+      } else if (edgeCase === 'Z') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_Z as Move[]));
+      }
+      
+      // Solve corners
+      if (cornerCase === 'T') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_T as Move[]));
+      } else if (cornerCase === 'L') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
+      } else if (cornerCase === 'SUNE') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
+      } else if (cornerCase === 'ANTISUNE') {
+        moves.push(...(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]));
+      }
+      
+      return moves;
+    }
   }
 
-  public solvePLL(): Move[] {
-    // Always use T-perm for demo; choose algorithm based on case for full implementation.
-    return CFOP_ALGORITHMS.PLL_T as Move[];
+  public solvePLL(useFullPLL: boolean = false): Move[] {
+    if (useFullPLL) {
+      // Full PLL: recognize case and use appropriate algorithm
+      const pllCase = this.recognizePLLCase();
+      const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
+      return (algorithm || CFOP_ALGORITHMS.PLL_T) as Move[];
+    } else {
+      // 2-look PLL: permute corners first, then edges
+      const cornerCase = this.recognizePLLCornerCase();
+      const edgeCase = this.recognizePLLEdgeCase();
+      
+      let moves: Move[] = [];
+      
+      // Solve corners
+      if (cornerCase === 'A') {
+        moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+      } else if (cornerCase === 'E') {
+        moves.push(...(CFOP_ALGORITHMS.PLL_E as Move[]));
+      }
+      
+      // Solve edges
+      if (edgeCase === 'U') {
+        moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+      } else if (edgeCase === 'H') {
+        moves.push(...(CFOP_ALGORITHMS.PLL_H as Move[]));
+      } else if (edgeCase === 'Z') {
+        moves.push(...(CFOP_ALGORITHMS.PLL_Z as Move[]));
+      }
+      
+      return moves;
+    }
+  }
+
+  // OLL Case Recognition Methods
+  private recognizeOLLCase(): string {
+    // Simplified OLL case recognition
+    const yellowFace = this.getYellowFacePattern();
+    const yellowCount = yellowFace.flat().filter(cell => cell).length;
+    
+    if (yellowCount === 0) return 'OLL_1';
+    if (yellowCount === 1) return 'OLL_2';
+    if (yellowCount === 2) return 'OLL_5';
+    if (yellowCount === 3) return 'OLL_8';
+    if (yellowCount === 4) return 'OLL_12';
+    
+    return 'OLL_T'; // Default fallback
+  }
+
+  private recognizeOLLEdgeCase(): string {
+    // Recognize edge orientation cases for 2-look OLL
+    const edges = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return y === 1 && ((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0));
+    });
+    
+    const orientedEdges = edges.filter(edge => edge.faceColors[0] === this.COLORS.yellow).length;
+    
+    if (orientedEdges === 0) return 'H';
+    if (orientedEdges === 2) return 'U';
+    if (orientedEdges === 4) return 'Z';
+    
+    return 'H'; // Default
+  }
+
+  private recognizeOLLCornerCase(): string {
+    // Recognize corner orientation cases for 2-look OLL
+    const corners = this.state.pieces.filter(piece => {
+      const [x, y, z] = piece.position;
+      return Math.abs(x) === 1 && y === 1 && Math.abs(z) === 1;
+    });
+    
+    const orientedCorners = corners.filter(corner => corner.faceColors[0] === this.COLORS.yellow).length;
+    
+    if (orientedCorners === 0) return 'T';
+    if (orientedCorners === 1) return 'L';
+    if (orientedCorners === 2) return 'SUNE';
+    if (orientedCorners === 3) return 'ANTISUNE';
+    
+    return 'T'; // Default
+  }
+
+  // PLL Case Recognition Methods
+  private recognizePLLCase(): string {
+    // Simplified PLL case recognition
+    const cornerPerm = this.getCornerPermutation();
+    const edgePerm = this.getEdgePermutation();
+    
+    // Check for common PLL cases
+    if (this.isPLLSolved(cornerPerm, edgePerm)) return 'PLL_SOLVED';
+    if (this.isPLLU(cornerPerm, edgePerm)) return 'PLL_U';
+    if (this.isPLLT(cornerPerm, edgePerm)) return 'PLL_T';
+    if (this.isPLLJ(cornerPerm, edgePerm)) return 'PLL_J';
+    if (this.isPLLA(cornerPerm, edgePerm)) return 'PLL_A';
+    
+    return 'PLL_T'; // Default fallback
+  }
+
+  private recognizePLLCornerCase(): string {
+    // Recognize corner permutation cases for 2-look PLL
+    const cornerPerm = this.getCornerPermutation();
+    
+    if (this.isPLLSolved(cornerPerm, [])) return 'SOLVED';
+    if (this.isPLLA(cornerPerm, [])) return 'A';
+    if (this.isPLLE(cornerPerm, [])) return 'E';
+    
+    return 'A'; // Default
+  }
+
+  private recognizePLLEdgeCase(): string {
+    // Recognize edge permutation cases for 2-look PLL
+    const edgePerm = this.getEdgePermutation();
+    
+    if (this.isPLLSolved([], edgePerm)) return 'SOLVED';
+    if (this.isPLLU([], edgePerm)) return 'U';
+    if (this.isPLLH([], edgePerm)) return 'H';
+    if (this.isPLLZ([], edgePerm)) return 'Z';
+    
+    return 'U'; // Default
+  }
+
+  // PLL Pattern Recognition Helpers
+  private isPLLSolved(cornerPerm: number[], edgePerm: number[]): boolean {
+    return cornerPerm.every((val, i) => val === i) && edgePerm.every((val, i) => val === i);
+  }
+
+  private isPLLU(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for U-perm pattern
+    return edgePerm[0] === edgePerm[1] && edgePerm[2] === edgePerm[3];
+  }
+
+  private isPLLT(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for T-perm pattern
+    return cornerPerm[0] !== cornerPerm[1] && cornerPerm[2] !== cornerPerm[3];
+  }
+
+  private isPLLJ(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for J-perm pattern
+    return cornerPerm[0] === cornerPerm[2] && cornerPerm[1] === cornerPerm[3];
+  }
+
+  private isPLLA(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for A-perm pattern
+    return cornerPerm[0] === cornerPerm[1] && cornerPerm[2] !== cornerPerm[3];
+  }
+
+  private isPLLE(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for E-perm pattern
+    return cornerPerm[0] === cornerPerm[2] && cornerPerm[1] !== cornerPerm[3];
+  }
+
+  private isPLLH(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for H-perm pattern
+    return edgePerm[0] === edgePerm[2] && edgePerm[1] === edgePerm[3];
+  }
+
+  private isPLLZ(cornerPerm: number[], edgePerm: number[]): boolean {
+    // Check for Z-perm pattern
+    return edgePerm[0] === edgePerm[1] && edgePerm[2] === edgePerm[3];
   }
 
   // Generate complete CFOP solution with stage tracking
-  public generateCFOPSolution(): { moves: Move[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
+  public generateCFOPSolution(useFullOLL: boolean = false, useFullPLL: boolean = false): { moves: Move[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
     const allMoves: Move[] = [];
     const stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] = [];
     
@@ -762,14 +1274,14 @@ class CubeSolver {
     stages.push({ stage: SolvingStage.F2L, startIndex: f2lStart, endIndex: allMoves.length - 1 });
     
     // Solve OLL
-    const ollMoves = this.solveOLL();
+    const ollMoves = this.solveOLL(useFullOLL);
     const ollStart = allMoves.length;
     allMoves.push(...ollMoves);
     stages.push({ stage: SolvingStage.OLL, startIndex: ollStart, endIndex: allMoves.length - 1 });
     ollMoves.forEach(move => this.applyMove(move));
     
     // Solve PLL
-    const pllMoves = this.solvePLL();
+    const pllMoves = this.solvePLL(useFullPLL);
     const pllStart = allMoves.length;
     allMoves.push(...pllMoves);
     stages.push({ stage: SolvingStage.PLL, startIndex: pllStart, endIndex: allMoves.length - 1 });
@@ -784,7 +1296,7 @@ class CubeSolver {
         // Highlight white edges that need to be solved
         return this.state.pieces.filter(piece => {
           const [x, y, z] = piece.position;
-          return piece.faceColors.some(color => color === COLORS.white) &&
+          return piece.faceColors.some(color => color === this.COLORS.white) &&
                  !(x === 0 && y === -1 && z === 1) && // Not in solved position
                  !(x === 1 && y === -1 && z === 0) &&
                  !(x === 0 && y === -1 && z === -1) &&
@@ -803,7 +1315,7 @@ class CubeSolver {
         // Highlight yellow face pieces that need orientation
         return this.state.pieces.filter(piece => {
           const [x, y, z] = piece.position;
-          return y === 1 && piece.faceColors[0] !== COLORS.yellow;
+          return y === 1 && piece.faceColors[0] !== this.COLORS.yellow;
         });
       
       case SolvingStage.PLL:
@@ -845,12 +1357,12 @@ class CubeSolver {
   public isSolved(): boolean {
     // Check if all faces are solved
     const faces = [
-      { pieces: this.state.pieces.filter(p => p.position[1] === 1), color: COLORS.yellow }, // Top
-      { pieces: this.state.pieces.filter(p => p.position[1] === -1), color: COLORS.white }, // Bottom
-      { pieces: this.state.pieces.filter(p => p.position[2] === 1), color: COLORS.red }, // Front
-      { pieces: this.state.pieces.filter(p => p.position[2] === -1), color: COLORS.orange }, // Back
-      { pieces: this.state.pieces.filter(p => p.position[0] === 1), color: COLORS.blue }, // Right
-      { pieces: this.state.pieces.filter(p => p.position[0] === -1), color: COLORS.green } // Left
+      { pieces: this.state.pieces.filter(p => p.position[1] === 1), color: this.COLORS.yellow }, // Top
+      { pieces: this.state.pieces.filter(p => p.position[1] === -1), color: this.COLORS.white }, // Bottom
+      { pieces: this.state.pieces.filter(p => p.position[2] === 1), color: this.COLORS.red }, // Front
+      { pieces: this.state.pieces.filter(p => p.position[2] === -1), color: this.COLORS.orange }, // Back
+      { pieces: this.state.pieces.filter(p => p.position[0] === 1), color: this.COLORS.blue }, // Right
+      { pieces: this.state.pieces.filter(p => p.position[0] === -1), color: this.COLORS.green } // Left
     ];
 
     return faces.every(face => 
@@ -884,6 +1396,11 @@ const RubiksCubeScene = () => {
   const [solveStats, setSolveStats] = useState<{ totalMoves: number; stageMoves: { [key in SolvingStage]: number } } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [colorScheme, setColorScheme] = useState<'standard' | 'monochrome'>('monochrome');
+  const [animationSpeed, setAnimationSpeed] = useState(300); // ms per move
+  const [useFullOLL, setUseFullOLL] = useState(false);
+  const [useFullPLL, setUseFullPLL] = useState(false);
+  const COLORS = COLOR_SCHEMES[colorScheme];
 
   const solverRef = useRef<CubeSolver | null>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -963,7 +1480,7 @@ const RubiksCubeScene = () => {
       lastMove = randomMove;
       
       // Apply the move to the state
-      const solver = new CubeSolver(state);
+      const solver = new CubeSolver(state, COLORS);
       solver.addMoves([randomMove]);
       solver.executeNextMove();
       Object.assign(state, solver.getState());
@@ -1015,7 +1532,7 @@ const RubiksCubeScene = () => {
       return;
     }
 
-    if (currentTime - lastMoveTimeRef.current >= 300) { // 300ms per move
+    if (currentTime - lastMoveTimeRef.current >= animationSpeed) { // user-selected ms per move
       const move = solverRef.current.executeNextMove();
       if (move) {
         setCubeState(solverRef.current.getState());
@@ -1051,7 +1568,7 @@ const RubiksCubeScene = () => {
     }
 
     animationRef.current = requestAnimationFrame(animateMoves);
-  }, [isSolving]);
+  }, [isSolving, animationSpeed]);
 
   // Start solving with CFOP method
   const startSolving = async () => {
@@ -1064,14 +1581,14 @@ const RubiksCubeScene = () => {
     setCubeState(scrambledState);
     setScrambleMoves(newScrambleMoves);
     
-    // Initialize solver with scrambled state
-    solverRef.current = new CubeSolver(scrambledState);
+    // Initialize solver with scrambled state and COLORS
+    solverRef.current = new CubeSolver(scrambledState, COLORS);
     
     // Generate CFOP solution
     setCurrentStage(SolvingStage.CROSS);
     setCurrentAlgorithm("Generating CFOP solution...");
     
-    const { moves: cfopSolution, stages } = solverRef.current.generateCFOPSolution();
+    const { moves: cfopSolution, stages } = solverRef.current.generateCFOPSolution(useFullOLL, useFullPLL);
     console.log("CFOP solution:", cfopSolution);
     console.log("CFOP stages:", stages);
     console.log("Generated CFOP solution:", cfopSolution.length, "moves");
@@ -1168,6 +1685,11 @@ const RubiksCubeScene = () => {
     if (groupRef.current) {
       groupRef.current.rotation.set(0, 0, 0);
     }
+  };
+
+  // Add color scheme toggle handler
+  const handleColorSchemeToggle = () => {
+    setColorScheme((prev) => (prev === 'standard' ? 'monochrome' : 'standard'));
   };
 
   return (
@@ -1303,6 +1825,44 @@ const RubiksCubeScene = () => {
         >
           Reset
         </button>
+        <button
+          onClick={handleColorSchemeToggle}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          {colorScheme === 'standard' ? 'Standard Colors' : 'Monochrome'}
+        </button>
+        <div className="flex flex-col items-center ml-4">
+          <label htmlFor="speed-slider" className="text-xs text-white mb-1">Animation Speed: {animationSpeed}ms</label>
+          <input
+            id="speed-slider"
+            type="range"
+            min={50}
+            max={1000}
+            step={10}
+            value={animationSpeed}
+            onChange={e => setAnimationSpeed(Number(e.target.value))}
+            className="w-32"
+            disabled={isSolving}
+          />
+        </div>
+        <div className="flex flex-col items-center ml-4">
+          <label className="text-xs text-white mb-1">Full OLL</label>
+          <input
+            type="checkbox"
+            checked={useFullOLL}
+            onChange={e => setUseFullOLL(e.target.checked)}
+            disabled={isSolving}
+          />
+        </div>
+        <div className="flex flex-col items-center ml-4">
+          <label className="text-xs text-white mb-1">Full PLL</label>
+          <input
+            type="checkbox"
+            checked={useFullPLL}
+            onChange={e => setUseFullPLL(e.target.checked)}
+            disabled={isSolving}
+          />
+        </div>
       </div>
     </div>
   );
