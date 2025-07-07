@@ -5,24 +5,23 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import BlurFade from "./magicui/blur-fade";
 
-// Color Schemes
-const COLOR_SCHEMES = {
-  standard: {
-    white: '#FFFFFF',
-    yellow: '#FFFF00',
-    red: '#FF0000',
-    orange: '#FF8000',
-    blue: '#0000FF',
-    green: '#00FF00',
-  },
-  monochrome: {
-    white: '#CAF0F8', // Pale Blue
-    yellow: '#ADE8F4', // Slightly darker pale blue
-    red: '#90E0EF', // Light Blue
-    orange: '#48CAE4', // Medium light blue
-    blue: '#0077B6', // Medium Blue
-    green: '#023E8A', // Dark Blue
-  }
+// Color Schemes - Only standard colors
+type ColorScheme = {
+  white: string;
+  yellow: string;
+  red: string;
+  orange: string;
+  blue: string;
+  green: string;
+};
+
+const COLORS: ColorScheme = {
+  white: '#FFFFFF',
+  yellow: '#FFFF00',
+  red: '#FF0000',
+  orange: '#FF8000',
+  blue: '#0000FF',
+  green: '#00FF00',
 };
 
 interface CubeProps {
@@ -195,7 +194,7 @@ const F2L_CASES = [
   // Basic Insertions (Cases 1-4) - Corner and edge correctly paired
   {
     name: 'Basic Insert #1 - Corner and Edge Paired (R U\' R\')',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -211,7 +210,7 @@ const F2L_CASES = [
   },
   {
     name: 'Basic Insert #2 - Corner White Right, Edge Correct (F R F\')',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -227,7 +226,7 @@ const F2L_CASES = [
   },
   {
     name: 'Basic Insert #3 - Standard Right Hand (R U R\')',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -238,7 +237,7 @@ const F2L_CASES = [
   },
   {
     name: 'Basic Insert #4 - Left Hand Version (F\' U\' F)',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -251,7 +250,7 @@ const F2L_CASES = [
   // Separated Pieces (Cases 5-12) - Corner and edge are not touching
   {
     name: 'Separated #1 - Both Top, Opposite Sides',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -266,7 +265,7 @@ const F2L_CASES = [
   },
   {
     name: 'Separated #2 - Edge Front, Corner Back',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -277,7 +276,7 @@ const F2L_CASES = [
   },
   {
     name: 'Separated #3 - Double Sexy Move',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -288,7 +287,7 @@ const F2L_CASES = [
   },
   {
     name: 'Separated #4 - Left Hand Double',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -299,7 +298,7 @@ const F2L_CASES = [
   },
   {
     name: 'Separated #5 - Setup with U2',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -310,21 +309,21 @@ const F2L_CASES = [
   },
   {
     name: 'Separated #6 - F\' U2 F Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U2', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
     name: 'Separated #7 - Mixed Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U2', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
     name: 'Separated #8 - Opposite Mixed',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U2', 'R', 'U', 'R\''] as Move[],
@@ -333,7 +332,7 @@ const F2L_CASES = [
   // Connected Pieces (Cases 13-24) - Corner and edge are connected but misoriented
   {
     name: 'Connected #1 - Break and Rebuild',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -349,7 +348,7 @@ const F2L_CASES = [
   },
   {
     name: 'Connected #2 - Left Hand Break',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -360,70 +359,70 @@ const F2L_CASES = [
   },
   {
     name: 'Connected #3 - Setup and Insert',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U\'', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Connected #4 - Left Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Connected #5 - Double U Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U\'', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Connected #6 - Left Double U',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U2', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Connected #7 - R U2 R\' Start',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U2', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
     name: 'Connected #8 - F\' U2 F Start',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U2', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
     name: 'Connected #9 - R U R\' U2 Start',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U', 'R\'', 'U2', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Connected #10 - F\' U\' F U2 Start',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U2', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Connected #11 - Simple Break',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
     name: 'Connected #12 - Left Simple Break',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
@@ -432,7 +431,7 @@ const F2L_CASES = [
   // Corner in Place (Cases 25-32) - Corner is already in its slot
   {
     name: 'Corner in Place #1 - Edge on Top',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -443,49 +442,49 @@ const F2L_CASES = [
   },
   {
     name: 'Corner in Place #2 - Left Hand Version',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['U', 'F\'', 'U', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Corner in Place #3 - Complex Extraction',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Corner in Place #4 - Left Complex',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Corner in Place #5 - Alternative Right',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\'', 'U\'', 'R', 'U', 'R\''] as Move[],
   },
   {
     name: 'Corner in Place #6 - Alternative Left',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 1;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
     name: 'Corner in Place #7 - Edge in Middle',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 0;
     },
     algorithm: ['R', 'U\'', 'R\'', 'U', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Corner in Place #8 - Left Edge Middle',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === -1 && edge.position[1] === 0;
     },
     algorithm: ['F\'', 'U', 'F', 'U\'', 'F\'', 'U2', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
@@ -494,7 +493,7 @@ const F2L_CASES = [
   // Edge in Place (Cases 33-40) - Edge is already in its slot
   {
     name: 'Edge in Place #1 - Corner on Top',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -505,49 +504,49 @@ const F2L_CASES = [
   },
   {
     name: 'Edge in Place #2 - Left Hand Version',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['F\'', 'U\'', 'F', 'U', 'F\'', 'U\'', 'F'] as Move[],
   },
   {
     name: 'Edge in Place #3 - Setup U\' First',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U\'', 'R', 'U\'', 'R\'', 'U2', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Edge in Place #4 - Left Setup U',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U', 'F\'', 'U', 'F', 'U2', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Edge in Place #5 - U2 Setup Right',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U2', 'R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Edge in Place #6 - U2 Setup Left',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U2', 'F\'', 'U\'', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
   },
   {
     name: 'Edge in Place #7 - U R U2 Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U', 'R', 'U2', 'R\'', 'U', 'R', 'U\'', 'R\''] as Move[],
   },
   {
     name: 'Edge in Place #8 - U\' F\' U2 Setup',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       return corner.position[1] === 1 && edge.position[1] === 0;
     },
     algorithm: ['U\'', 'F\'', 'U2', 'F', 'U\'', 'F\'', 'U', 'F'] as Move[],
@@ -556,7 +555,7 @@ const F2L_CASES = [
   // Special Case - Both pieces in slot but wrong
   {
     name: 'Both in Slot - Extract and Rebuild',
-    recognize: (corner: CubePiece, edge: CubePiece, COLORS: typeof COLOR_SCHEMES.standard) => {
+    recognize: (corner: CubePiece, edge: CubePiece, COLORS: ColorScheme) => {
       const [cx, cy, cz] = corner.position;
       const [ex, ey, ez] = edge.position;
       
@@ -634,9 +633,9 @@ class CubeSolver {
   private animationSpeed = 300; // ms per move
   public stages?: { stage: SolvingStage; startIndex: number; endIndex: number }[];
   public totalMoves: number = 0;
-  private COLORS: typeof COLOR_SCHEMES.standard;
+  private COLORS: ColorScheme;
 
-  constructor(initialState: CubeState, COLORS: typeof COLOR_SCHEMES.standard) {
+  constructor(initialState: CubeState, COLORS: ColorScheme) {
     this.state = JSON.parse(JSON.stringify(initialState));
     this.COLORS = COLORS;
   }
@@ -1963,11 +1962,9 @@ const RubiksCubeScene = () => {
   const [solveStats, setSolveStats] = useState<{ totalMoves: number; stageMoves: { [key in SolvingStage]: number } } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
-  const [colorScheme, setColorScheme] = useState<'standard' | 'monochrome'>('monochrome');
   const [animationSpeed, setAnimationSpeed] = useState(300); // ms per move
   const [useFullOLL, setUseFullOLL] = useState(false);
   const [useFullPLL, setUseFullPLL] = useState(false);
-  const COLORS = COLOR_SCHEMES[colorScheme];
 
   const solverRef = useRef<CubeSolver | null>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -2254,11 +2251,6 @@ const RubiksCubeScene = () => {
     }
   };
 
-  // Add color scheme toggle handler
-  const handleColorSchemeToggle = () => {
-    setColorScheme((prev) => (prev === 'standard' ? 'monochrome' : 'standard'));
-  };
-
   return (
     <div 
       className="w-full h-96 relative cursor-grab active:cursor-grabbing"
@@ -2343,94 +2335,170 @@ const RubiksCubeScene = () => {
       
       {/* CFOP Stage Display */}
       {currentStage && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg">
-          <div className="text-sm font-semibold">{currentStage}</div>
-          {currentAlgorithm && (
-            <div className="text-xs text-gray-300 mt-1">{currentAlgorithm}</div>
-          )}
-          {solverRef.current && (
-            <div className="text-xs text-gray-400 mt-1">
-              Moves remaining: {solverRef.current.getQueueLength()}
-            </div>
-          )}
-          {solveStats && (
-            <div className="text-xs text-blue-300 mt-1">
-              Total: {solveStats.totalMoves} moves
-            </div>
-          )}
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-xl">
+            <div className="text-lg font-semibold text-white text-center mb-2">{currentStage}</div>
+            {currentAlgorithm && (
+              <div className="text-sm text-white/80 text-center mb-2 font-mono">{currentAlgorithm}</div>
+            )}
+            {solverRef.current && (
+              <div className="text-xs text-white/70 text-center">
+                Moves remaining: {solverRef.current.getQueueLength()}
+              </div>
+            )}
+            {solveStats && (
+              <div className="text-xs text-blue-300 text-center mt-1">
+                Total: {solveStats.totalMoves} moves
+              </div>
+            )}
+          </div>
         </div>
       )}
       
       {/* Solve Statistics */}
       {solveStats && !isSolving && (
-        <div className="absolute top-4 right-4 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg">
-          <div className="text-sm font-semibold mb-2">Solve Statistics</div>
-          <div className="text-xs space-y-1">
-            <div>Cross: {solveStats.stageMoves[SolvingStage.CROSS]} moves</div>
-            <div>F2L: {solveStats.stageMoves[SolvingStage.F2L]} moves</div>
-            <div>OLL: {solveStats.stageMoves[SolvingStage.OLL]} moves</div>
-            <div>PLL: {solveStats.stageMoves[SolvingStage.PLL]} moves</div>
-            <div className="text-blue-300 font-semibold">
-              Total: {solveStats.totalMoves} moves
+        <div className="absolute top-6 right-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-xl">
+            <div className="text-sm font-semibold text-white mb-3 text-center">Solve Statistics</div>
+            <div className="text-xs space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-white/80">Cross:</span>
+                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.CROSS]} moves</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/80">F2L:</span>
+                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.F2L]} moves</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/80">OLL:</span>
+                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.OLL]} moves</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/80">PLL:</span>
+                <span className="text-white font-mono">{solveStats.stageMoves[SolvingStage.PLL]} moves</span>
+              </div>
+              <div className="border-t border-white/20 pt-2 mt-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-blue-300 font-semibold">Total:</span>
+                  <span className="text-blue-300 font-semibold font-mono">{solveStats.totalMoves} moves</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
       
       {/* Controls */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 flex-wrap justify-center">
-        <button
-          onClick={startSolving}
-          disabled={isSolving}
-          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-50"
-        >
-          {isSolving ? "Solving..." : "CFOP Solve"}
-        </button>
-        <button
-          onClick={resetCube}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Reset
-        </button>
-        <button
-          onClick={handleColorSchemeToggle}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {colorScheme === 'standard' ? 'Standard Colors' : 'Monochrome'}
-        </button>
-        <div className="flex flex-col items-center ml-4">
-          <label htmlFor="speed-slider" className="text-xs text-white mb-1">Animation Speed: {animationSpeed}ms</label>
-          <input
-            id="speed-slider"
-            type="range"
-            min={50}
-            max={1000}
-            step={10}
-            value={animationSpeed}
-            onChange={e => setAnimationSpeed(Number(e.target.value))}
-            className="w-32"
-            disabled={isSolving}
-          />
-        </div>
-        <div className="flex flex-col items-center ml-4">
-          <label className="text-xs text-white mb-1">Full OLL</label>
-          <input
-            type="checkbox"
-            checked={useFullOLL}
-            onChange={e => setUseFullOLL(e.target.checked)}
-            disabled={isSolving}
-          />
-        </div>
-        <div className="flex flex-col items-center ml-4">
-          <label className="text-xs text-white mb-1">Full PLL</label>
-          <input
-            type="checkbox"
-            checked={useFullPLL}
-            onChange={e => setUseFullPLL(e.target.checked)}
-            disabled={isSolving}
-          />
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl">
+          {/* Main Action Buttons */}
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={startSolving}
+              disabled={isSolving}
+              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+              {isSolving ? "Solving..." : "CFOP Solve"}
+            </button>
+            <button
+              onClick={resetCube}
+              className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-xl transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+              Reset
+            </button>
+          </div>
+
+          {/* Settings Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Animation Speed Control */}
+            <div className="flex flex-col items-center space-y-3">
+              <label htmlFor="speed-slider" className="text-sm font-medium text-white/90">
+                Speed
+              </label>
+              <div className="flex flex-col items-center space-y-2">
+                <span className="text-xs text-white/70 font-mono">
+                  {animationSpeed}ms
+                </span>
+                <input
+                  id="speed-slider"
+                  type="range"
+                  min={50}
+                  max={1000}
+                  step={10}
+                  value={animationSpeed}
+                  onChange={e => setAnimationSpeed(Number(e.target.value))}
+                  className="w-24 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                  disabled={isSolving}
+                />
+              </div>
+            </div>
+
+            {/* Full OLL Toggle */}
+            <div className="flex flex-col items-center space-y-3">
+              <label className="text-sm font-medium text-white/90">
+                Full OLL
+              </label>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useFullOLL}
+                  onChange={e => setUseFullOLL(e.target.checked)}
+                  disabled={isSolving}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </label>
+            </div>
+
+            {/* Full PLL Toggle */}
+            <div className="flex flex-col items-center space-y-3">
+              <label className="text-sm font-medium text-white/90">
+                Full PLL
+              </label>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useFullPLL}
+                  onChange={e => setUseFullPLL(e.target.checked)}
+                  disabled={isSolving}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Custom Slider Styles */}
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .slider::-moz-range-thumb {
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .slider:disabled::-webkit-slider-thumb {
+          background: #9ca3af;
+          cursor: not-allowed;
+        }
+        .slider:disabled::-moz-range-thumb {
+          background: #9ca3af;
+          cursor: not-allowed;
+        }
+      `}</style>
     </div>
   );
 };
