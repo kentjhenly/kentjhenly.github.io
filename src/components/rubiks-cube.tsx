@@ -2391,36 +2391,33 @@ const RubiksCubeScene = () => {
       )}
       
       {/* Controls */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 shadow-2xl">
           {/* Main Action Buttons */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex gap-2 mb-4">
             <button
               onClick={startSolving}
               disabled={isSolving}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-sm"
             >
               {isSolving ? "Solving..." : "CFOP Solve"}
             </button>
             <button
               onClick={resetCube}
-              className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-xl transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg"
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 shadow-lg text-sm"
             >
               Reset
             </button>
           </div>
 
-          {/* Settings Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Settings - Horizontal Layout */}
+          <div className="flex items-center gap-6">
             {/* Animation Speed Control */}
-            <div className="flex flex-col items-center space-y-3">
-              <label htmlFor="speed-slider" className="text-sm font-medium text-white/90">
+            <div className="flex items-center gap-2">
+              <label htmlFor="speed-slider" className="text-xs font-medium text-white/90 whitespace-nowrap">
                 Speed
               </label>
-              <div className="flex flex-col items-center space-y-2">
-                <span className="text-xs text-white/70 font-mono">
-                  {animationSpeed}ms
-                </span>
+              <div className="flex items-center gap-1">
                 <input
                   id="speed-slider"
                   type="range"
@@ -2429,15 +2426,18 @@ const RubiksCubeScene = () => {
                   step={10}
                   value={animationSpeed}
                   onChange={e => setAnimationSpeed(Number(e.target.value))}
-                  className="w-24 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                  className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
                   disabled={isSolving}
                 />
+                <span className="text-xs text-white/70 font-mono w-8">
+                  {Math.round(animationSpeed/10)/10}s
+                </span>
               </div>
             </div>
 
             {/* Full OLL Toggle */}
-            <div className="flex flex-col items-center space-y-3">
-              <label className="text-sm font-medium text-white/90">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-white/90 whitespace-nowrap">
                 Full OLL
               </label>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -2448,13 +2448,13 @@ const RubiksCubeScene = () => {
                   disabled={isSolving}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-8 h-4 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
               </label>
             </div>
 
             {/* Full PLL Toggle */}
-            <div className="flex flex-col items-center space-y-3">
-              <label className="text-sm font-medium text-white/90">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-white/90 whitespace-nowrap">
                 Full PLL
               </label>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -2465,7 +2465,7 @@ const RubiksCubeScene = () => {
                   disabled={isSolving}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                <div className="w-8 h-4 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
               </label>
             </div>
           </div>
@@ -2476,21 +2476,21 @@ const RubiksCubeScene = () => {
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
-          height: 16px;
-          width: 16px;
+          height: 12px;
+          width: 12px;
           border-radius: 50%;
           background: #3b82f6;
           cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         .slider::-moz-range-thumb {
-          height: 16px;
-          width: 16px;
+          height: 12px;
+          width: 12px;
           border-radius: 50%;
           background: #3b82f6;
           cursor: pointer;
           border: none;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         .slider:disabled::-webkit-slider-thumb {
           background: #9ca3af;
