@@ -35,28 +35,18 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
       {/* Clean blockquote with left border */}
       <blockquote className="relative pl-6 border-l-2 border-muted-foreground/30">
         <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4">
-          In June 2025, I raised public concerns about the authorship and data ethics of a youth-led AI healthcare project. This sparked a global discussion on research integrity and was later featured on Wikipedia.
+          In June 2025, I raised public concerns about the authorship and data ethics of a youth-led AI healthcare project. This sparked a discussion in Hong Kong on research integrity and was later featured on Wikipedia.
         </p>
         
         {/* Clean Wikipedia link */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="https://en.wikipedia.org/wiki/MediSafe_controversy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-foreground/80 hover:text-foreground transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-          >
-            Read on Wikipedia →
-          </Link>
-          
-          {/* Subtle ethics badge */}
-          <div className="flex items-center space-x-2 px-3 py-1 bg-muted/50 rounded-full">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-            <span className="text-xs text-muted-foreground font-medium">
-              AI Ethics & Research Integrity
-            </span>
-          </div>
-        </div>
+        <Link
+          href="https://en.wikipedia.org/wiki/MediSafe_controversy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-foreground/80 hover:text-foreground transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
+        >
+          Read on Wikipedia →
+        </Link>
       </blockquote>
     </motion.div>
   );

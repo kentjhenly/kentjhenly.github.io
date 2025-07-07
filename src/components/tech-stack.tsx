@@ -10,9 +10,7 @@ interface TechStackProps {
 
 interface TechItem {
   name: string;
-  logo?: string;
-  textOnly?: boolean;
-  color?: string;
+  logo: string;
 }
 
 const techStack: TechItem[] = [
@@ -25,13 +23,8 @@ const techStack: TechItem[] = [
   { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
   { name: "Next.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
   { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
-  { name: "shadcn/ui", textOnly: true, color: "text-foreground" },
-  { name: "Three.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg" },
-  { name: "Framer Motion", textOnly: true, color: "text-pink-600 dark:text-pink-400" },
   { name: "TensorFlow", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg" },
   { name: "PyTorch", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" },
-  { name: "Scikit-learn", textOnly: true, color: "text-orange-600 dark:text-orange-400" },
-  { name: "Transformers", textOnly: true, color: "text-yellow-600 dark:text-yellow-400" },
   { name: "Pandas", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" },
   { name: "NumPy", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" },
   { name: "Flask", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" },
@@ -39,34 +32,22 @@ const techStack: TechItem[] = [
   { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
   { name: "GitHub", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
   { name: "Docker", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
+  { name: "Three.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg" },
   { name: "LaTeX", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/latex/latex-original.svg" },
 ];
 
 const TechItem = ({ tech }: { tech: TechItem }) => {
-  if (tech.textOnly) {
-    return (
-      <div className="flex items-center justify-center min-w-[120px] h-16 px-4 mx-2 bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-muted rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-        <span className={`text-sm font-semibold whitespace-nowrap ${tech.color || 'text-foreground'}`}>
-          {tech.name}
-        </span>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center min-w-[120px] h-16 px-4 mx-2 bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-muted rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-      <div className="relative w-8 h-8 mb-1">
+    <div className="flex items-center justify-center mx-6 group">
+      <div className="relative w-12 h-12 transition-all duration-300 group-hover:scale-110 opacity-70 hover:opacity-100">
         <Image
-          src={tech.logo!}
+          src={tech.logo}
           alt={`${tech.name} logo`}
           fill
-          className="object-contain"
+          className="object-contain filter transition-all duration-300"
           unoptimized
         />
       </div>
-      <span className="text-xs font-medium text-muted-foreground text-center whitespace-nowrap">
-        {tech.name}
-      </span>
     </div>
   );
 };
@@ -109,15 +90,15 @@ export const TechStack = ({ delay = 0 }: TechStackProps) => {
         </div>
       </div>
 
-      {/* Scrolling marquee container */}
-      <div className="relative w-full overflow-hidden">
-        {/* Gradient overlays for smooth edge fade */}
-        <div className="absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-background to-transparent" />
-        <div className="absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-background to-transparent" />
+      {/* Elegant scrolling logos */}
+      <div className="relative w-full overflow-hidden py-8">
+        {/* Subtle gradient overlays */}
+        <div className="absolute left-0 top-0 z-10 h-full w-32 bg-gradient-to-r from-background via-background/80 to-transparent" />
+        <div className="absolute right-0 top-0 z-10 h-full w-32 bg-gradient-to-l from-background via-background/80 to-transparent" />
         
-        {/* Scrolling content */}
+        {/* Floating logos */}
         <motion.div
-          className="flex"
+          className="flex items-center"
           animate={{
             x: [0, -50 + "%"],
           }}
@@ -125,7 +106,7 @@ export const TechStack = ({ delay = 0 }: TechStackProps) => {
             x: {
               repeat: Infinity,
               repeatType: "loop",
-              duration: 40,
+              duration: 45,
               ease: "linear",
             },
           }}
@@ -135,13 +116,6 @@ export const TechStack = ({ delay = 0 }: TechStackProps) => {
           ))}
         </motion.div>
       </div>
-
-      {/* Optional: Pause on hover */}
-      <style jsx>{`
-        .marquee-container:hover .marquee-content {
-          animation-play-state: paused;
-        }
-      `}</style>
     </motion.div>
   );
 }; 
