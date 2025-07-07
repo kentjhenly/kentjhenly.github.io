@@ -328,7 +328,7 @@ const FULL_PLL_ALGORITHMS = {
   PLL_Gd: ['R', 'U', 'R\'', 'U\'', 'D', 'R2', 'U\'', 'R', 'U\'', 'R\'', 'U', 'R\'', 'U', 'R2', 'D\''],
   
   // Corner permutations (J cases)
-  PLL_Ja: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L'],
+  PLL_Ja: ['R\'', 'U', 'L\'', 'U2', 'R', 'U\'', 'R\'', 'U2', 'R', 'L', 'U\''],
   PLL_Jb: ['R', 'U', 'R\'', 'F\'', 'R', 'U', 'R\'', 'U\'', 'R\'', 'F', 'R2', 'U\'', 'R\''],
   
   // Corner permutations (N cases)
@@ -1625,7 +1625,7 @@ class CubeSolver {
   }
 
   // Get moves to position edge on top layer
-  private getTopLayerSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): Move[] {
+  private getTopLayerSetupMoves(currentPos: [number, number, number], targetPos: [number, number, number]): BasicMove[] {
     const [cx, cy, cz] = currentPos;
     const [tx, ty, tz] = targetPos;
     
@@ -1635,9 +1635,9 @@ class CubeSolver {
     const rotationSteps = (targetAngle - currentAngle + 4) % 4;
     
     switch (rotationSteps) {
-      case 1: return ['U'] as Move[];
-      case 2: return ['U2'] as Move[];
-      case 3: return ['U\''] as Move[];
+      case 1: return ['U'] as BasicMove[];
+      case 2: return ['U2'] as BasicMove[];
+      case 3: return ['U\''] as BasicMove[];
       default: return [];
     }
   }
@@ -1652,99 +1652,58 @@ class CubeSolver {
   }
 
   // Insert edge from top to bottom
-  private getEdgeInsertAlgorithm(face: string): Move[] {
+  private getEdgeInsertAlgorithm(face: string): BasicMove[] {
     switch (face) {
-      case 'F': return ['F2'] as Move[];
-      case 'R': return ['R2'] as Move[];
-      case 'B': return ['B2'] as Move[];
-      case 'L': return ['L2'] as Move[];
-      default: return ['F2'] as Move[];
+      case 'F': return ['F2'] as BasicMove[];
+      case 'R': return ['R2'] as BasicMove[];
+      case 'B': return ['B2'] as BasicMove[];
+      case 'L': return ['L2'] as BasicMove[];
+      default: return ['F2'] as BasicMove[];
     }
   }
 
   // Flip edge orientation and insert
-  private getEdgeFlipAlgorithm(face: string): Move[] {
+  private getEdgeFlipAlgorithm(face: string): BasicMove[] {
     switch (face) {
-      case 'F': return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
-      case 'R': return ['R', 'B', 'U', 'B\'', 'U\'', 'R\''] as Move[];
-      case 'B': return ['B', 'L', 'U', 'L\'', 'U\'', 'B\''] as Move[];
-      case 'L': return ['L', 'F', 'U', 'F\'', 'U\'', 'L\''] as Move[];
-      default: return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[];
+      case 'F': return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as BasicMove[];
+      case 'R': return ['R', 'B', 'U', 'B\'', 'U\'', 'R\''] as BasicMove[];
+      case 'B': return ['B', 'L', 'U', 'L\'', 'U\'', 'B\''] as BasicMove[];
+      case 'L': return ['L', 'F', 'U', 'F\'', 'U\'', 'L\''] as BasicMove[];
+      default: return ['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as BasicMove[];
     }
   }
 
   // Extract edge from middle layer to top
-  private extractEdgeToTop(edge: CubePiece): Move[] {
+  private extractEdgeToTop(edge: CubePiece): BasicMove[] {
     const [x, y, z] = edge.position;
     
-    if (z === 1) return ['F', 'U'] as Move[];   // Front middle
-    if (x === 1) return ['R', 'U'] as Move[];   // Right middle
-    if (z === -1) return ['B', 'U'] as Move[];  // Back middle
-    if (x === -1) return ['L', 'U'] as Move[];  // Left middle
+    if (z === 1) return ['F', 'U'] as BasicMove[];   // Front middle
+    if (x === 1) return ['R', 'U'] as BasicMove[];   // Right middle
+    if (z === -1) return ['B', 'U'] as BasicMove[];  // Back middle
+    if (x === -1) return ['L', 'U'] as BasicMove[];  // Left middle
     
-    return ['U'] as Move[];
+    return ['U'] as BasicMove[];
   }
 
   // Extract edge from bottom layer to top
-  private extractBottomEdgeToTop(edge: CubePiece): Move[] {
+  private extractBottomEdgeToTop(edge: CubePiece): BasicMove[] {
     const [x, y, z] = edge.position;
     
-    if (z === 1) return ['F2', 'U'] as Move[];   // Front bottom
-    if (x === 1) return ['R2', 'U'] as Move[];   // Right bottom
-    if (z === -1) return ['B2', 'U'] as Move[];  // Back bottom
-    if (x === -1) return ['L2', 'U'] as Move[];  // Left bottom
+    if (z === 1) return ['F2', 'U'] as BasicMove[];   // Front bottom
+    if (x === 1) return ['R2', 'U'] as BasicMove[];   // Right bottom
+    if (z === -1) return ['B2', 'U'] as BasicMove[];  // Back bottom
+    if (x === -1) return ['L2', 'U'] as BasicMove[];  // Left bottom
     
-    return ['U'] as Move[];
+    return ['U'] as BasicMove[];
   }
 
   // Flip edge in bottom layer
-  private getBottomEdgeFlipAlgorithm(face: string): Move[] {
+  private getBottomEdgeFlipAlgorithm(face: string): BasicMove[] {
     return this.getEdgeFlipAlgorithm(face);
   }
 
-  // Enhanced F2L solver with all 41 cases
-  public solveF2L(): Move[] {
-    let moves: Move[] = [];
-    let pairsSolved = 0;
-    let maxAttempts = 12; // Increased attempts for better coverage
-    
-    while (pairsSolved < 4 && maxAttempts > 0) {
-      // Find next F2L pair to solve
-      const pair = this.findNextF2LPair();
-      if (!pair) {
-        // If no pair found, try to break up existing pairs
-        const breakupMoves = this.breakupF2LPairs();
-        if (breakupMoves.length > 0) {
-          moves.push(...breakupMoves);
-          breakupMoves.forEach(move => this.applyMove(move));
-          maxAttempts--;
-          continue;
-        }
-        break;
-      }
-
-      // Find the best matching F2L case
-      const bestCase = this.findBestF2LCase(pair.corner, pair.edge);
-      
-      // Apply the algorithm
-      moves.push(...bestCase.algorithm);
-      
-      // Apply moves to state to track progress
-      bestCase.algorithm.forEach(move => this.applyMove(move));
-      
-      // Check if this pair is now solved
-      if (this.isF2LPairSolved(pair.corner, pair.edge, pair.slot)) {
-        pairsSolved++;
-      }
-      
-      maxAttempts--;
-    }
-
-    return moves;
-  }
-
   // Break up F2L pairs that are incorrectly placed
-  private breakupF2LPairs(): Move[] {
+  private breakupF2LPairs(): BasicMove[] {
     // Look for F2L pairs that are in slots but incorrectly oriented
     const slots = [0, 1, 2, 3];
     
@@ -1759,10 +1718,10 @@ class CubeSolver {
       if (cornerInSlot && cornerInSlot.faceColors[1] !== this.COLORS.white) {
         // Corner is in slot but wrong orientation - extract it
         switch (slot) {
-          case 0: return ['R', 'U\'', 'R\''] as Move[]; // Front-right
-          case 1: return ['F\'', 'U', 'F'] as Move[];   // Front-left
-          case 2: return ['L\'', 'U', 'L'] as Move[];   // Back-left
-          case 3: return ['B', 'U\'', 'B\''] as Move[]; // Back-right
+          case 0: return ['R', 'U\'', 'R\''] as BasicMove[]; // Front-right
+          case 1: return ['F\'', 'U', 'F'] as BasicMove[];   // Front-left
+          case 2: return ['L\'', 'U', 'L'] as BasicMove[];   // Back-left
+          case 3: return ['B', 'U\'', 'B\''] as BasicMove[]; // Back-right
         }
       }
     }
@@ -1807,32 +1766,76 @@ class CubeSolver {
     return F2L_CASES[2];
   }
 
+  // Enhanced F2L solver with all 41 cases
+  public solveF2L(): BasicMove[] {
+    let moves: BasicMove[] = [];
+    let pairsSolved = 0;
+    let maxAttempts = 12; // Increased attempts for better coverage
+    
+    while (pairsSolved < 4 && maxAttempts > 0) {
+      // Find next F2L pair to solve
+      const pair = this.findNextF2LPair();
+      if (!pair) {
+        // If no pair found, try to break up existing pairs
+        const breakupMoves = this.breakupF2LPairs();
+        if (breakupMoves.length > 0) {
+          moves.push(...breakupMoves);
+          breakupMoves.forEach(move => this.applyMove(move));
+          maxAttempts--;
+          continue;
+        }
+        break;
+      }
+
+      // Find the best matching F2L case
+      const bestCase = this.findBestF2LCase(pair.corner, pair.edge);
+      
+      // Convert algorithm to basic moves
+      const basicAlgorithm = processAdvancedMoves(bestCase.algorithm);
+      
+      // Apply the algorithm
+      moves.push(...basicAlgorithm);
+      
+      // Apply moves to state to track progress
+      basicAlgorithm.forEach(move => this.applyMove(move));
+      
+      // Check if this pair is now solved
+      if (this.isF2LPairSolved(pair.corner, pair.edge, pair.slot)) {
+        pairsSolved++;
+      }
+      
+      maxAttempts--;
+    }
+
+    return moves;
+  }
+
   // Enhanced OLL solver with full algorithm set
-  public solveOLL(useFullOLL: boolean = false): Move[] {
+  public solveOLL(useFullOLL: boolean = false): BasicMove[] {
     if (useFullOLL) {
       // Full OLL: recognize specific case and use appropriate algorithm
       const ollCase = this.recognizeFullOLLCase();
       const algorithm = FULL_OLL_ALGORITHMS[ollCase as keyof typeof FULL_OLL_ALGORITHMS];
       if (algorithm) {
-        return algorithm as Move[];
+        return processAdvancedMoves(algorithm as Move[]);
       }
     }
     
     // 2-look OLL: orient edges first, then corners
-    let moves: Move[] = [];
+    let moves: BasicMove[] = [];
     
     // First, orient all edges (get yellow cross)
     if (!this.areAllEdgesOriented()) {
       const edgeCase = this.recognizeOLLEdgeCase();
       switch (edgeCase) {
         case 'dot':
-          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[])); // F R U R' U' F'
+          moves.push(...processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as Move[])); // F R U R' U' F'
           break;
         case 'L':
-          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
+          moves.push(...processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as Move[]));
           break;
         case 'line':
-          moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
+          moves.push(...processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as Move[]));
           break;
         default:
           // Already oriented
@@ -1846,33 +1849,35 @@ class CubeSolver {
     // Then, orient all corners
     if (!this.areAllCornersOriented()) {
       const cornerCase = this.recognizeOLLCornerCase();
+      let cornerMoves: BasicMove[] = [];
       switch (cornerCase) {
         case 'sune':
-          moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
           break;
         case 'antisune':
-          moves.push(...(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]);
           break;
         case 'pi':
-          moves.push(...(CFOP_ALGORITHMS.OLL_PI as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_PI as Move[]);
           break;
         case 'H':
-          moves.push(...(CFOP_ALGORITHMS.OLL_H as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as Move[]);
           break;
         case 'T':
-          moves.push(...(CFOP_ALGORITHMS.OLL_T as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_T as Move[]);
           break;
         case 'L':
-          moves.push(...(CFOP_ALGORITHMS.OLL_L as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as Move[]);
           break;
         case 'U':
-          moves.push(...(CFOP_ALGORITHMS.OLL_U as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_U as Move[]);
           break;
         default:
           // Try a general algorithm
-          moves.push(...(CFOP_ALGORITHMS.OLL_SUNE as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
           break;
       }
+      moves.push(...cornerMoves);
     }
     
     return moves;
@@ -1951,63 +1956,67 @@ class CubeSolver {
   }
 
   // Enhanced PLL solver with full algorithm set
-  public solvePLL(useFullPLL: boolean = false): Move[] {
+  public solvePLL(useFullPLL: boolean = false): BasicMove[] {
     if (useFullPLL) {
       // Full PLL: recognize specific case and use appropriate algorithm
       const pllCase = this.recognizeFullPLLCase();
       const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
       if (algorithm) {
-        return algorithm as Move[];
+        return processAdvancedMoves(algorithm as Move[]);
       }
     }
     
     // 2-look PLL: permute corners first, then edges
-    let moves: Move[] = [];
+    let moves: BasicMove[] = [];
     
     // First, solve corners
     if (!this.areCornersPermuted()) {
       const cornerCase = this.recognizePLLCornerCase();
+      let cornerMoves: BasicMove[] = [];
       switch (cornerCase) {
         case 'Aa':
-          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
           break;
         case 'Ab':
-          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
-          moves.push('U'); // Adjust for Ab case
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
+          cornerMoves.push('U'); // Adjust for Ab case
           break;
         case 'E':
-          moves.push(...(CFOP_ALGORITHMS.PLL_E as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_E as Move[]);
           break;
         default:
-          moves.push(...(CFOP_ALGORITHMS.PLL_A as Move[]));
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
           break;
       }
+      moves.push(...cornerMoves);
       
       // Apply corner moves
-      moves.forEach(move => this.applyMove(move));
+      cornerMoves.forEach(move => this.applyMove(move));
     }
     
     // Then, solve edges
     if (!this.areEdgesPermuted()) {
       const edgeCase = this.recognizePLLEdgeCase();
+      let edgeMoves: BasicMove[] = [];
       switch (edgeCase) {
         case 'Ua':
-          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
           break;
         case 'Ub':
-          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
-          moves.push('U2'); // Adjust for Ub case
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
+          edgeMoves.push('U2'); // Adjust for Ub case
           break;
         case 'H':
-          moves.push(...(CFOP_ALGORITHMS.PLL_H as Move[]));
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_H as Move[]);
           break;
         case 'Z':
-          moves.push(...(CFOP_ALGORITHMS.PLL_Z as Move[]));
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_Z as Move[]);
           break;
         default:
-          moves.push(...(CFOP_ALGORITHMS.PLL_U as Move[]));
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
           break;
       }
+      moves.push(...edgeMoves);
     }
     
     return moves;
@@ -2120,8 +2129,8 @@ class CubeSolver {
   }
 
   // Generate complete CFOP solution with stage tracking
-  public generateCFOPSolution(useFullOLL: boolean = false, useFullPLL: boolean = false): { moves: Move[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
-    const allMoves: Move[] = [];
+  public generateCFOPSolution(useFullOLL: boolean = false, useFullPLL: boolean = false): { moves: BasicMove[]; stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] } {
+    const allMoves: BasicMove[] = [];
     const stages: { stage: SolvingStage; startIndex: number; endIndex: number }[] = [];
     
     // Solve cross
