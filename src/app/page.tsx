@@ -38,6 +38,12 @@ export default function Page() {
                 text={`Hi, I'm ${DATA.name.split(" ")[0]}.`}
               />
               <BlurFadeText
+                delay={BLUR_FADE_DELAY * 1.5}
+                className="text-sm text-muted-foreground md:text-base"
+                yOffset={8}
+                text={`In Cantonese, I'm Cheng Hei Lam (鄭曦琳). "Cheng" (chehng), "Hei" (hay), "Lam" (lum as in lumber)`}
+              />
+              <BlurFadeText
                 className="max-w-[600px] text-muted-foreground md:text-xl"
                 delay={BLUR_FADE_DELAY * 2}
                 text={DATA.description}

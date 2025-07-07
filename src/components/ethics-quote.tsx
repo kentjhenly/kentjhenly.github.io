@@ -70,10 +70,10 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
         className="space-y-content-sm"
       >
         <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-          Growing up in Hong Kong's high-pressure education system, I've seen how students often focus more on winning awards than on learning or ethical responsibility. In June 2025, I spoke out publicly about a youth-led AI healthcare project that reportedly used sensitive patient data from her father's clinic to train large language models, without proper consent or transparency. The project was also found to have been outsourced to an AI studio, yet it was presented as her own work and used to enter many local and international competitions, gaining media attention and awards.
+          Growing up in Hong Kong&apos;s high-pressure education system, I&apos;ve seen how students often focus more on winning awards than on learning or ethical responsibility. In June 2025, I spoke out publicly about a youth-led AI healthcare project that reportedly used sensitive patient data from her father&apos;s clinic to train large language models, without proper consent or transparency. The project was also found to have been outsourced to an AI studio, yet it was presented as her own work and used to enter many local and international competitions, gaining media attention and awards.
         </p>
         <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
-          I felt this was deeply unfair to other students who put in genuine effort to create original work. My concerns sparked a broader conversation about research integrity and fairness in Hong Kong's academic culture, and were later{" "}
+          I felt this was deeply unfair to other students who put in genuine effort to create original work. My concerns sparked a broader conversation about research integrity and fairness in Hong Kong&apos;s academic culture, and were later{" "}
           <Link
             href="https://en.wikipedia.org/wiki/MediSafe_controversy"
             target="_blank"
