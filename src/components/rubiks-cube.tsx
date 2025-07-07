@@ -24,6 +24,9 @@ const COLORS: ColorScheme = {
   green: '#00FF00',
 };
 
+// Placeholder color used for internal/hidden cube faces
+const INTERNAL_COLOR = '#808080';
+
 interface CubeProps {
   position: [number, number, number];
   faceColors: string[]; // [top, bottom, left, right, front, back]
@@ -2878,7 +2881,7 @@ class CubeSolver {
       const [x, y, z] = corner.position;
       // Get the side face colors (not yellow top face)
       const sideColors = [corner.faceColors[2], corner.faceColors[3], corner.faceColors[4], corner.faceColors[5]]
-        .filter((color: string) => color !== this.COLORS.yellow && color !== '#000000');
+        .filter((color: string) => color !== this.COLORS.yellow && color !== INTERNAL_COLOR);
       return { position: [x, y, z] as [number, number, number], colors: sideColors };
     });
     
@@ -2914,7 +2917,7 @@ class CubeSolver {
     const edgeColors = edges.map(edge => {
       const [x, y, z] = edge.position;
       const sideColors = [edge.faceColors[2], edge.faceColors[3], edge.faceColors[4], edge.faceColors[5]]
-        .filter((color: string) => color !== this.COLORS.yellow && color !== '#000000');
+        .filter((color: string) => color !== this.COLORS.yellow && color !== INTERNAL_COLOR);
       return { position: [x, y, z] as [number, number, number], colors: sideColors };
     });
     
@@ -3069,7 +3072,7 @@ class CubeSolver {
     
     // All visible faces must match expected colors
     for (let i = 0; i < 6; i++) {
-      if (piece.faceColors[i] !== '#000000' && piece.faceColors[i] !== expectedColors[i]) {
+      if (piece.faceColors[i] !== INTERNAL_COLOR && piece.faceColors[i] !== expectedColors[i]) {
         return false;
       }
     }
@@ -3079,7 +3082,14 @@ class CubeSolver {
 
   // Get expected colors for a piece at given position
   private getExpectedPieceColors(x: number, y: number, z: number): string[] {
-    const colors = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
+    const colors = [
+      INTERNAL_COLOR,
+      INTERNAL_COLOR,
+      INTERNAL_COLOR,
+      INTERNAL_COLOR,
+      INTERNAL_COLOR,
+      INTERNAL_COLOR,
+    ];
     
     // Set colors based on position
     if (y === 1) colors[0] = this.COLORS.yellow;    // Top
@@ -3132,22 +3142,22 @@ const RubiksCubeScene = () => {
           
           const faceColors: string[] = [
             // Top face (index 0): yellow only if on top face, otherwise internal gray
-            y === 1 ? COLORS.yellow : '#808080',
-            
+            y === 1 ? COLORS.yellow : INTERNAL_COLOR,
+
             // Bottom face (index 1): white only if on bottom face, otherwise internal gray
-            y === -1 ? COLORS.white : '#808080',
-            
+            y === -1 ? COLORS.white : INTERNAL_COLOR,
+
             // Left face (index 2): green only if on left face, otherwise internal gray
-            x === -1 ? COLORS.green : '#808080',
-            
+            x === -1 ? COLORS.green : INTERNAL_COLOR,
+
             // Right face (index 3): blue only if on right face, otherwise internal gray
-            x === 1 ? COLORS.blue : '#808080',
-            
+            x === 1 ? COLORS.blue : INTERNAL_COLOR,
+
             // Front face (index 4): red only if on front face, otherwise internal gray
-            z === 1 ? COLORS.red : '#808080',
-            
+            z === 1 ? COLORS.red : INTERNAL_COLOR,
+
             // Back face (index 5): orange only if on back face, otherwise internal gray
-            z === -1 ? COLORS.orange : '#808080'
+            z === -1 ? COLORS.orange : INTERNAL_COLOR
           ];
           
           pieces.push({
@@ -3247,17 +3257,17 @@ const RubiksCubeScene = () => {
           // Expected colors based on position (same logic as createSolvedState)
           const expectedColors = [
             // Top face: yellow only if on top face, otherwise internal gray
-            y === 1 ? COLORS.yellow : '#808080',
+            y === 1 ? COLORS.yellow : INTERNAL_COLOR,
             // Bottom face: white only if on bottom face, otherwise internal gray
-            y === -1 ? COLORS.white : '#808080',
+            y === -1 ? COLORS.white : INTERNAL_COLOR,
             // Left face: green only if on left face, otherwise internal gray
-            x === -1 ? COLORS.green : '#808080',
+            x === -1 ? COLORS.green : INTERNAL_COLOR,
             // Right face: blue only if on right face, otherwise internal gray
-            x === 1 ? COLORS.blue : '#808080',
+            x === 1 ? COLORS.blue : INTERNAL_COLOR,
             // Front face: red only if on front face, otherwise internal gray
-            z === 1 ? COLORS.red : '#808080',
+            z === 1 ? COLORS.red : INTERNAL_COLOR,
             // Back face: orange only if on back face, otherwise internal gray
-            z === -1 ? COLORS.orange : '#808080'
+            z === -1 ? COLORS.orange : INTERNAL_COLOR
           ];
           
           // Check that all face colors match the expected colors
