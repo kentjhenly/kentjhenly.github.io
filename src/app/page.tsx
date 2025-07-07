@@ -6,6 +6,7 @@ const GitHubContributions = dynamic(() => import("@/components/github-contributi
 const EthicsQuote = dynamic(() => import("@/components/ethics-quote").then(mod => mod.EthicsQuote), { ssr: false });
 const TechStack = dynamic(() => import("@/components/tech-stack").then(mod => mod.TechStack), { ssr: false });
 const EnhancedTimeline = dynamic(() => import("@/components/enhanced-timeline").then(mod => mod.EnhancedTimeline), { ssr: false });
+const ContactOrbiting = dynamic(() => import("@/components/contact-orbiting").then(mod => mod.ContactOrbiting), { ssr: false });
 
 const HongKongMap = dynamic(() => import("@/components/hong-kong-map").then(mod => mod.HongKongMap), { ssr: false });
 const WorldMap = dynamic(() => import("@/components/world-map").then(mod => mod.WorldMap), { ssr: false });
@@ -18,7 +19,6 @@ const TableOfContents = dynamic(() => import("@/components/table-of-contents").t
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
-import Link from "next/link";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -263,34 +263,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="contact">
-        <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6 w-full">
-          <BlurFade delay={BLUR_FADE_DELAY * 33}>
-            <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                Get in Touch.
-              </h2>
-              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Want to chat? Feel free to reach out via{" "}
-                <Link
-                  href={DATA.contact.social.email.url}
-                  className="text-blue-500 hover:underline"
-                >
-                  email
-                </Link>{" "}
-                or{" "}
-                <Link
-                  href={DATA.contact.social.LinkedIn.url}
-                  className="text-blue-500 hover:underline"
-                >
-                  LinkedIn
-                </Link>{" "}
-                and I&apos;ll respond whenever I can.
-              </p>
-            </div>
-          </BlurFade>
-        </div>
-      </section>
+      <ContactOrbiting delay={BLUR_FADE_DELAY * 33} />
     </main>
   );
 }

@@ -1,218 +1,157 @@
 "use client";
 
-import React from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRightIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
-interface TimelineItemProps {
+interface TimelineItem {
   logoUrl: string;
   altText: string;
   title: string;
-  subtitle?: string;
+  subtitle: string;
   href?: string;
   badges?: readonly string[];
   period: string;
-  description?: string;
   bullets?: readonly string[];
-  isLast?: boolean;
-  index: number;
+}
+
+interface EnhancedTimelineProps {
+  items: TimelineItem[];
   delay?: number;
 }
 
-interface TimelineProps {
-  items: Array<{
-    logoUrl: string;
-    altText: string;
-    title: string;
-    subtitle?: string;
-    href?: string;
-    badges?: readonly string[];
-    period: string;
-    description?: string;
-    bullets?: readonly string[];
-  }>;
-  delay?: number;
-}
+export const EnhancedTimeline = ({ items, delay = 0 }: EnhancedTimelineProps) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-const TimelineItem = ({
-  logoUrl,
-  altText,
-  title,
-  subtitle,
-  href,
-  badges,
-  period,
-  description,
-  bullets,
-  isLast = false,
-  index,
-  delay = 0,
-}: TimelineItemProps) => {
-  const ref = React.useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  const handleClick = (e: React.MouseEvent) => {
-    if (description || bullets) {
-      e.preventDefault();
-      setIsExpanded(!isExpanded);
-    }
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        delay: delay,
+        staggerChildren: 0.15,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
-    },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
-        delay: delay + (index * 0.1),
+        duration: 0.6,
         ease: [0.25, 0.1, 0.25, 1],
       },
     },
   };
 
-  const content = (
+  return (
     <motion.div
       ref={ref}
-      variants={itemVariants}
+      variants={containerVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      className="relative pl-6 pb-4 last:pb-0"
+      className="relative"
     >
-      {/* Minimal timeline line */}
-      {!isLast && (
-        <div className="absolute left-0 top-8 bottom-0 w-px bg-border/40" />
-      )}
+      {/* Vertical timeline line */}
+      <div className="absolute left-6 top-0 bottom-0 w-px bg-border" />
       
-      {/* Small timeline dot */}
-      <div className="absolute left-[-3px] top-6 w-1.5 h-1.5 rounded-full bg-primary/60" />
+      {/* Timeline items */}
+      <div className="space-y-8">
+        {items.map((item, index) => (
+          <motion.div
+            key={index}
+            variants={itemVariants}
+            className="relative flex items-start"
+          >
+            {/* Timeline dot with integrated logo */}
+            <div className="relative z-10 flex-shrink-0">
+              <div className="w-12 h-12 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center overflow-hidden">
+                <Image
+                  src={item.logoUrl}
+                  alt={item.altText}
+                  width={24}
+                  height={24}
+                  className="rounded-sm object-cover"
+                />
+              </div>
+            </div>
 
-      {/* Clean, flat card */}
-      <div className="group cursor-pointer" onClick={handleClick}>
-        <div className="border border-border/50 rounded-lg p-6 bg-card/50 hover:bg-card/80 hover:border-border transition-all duration-300">
-          {/* Header with integrated logo */}
-          <div className="flex items-start gap-4 mb-3">
-            {/* Logo integrated inside card */}
-            <Avatar className="size-8 border border-border/30 flex-shrink-0 mt-1">
-              <AvatarImage
-                src={logoUrl}
-                alt={altText}
-                className="object-contain"
-              />
-              <AvatarFallback className="text-xs bg-muted/50">{altText[0]}</AvatarFallback>
-            </Avatar>
-
-            <div className="flex-1 min-w-0">
+            {/* Content section */}
+            <div className="ml-6 flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors duration-200 text-base leading-tight">
-                    {title}
-                  </h3>
-                  {subtitle && (
-                    <p className="text-muted-foreground text-sm mt-1 leading-relaxed whitespace-pre-line">
-                      {subtitle}
+                {/* Left content */}
+                <div className="flex-1 min-w-0">
+                  {/* Title and subtitle */}
+                  <div className="space-y-1">
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block"
+                      >
+                        <h3 className="font-semibold text-lg leading-tight hover:text-primary transition-colors whitespace-pre-line">
+                          {item.title}
+                        </h3>
+                      </Link>
+                    ) : (
+                      <h3 className="font-semibold text-lg leading-tight whitespace-pre-line">
+                        {item.title}
+                      </h3>
+                    )}
+                    <p className="text-muted-foreground font-medium">
+                      {item.subtitle}
                     </p>
-                  )}
-                  {badges && badges.length > 0 && (
-                    <div className="flex gap-1 mt-2 flex-wrap">
-                      {badges.map((badge, index) => (
+                  </div>
+
+                  {/* Badges */}
+                  {item.badges && item.badges.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {item.badges.map((badge, badgeIndex) => (
                         <Badge
+                          key={badgeIndex}
                           variant="secondary"
-                          className="text-xs bg-muted/60 border-0"
-                          key={index}
+                          className="text-xs px-2 py-0.5"
                         >
                           {badge}
                         </Badge>
                       ))}
                     </div>
                   )}
-                </div>
-                
-                <div className="flex items-start gap-2 flex-shrink-0">
-                  <span className="text-sm font-medium text-muted-foreground bg-muted/40 px-3 py-1 rounded-md whitespace-nowrap">
-                    {period}
-                  </span>
-                  {(description || bullets) && (
-                    <ChevronRightIcon
-                      className={cn(
-                        "size-4 text-muted-foreground transition-all duration-200 mt-0.5 opacity-60 group-hover:opacity-100",
-                        isExpanded ? "rotate-90" : "rotate-0"
-                      )}
-                    />
+
+                  {/* Bullets */}
+                  {item.bullets && item.bullets.length > 0 && (
+                    <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                      {item.bullets.map((bullet, bulletIndex) => (
+                        <li key={bulletIndex} className="flex items-start gap-2">
+                          <span className="w-1 h-1 rounded-full bg-muted-foreground/60 mt-2 flex-shrink-0" />
+                          <span className="leading-relaxed">{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
                   )}
+                </div>
+
+                {/* Right content - Date badge */}
+                <div className="flex-shrink-0">
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs text-muted-foreground border-muted-foreground/30 bg-muted/30 font-normal px-3 py-1"
+                  >
+                    {item.period}
+                  </Badge>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Expandable content */}
-          {(description || bullets) && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{
-                opacity: isExpanded ? 1 : 0,
-                height: isExpanded ? "auto" : 0,
-              }}
-              transition={{
-                duration: 0.3,
-                ease: [0.4, 0, 0.2, 1],
-              }}
-              className="overflow-hidden"
-            >
-              <div className="pt-3 border-t border-border/30 ml-12">
-                {bullets ? (
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    {bullets.map((bullet, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="size-1 rounded-full bg-primary/60 mt-2 flex-shrink-0" />
-                        <span className="leading-relaxed">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {description}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
-  );
-
-  if (href && href !== "#") {
-    return (
-      <Link href={href} target="_blank" rel="noopener noreferrer">
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
-};
-
-export const EnhancedTimeline = ({ items, delay = 0 }: TimelineProps) => {
-  return (
-    <div className="relative max-w-4xl mx-auto">
-      {items.map((item, index) => (
-        <TimelineItem
-          key={`${item.title}-${index}`}
-          {...item}
-          index={index}
-          delay={delay}
-          isLast={index === items.length - 1}
-        />
-      ))}
-    </div>
   );
 }; 
