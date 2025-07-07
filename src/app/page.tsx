@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 const GitHubContributions = dynamic(() => import("@/components/github-contributions").then(mod => mod.GitHubContributions), { ssr: false });
 const EthicsQuote = dynamic(() => import("@/components/ethics-quote").then(mod => mod.EthicsQuote), { ssr: false });
 const TechStack = dynamic(() => import("@/components/tech-stack").then(mod => mod.TechStack), { ssr: false });
-const EnhancedTimeline = dynamic(() => import("@/components/enhanced-timeline").then(mod => mod.EnhancedTimeline), { ssr: false });
+const TimelineItem = dynamic(() => import("@/components/resume-card").then(mod => mod.TimelineItem), { ssr: false });
 const ContactOrbiting = dynamic(() => import("@/components/contact-orbiting").then(mod => mod.ContactOrbiting), { ssr: false });
 
 const HongKongMap = dynamic(() => import("@/components/hong-kong-map").then(mod => mod.HongKongMap), { ssr: false });
@@ -97,42 +97,50 @@ export default function Page() {
       </section>
 
       <section id="work" className="mb-section-lg">
-        <div className="space-y-8">
+        <div className="space-y-12">
           <BlurFade delay={BLUR_FADE_DELAY * 17}>
             <h2 className="text-xl font-bold">Technical Experience</h2>
           </BlurFade>
-          <EnhancedTimeline 
-            items={DATA.technicalExperience.map(work => ({
-              logoUrl: work.logoUrl,
-              altText: work.company,
-              title: work.company,
-              subtitle: work.title,
-              href: work.href,
-              badges: work.badges,
-              period: `${work.start} - ${work.end ?? "Present"}`,
-              bullets: work.bullets,
-            }))}
-            delay={BLUR_FADE_DELAY * 18}
-          />
+          <div className="space-y-0">
+            {DATA.technicalExperience.map((work, id) => (
+              <BlurFade key={work.company} delay={BLUR_FADE_DELAY * 18 + id * 0.05}>
+                <TimelineItem
+                  logoUrl={work.logoUrl}
+                  altText={work.company}
+                  title={work.company}
+                  subtitle={work.title}
+                  href={work.href}
+                  badges={work.badges}
+                  period={`${work.start} - ${work.end ?? "Present"}`}
+                  bullets={work.bullets}
+                  isLast={id === DATA.technicalExperience.length - 1}
+                />
+              </BlurFade>
+            ))}
+          </div>
         </div>
       </section>
 
       <section id="education" className="mb-section-lg">
-        <div className="space-y-8">
+        <div className="space-y-12">
           <BlurFade delay={BLUR_FADE_DELAY * 19}>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
-          <EnhancedTimeline 
-            items={DATA.education.map(education => ({
-              logoUrl: education.logoUrl,
-              altText: education.school,
-              title: education.school,
-              subtitle: education.degree,
-              href: education.href,
-              period: `${education.start} - ${education.end}`,
-            }))}
-            delay={BLUR_FADE_DELAY * 20}
-          />
+          <div className="space-y-0">
+            {DATA.education.map((education, id) => (
+              <BlurFade key={education.school} delay={BLUR_FADE_DELAY * 20 + id * 0.05}>
+                <TimelineItem
+                  logoUrl={education.logoUrl}
+                  altText={education.school}
+                  title={education.school}
+                  subtitle={education.degree}
+                  href={education.href}
+                  period={`${education.start} - ${education.end}`}
+                  isLast={id === DATA.education.length - 1}
+                />
+              </BlurFade>
+            ))}
+          </div>
         </div>
       </section>
 
