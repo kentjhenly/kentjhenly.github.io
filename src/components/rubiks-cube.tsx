@@ -619,6 +619,53 @@ class CubeSolver {
   }
 }
 
+// Create solved state with proper color assignment - FIXED to prevent black faces
+const createSolvedState = (): CubeState => {
+  const pieces: CubePiece[] = [];
+  
+  for (let x = -1; x <= 1; x++) {
+    for (let y = -1; y <= 1; y++) {
+      for (let z = -1; z <= 1; z++) {
+        // Generate unique piece ID based on position
+        const pieceId = `${x},${y},${z}`;
+        const homePosition: [number, number, number] = [x, y, z];
+        
+        // CRITICAL FIX: Only assign colors to visible faces, use proper sticker colors
+        const faceColors: string[] = [
+          // Top face (index 0): yellow only if on top face, otherwise internal gray
+          y === 1 ? COLORS.yellow : '#808080',
+          
+          // Bottom face (index 1): white only if on bottom face, otherwise internal gray
+          y === -1 ? COLORS.white : '#808080',
+          
+          // Left face (index 2): green only if on left face, otherwise internal gray
+          x === -1 ? COLORS.green : '#808080',
+          
+          // Right face (index 3): blue only if on right face, otherwise internal gray
+          x === 1 ? COLORS.blue : '#808080',
+          
+          // Front face (index 4): red only if on front face, otherwise internal gray
+          z === 1 ? COLORS.red : '#808080',
+          
+          // Back face (index 5): orange only if on back face, otherwise internal gray
+          z === -1 ? COLORS.orange : '#808080'
+        ];
+        
+        pieces.push({
+          id: pieceId,
+          currentPosition: [x, y, z],
+          homePosition,
+          orientation: 0,
+          faceColors,
+          position: [x, y, z] // Legacy support
+        });
+      }
+    }
+  }
+  
+  return { pieces };
+};
+
 const RubiksCubeScene = () => {
   const [cubeState, setCubeState] = useState<CubeState>(() => createSolvedState());
   const [isSolving, setIsSolving] = useState(false);
@@ -631,56 +678,9 @@ const RubiksCubeScene = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
-  const groupRef = useRef<THREE.Group>(null);
+    const groupRef = useRef<THREE.Group>(null);
   const solverRef = useRef<CubeSolver | null>(null);
   const animationRef = useRef<number>();
-
-  // Create solved state with proper color assignment - FIXED to prevent black faces
-  const createSolvedState = (): CubeState => {
-    const pieces: CubePiece[] = [];
-    
-    for (let x = -1; x <= 1; x++) {
-      for (let y = -1; y <= 1; y++) {
-        for (let z = -1; z <= 1; z++) {
-          // Generate unique piece ID based on position
-          const pieceId = `${x},${y},${z}`;
-          const homePosition: [number, number, number] = [x, y, z];
-          
-          // CRITICAL FIX: Only assign colors to visible faces, use proper sticker colors
-          const faceColors: string[] = [
-            // Top face (index 0): yellow only if on top face, otherwise internal gray
-            y === 1 ? COLORS.yellow : '#808080',
-            
-            // Bottom face (index 1): white only if on bottom face, otherwise internal gray
-            y === -1 ? COLORS.white : '#808080',
-            
-            // Left face (index 2): green only if on left face, otherwise internal gray
-            x === -1 ? COLORS.green : '#808080',
-            
-            // Right face (index 3): blue only if on right face, otherwise internal gray
-            x === 1 ? COLORS.blue : '#808080',
-            
-            // Front face (index 4): red only if on front face, otherwise internal gray
-            z === 1 ? COLORS.red : '#808080',
-            
-            // Back face (index 5): orange only if on back face, otherwise internal gray
-            z === -1 ? COLORS.orange : '#808080'
-          ];
-          
-          pieces.push({
-            id: pieceId,
-            currentPosition: [x, y, z],
-            homePosition,
-            orientation: 0,
-            faceColors,
-            position: [x, y, z] // Legacy support
-          });
-        }
-      }
-    }
-    
-    return { pieces };
-  };
 
   // Create scrambled state with random moves
   const createScrambledState = (): { state: CubeState; moves: BasicMove[] } => {
