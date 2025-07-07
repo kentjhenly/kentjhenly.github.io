@@ -2893,6 +2893,14 @@ const RubiksCubeScene = () => {
     // Check if cube is already solved before generating solution
     console.log("Is cube solved after scrambling?", solverRef.current.isSolved());
     
+    if (solverRef.current.isSolved()) {
+      console.error("ERROR: Cube is detected as solved immediately after scrambling!");
+      console.log("Scrambled state pieces:", JSON.stringify(scrambledState.pieces.map(p => ({ pos: p.position, colors: p.faceColors })), null, 2));
+      setCurrentAlgorithm("ERROR: Cube appears solved after scrambling");
+      setIsSolving(false);
+      return;
+    }
+    
     // Generate CFOP solution
     setCurrentStage(SolvingStage.CROSS);
     setCurrentAlgorithm("Generating CFOP solution...");
