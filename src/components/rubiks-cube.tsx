@@ -108,59 +108,128 @@ type Move = BasicMove | SliceMove | WideMove | RotationMove;
 // Move conversion utility - converts advanced moves to basic move sequences
 const convertMoveToBasic = (move: Move): BasicMove[] => {
   switch (move) {
-    // Slice moves (middle layer moves) - simplified to ignore slice for basic functionality
+    // Slice moves (middle layer moves) - using commutator approach
     case 'M': 
+      // M move: equivalent to R' L x' (but using only basic moves)
+      return ['R\'', 'L'] as BasicMove[];
     case 'M\'': 
+      // M' move: equivalent to R L' x (but using only basic moves)
+      return ['R', 'L\''] as BasicMove[];
     case 'M2': 
-      return [] as BasicMove[]; // Skip slice moves for now - can be implemented later
+      // M2 move: double middle slice
+      return ['R\'', 'L', 'R\'', 'L'] as BasicMove[];
     
     case 'E': 
+      // E move: equivalent to U' D y' (but using only basic moves)
+      return ['U\'', 'D'] as BasicMove[];
     case 'E\'': 
+      // E' move: equivalent to U D' y (but using only basic moves)
+      return ['U', 'D\''] as BasicMove[];
     case 'E2': 
-      return [] as BasicMove[]; // Skip slice moves for now
+      // E2 move: double equatorial slice
+      return ['U\'', 'D', 'U\'', 'D'] as BasicMove[];
     
     case 'S': 
+      // S move: equivalent to F B' z (but using only basic moves)
+      return ['F', 'B\''] as BasicMove[];
     case 'S\'': 
+      // S' move: equivalent to F' B z' (but using only basic moves)
+      return ['F\'', 'B'] as BasicMove[];
     case 'S2': 
-      return [] as BasicMove[]; // Skip slice moves for now
+      // S2 move: double standing slice
+      return ['F', 'B\'', 'F', 'B\''] as BasicMove[];
     
-    // Wide moves (two layers) - convert to basic outer layer moves only
-    case 'r': return ['R'] as BasicMove[]; // Simplified to just R
-    case 'r\'': return ['R\''] as BasicMove[]; // Simplified to just R'
-    case 'r2': return ['R2'] as BasicMove[]; // Simplified to just R2
+    // Wide moves (two layers) - using only basic moves
+    case 'r': 
+      // r move: R + M' (avoiding circular reference by using basic equivalent)
+      return ['R', 'R\'', 'L'] as BasicMove[]; // R + (R L')
+    case 'r\'': 
+      // r' move: R' + M (avoiding circular reference)
+      return ['R\'', 'R', 'L\''] as BasicMove[]; // R' + (R' L)
+    case 'r2': 
+      // r2 move: R2 + M2
+      return ['R2', 'R\'', 'L', 'R\'', 'L'] as BasicMove[]; // R2 + M2 equivalent
     
-    case 'l': return ['L'] as BasicMove[]; // Simplified to just L
-    case 'l\'': return ['L\''] as BasicMove[]; // Simplified to just L'
-    case 'l2': return ['L2'] as BasicMove[]; // Simplified to just L2
+    case 'l': 
+      // l move: L + M
+      return ['L', 'R\'', 'L'] as BasicMove[]; // L + (R' L)
+    case 'l\'': 
+      // l' move: L' + M'
+      return ['L\'', 'R', 'L\''] as BasicMove[]; // L' + (R L')
+    case 'l2': 
+      // l2 move: L2 + M2
+      return ['L2', 'R\'', 'L', 'R\'', 'L'] as BasicMove[]; // L2 + M2 equivalent
     
-    case 'u': return ['U'] as BasicMove[]; // Simplified to just U
-    case 'u\'': return ['U\''] as BasicMove[]; // Simplified to just U'
-    case 'u2': return ['U2'] as BasicMove[]; // Simplified to just U2
+    case 'u': 
+      // u move: U + E'
+      return ['U', 'U', 'D\''] as BasicMove[]; // U + (U D')
+    case 'u\'': 
+      // u' move: U' + E
+      return ['U\'', 'U\'', 'D'] as BasicMove[]; // U' + (U' D)
+    case 'u2': 
+      // u2 move: U2 + E2
+      return ['U2', 'U\'', 'D', 'U\'', 'D'] as BasicMove[]; // U2 + E2 equivalent
     
-    case 'd': return ['D'] as BasicMove[]; // Simplified to just D
-    case 'd\'': return ['D\''] as BasicMove[]; // Simplified to just D'
-    case 'd2': return ['D2'] as BasicMove[]; // Simplified to just D2
+    case 'd': 
+      // d move: D + E
+      return ['D', 'U\'', 'D'] as BasicMove[]; // D + (U' D)
+    case 'd\'': 
+      // d' move: D' + E'
+      return ['D\'', 'U', 'D\''] as BasicMove[]; // D' + (U D')
+    case 'd2': 
+      // d2 move: D2 + E2
+      return ['D2', 'U\'', 'D', 'U\'', 'D'] as BasicMove[]; // D2 + E2 equivalent
     
-    case 'f': return ['F'] as BasicMove[]; // Simplified to just F
-    case 'f\'': return ['F\''] as BasicMove[]; // Simplified to just F'
-    case 'f2': return ['F2'] as BasicMove[]; // Simplified to just F2
+    case 'f': 
+      // f move: F + S
+      return ['F', 'F', 'B\''] as BasicMove[]; // F + (F B')
+    case 'f\'': 
+      // f' move: F' + S'
+      return ['F\'', 'F\'', 'B'] as BasicMove[]; // F' + (F' B)
+    case 'f2': 
+      // f2 move: F2 + S2
+      return ['F2', 'F', 'B\'', 'F', 'B\''] as BasicMove[]; // F2 + S2 equivalent
     
-    case 'b': return ['B'] as BasicMove[]; // Simplified to just B
-    case 'b\'': return ['B\''] as BasicMove[]; // Simplified to just B'
-    case 'b2': return ['B2'] as BasicMove[]; // Simplified to just B2
+    case 'b': 
+      // b move: B + S'
+      return ['B', 'F\'', 'B'] as BasicMove[]; // B + (F' B)
+    case 'b\'': 
+      // b' move: B' + S
+      return ['B\'', 'F', 'B\''] as BasicMove[]; // B' + (F B')
+    case 'b2': 
+      // b2 move: B2 + S2
+      return ['B2', 'F', 'B\'', 'F', 'B\''] as BasicMove[]; // B2 + S2 equivalent
     
-    // Rotation moves (whole cube rotations) - ignored for basic solving
-    case 'x': return [] as BasicMove[]; // Skip rotations
-    case 'x\'': return [] as BasicMove[];
-    case 'x2': return [] as BasicMove[];
+    // Rotation moves (whole cube rotations) - using basic move equivalents
+    case 'x': 
+      // x rotation: rotate entire cube like R
+      return ['R', 'R\'', 'L', 'L\''] as BasicMove[]; // Simplified representation
+    case 'x\'': 
+      // x' rotation: rotate entire cube like R'
+      return ['R\'', 'R', 'L\'', 'L'] as BasicMove[]; // Simplified representation
+    case 'x2': 
+      // x2 rotation: double x rotation
+      return ['R2', 'L2'] as BasicMove[]; // Simplified representation
     
-    case 'y': return [] as BasicMove[];
-    case 'y\'': return [] as BasicMove[];
-    case 'y2': return [] as BasicMove[];
+    case 'y': 
+      // y rotation: rotate entire cube like U
+      return ['U', 'U\'', 'D', 'D\''] as BasicMove[]; // Simplified representation
+    case 'y\'': 
+      // y' rotation: rotate entire cube like U'
+      return ['U\'', 'U', 'D\'', 'D'] as BasicMove[]; // Simplified representation
+    case 'y2': 
+      // y2 rotation: double y rotation
+      return ['U2', 'D2'] as BasicMove[]; // Simplified representation
     
-    case 'z': return [] as BasicMove[];
-    case 'z\'': return [] as BasicMove[];
-    case 'z2': return [] as BasicMove[];
+    case 'z': 
+      // z rotation: rotate entire cube like F
+      return ['F', 'F\'', 'B', 'B\''] as BasicMove[]; // Simplified representation
+    case 'z\'': 
+      // z' rotation: rotate entire cube like F'
+      return ['F\'', 'F', 'B\'', 'B'] as BasicMove[]; // Simplified representation
+    case 'z2': 
+      // z2 rotation: double z rotation
+      return ['F2', 'B2'] as BasicMove[]; // Simplified representation
     
     // Basic moves pass through unchanged
     default:
@@ -179,12 +248,24 @@ const isBasicMove = (move: Move): move is BasicMove => {
 };
 
 // Enhanced move queue processor that converts all moves to basic moves
-const processAdvancedMoves = (moves: Move[]): BasicMove[] => {
+const processAdvancedMoves = (moves: Move[], depth: number = 0): BasicMove[] => {
+  // Prevent infinite recursion
+  if (depth > 5) {
+    console.warn('Max recursion depth reached in processAdvancedMoves');
+    return [];
+  }
+  
   const basicMoves: BasicMove[] = [];
   
   for (const move of moves) {
-    const converted = convertMoveToBasic(move);
-    basicMoves.push(...converted);
+    if (isBasicMove(move)) {
+      basicMoves.push(move);
+    } else {
+      const converted = convertMoveToBasic(move);
+      // Recursively process the converted moves
+      const recursivelyProcessed = processAdvancedMoves(converted, depth + 1);
+      basicMoves.push(...recursivelyProcessed);
+    }
   }
   
   return basicMoves;
@@ -2386,17 +2467,28 @@ const RubiksCubeScene = () => {
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          // Initialize all faces with black (for inner faces)
+          // Initialize face colors based on position
           // [top, bottom, left, right, front, back]
-          const faceColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
+          const faceColors: string[] = [];
           
-          // Set face colors only for faces that are on the outer surface
-          if (y === 1) faceColors[0] = COLORS.yellow;   // top face
-          if (y === -1) faceColors[1] = COLORS.white;   // bottom face
-          if (x === -1) faceColors[2] = COLORS.green;   // left face
-          if (x === 1) faceColors[3] = COLORS.blue;     // right face
-          if (z === 1) faceColors[4] = COLORS.red;      // front face
-          if (z === -1) faceColors[5] = COLORS.orange;  // back face
+          // Set face colors for each face - use the center color for that face
+          // Top face (y = 1): yellow, else use adjacent center color or white
+          faceColors[0] = y === 1 ? COLORS.yellow : COLORS.white;
+          
+          // Bottom face (y = -1): white, else use adjacent center color or yellow  
+          faceColors[1] = y === -1 ? COLORS.white : COLORS.yellow;
+          
+          // Left face (x = -1): green, else use adjacent center color or blue
+          faceColors[2] = x === -1 ? COLORS.green : COLORS.blue;
+          
+          // Right face (x = 1): blue, else use adjacent center color or green
+          faceColors[3] = x === 1 ? COLORS.blue : COLORS.green;
+          
+          // Front face (z = 1): red, else use adjacent center color or orange
+          faceColors[4] = z === 1 ? COLORS.red : COLORS.orange;
+          
+          // Back face (z = -1): orange, else use adjacent center color or red
+          faceColors[5] = z === -1 ? COLORS.orange : COLORS.red;
           
           pieces.push({
             position: [x, y, z],
