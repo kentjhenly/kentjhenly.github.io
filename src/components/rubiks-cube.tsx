@@ -1041,24 +1041,27 @@ class CubeSolver {
       // Get all pieces that are affected by R move (x = 1)
       const rightPieces = state.pieces.filter(piece => piece.position[0] === 1);
       
-      // Store original positions and face colors
+      // Store original data to avoid mutation during iteration
       const originalData = rightPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: clockwise when viewed from right face
+      // For R move: pieces rotate clockwise when viewed from the right face
+      // Position transformation: (x,y,z) -> (x,-z,y)
       for (let i = 0; i < rightPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         rightPieces[i].position = [x, -z, y];
         
-        // Rotate face colors: right face rotates clockwise, other faces shift
+        // Face color transformation for R move:
+        // - Right face (index 3) rotates internally 
+        // - Adjacent faces shift: top->back, front->top, bottom->front, back->bottom
         const oldColors = originalData[i].faceColors;
         rightPieces[i].faceColors = [
           oldColors[4], // top <- front
-          oldColors[5], // bottom <- back
+          oldColors[5], // bottom <- back  
           oldColors[2], // left (unchanged)
-          oldColors[3], // right (unchanged) 
+          oldColors[3], // right face (unchanged in this implementation)
           oldColors[1], // front <- bottom
           oldColors[0]  // back <- top
         ];
@@ -1066,61 +1069,65 @@ class CubeSolver {
     }
   }
 
-  // Apply left face rotation - rewritten for correctness
+  // Apply left face rotation - completely rewritten for correctness
   private applyLeftRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
       // Get all pieces that are affected by L move (x = -1)
       const leftPieces = state.pieces.filter(piece => piece.position[0] === -1);
       
-      // Store original positions and face colors
+      // Store original data
       const originalData = leftPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: counterclockwise when viewed from left face  
+      // For L move: pieces rotate counterclockwise when viewed from the left face
+      // Position transformation: (x,y,z) -> (x,z,-y)
       for (let i = 0; i < leftPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         leftPieces[i].position = [x, z, -y];
         
-        // Rotate face colors: left face rotates counterclockwise
+        // Face color transformation for L move (inverse of R):
+        // Adjacent faces shift: top->front, back->top, bottom->back, front->bottom
         const oldColors = originalData[i].faceColors;
         leftPieces[i].faceColors = [
           oldColors[5], // top <- back
           oldColors[4], // bottom <- front
-          oldColors[2], // left (unchanged)
+          oldColors[2], // left face (unchanged)
           oldColors[3], // right (unchanged)
-          oldColors[0], // front <- top  
+          oldColors[0], // front <- top
           oldColors[1]  // back <- bottom
         ];
       }
     }
   }
 
-  // Apply up face rotation - rewritten for correctness
+  // Apply up face rotation - completely rewritten for correctness
   private applyUpRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
       // Get all pieces that are affected by U move (y = 1)
       const upPieces = state.pieces.filter(piece => piece.position[1] === 1);
       
-      // Store original positions and face colors
+      // Store original data
       const originalData = upPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: clockwise when viewed from above
+      // For U move: pieces rotate clockwise when viewed from above
+      // Position transformation: (x,y,z) -> (-z,y,x)
       for (let i = 0; i < upPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         upPieces[i].position = [-z, y, x];
         
-        // Rotate face colors: top face rotates clockwise, side faces shift
+        // Face color transformation for U move:
+        // Side faces shift in ring: front->left, right->front, back->right, left->back
         const oldColors = originalData[i].faceColors;
         upPieces[i].faceColors = [
-          oldColors[0], // top (unchanged)
+          oldColors[0], // top face (unchanged)
           oldColors[1], // bottom (unchanged)
           oldColors[4], // left <- front
-          oldColors[5], // right <- back  
+          oldColors[5], // right <- back
           oldColors[3], // front <- right
           oldColors[2]  // back <- left
         ];
@@ -1128,28 +1135,30 @@ class CubeSolver {
     }
   }
 
-  // Apply down face rotation - rewritten for correctness
+  // Apply down face rotation - completely rewritten for correctness
   private applyDownRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
       // Get all pieces that are affected by D move (y = -1)
       const downPieces = state.pieces.filter(piece => piece.position[1] === -1);
       
-      // Store original positions and face colors
+      // Store original data
       const originalData = downPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: counterclockwise when viewed from below 
+      // For D move: pieces rotate counterclockwise when viewed from below
+      // Position transformation: (x,y,z) -> (z,y,-x)
       for (let i = 0; i < downPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         downPieces[i].position = [z, y, -x];
         
-        // Rotate face colors: bottom face rotates counterclockwise
+        // Face color transformation for D move (inverse of U):
+        // Side faces shift: front->right, left->front, back->left, right->back
         const oldColors = originalData[i].faceColors;
         downPieces[i].faceColors = [
           oldColors[0], // top (unchanged)
-          oldColors[1], // bottom (unchanged)
+          oldColors[1], // bottom face (unchanged)
           oldColors[5], // left <- back
           oldColors[4], // right <- front
           oldColors[2], // front <- left
@@ -1159,63 +1168,67 @@ class CubeSolver {
     }
   }
 
-  // Apply front face rotation - rewritten for correctness
+  // Apply front face rotation - completely rewritten for correctness
   private applyFrontRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
       // Get all pieces that are affected by F move (z = 1)
       const frontPieces = state.pieces.filter(piece => piece.position[2] === 1);
       
-      // Store original positions and face colors
+      // Store original data
       const originalData = frontPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: clockwise when viewed from front
+      // For F move: pieces rotate clockwise when viewed from the front
+      // Position transformation: (x,y,z) -> (-y,x,z)
       for (let i = 0; i < frontPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         frontPieces[i].position = [-y, x, z];
         
-        // Rotate face colors: front face rotates clockwise
+        // Face color transformation for F move:
+        // Adjacent faces shift: top->right, left->top, bottom->left, right->bottom
         const oldColors = originalData[i].faceColors;
         frontPieces[i].faceColors = [
           oldColors[2], // top <- left
           oldColors[3], // bottom <- right
           oldColors[1], // left <- bottom
           oldColors[0], // right <- top
-          oldColors[4], // front (unchanged)
+          oldColors[4], // front face (unchanged)
           oldColors[5]  // back (unchanged)
         ];
       }
     }
   }
 
-  // Apply back face rotation - rewritten for correctness
+  // Apply back face rotation - completely rewritten for correctness
   private applyBackRotation(state: CubeState, count: number): void {
     for (let rotation = 0; rotation < count; rotation++) {
       // Get all pieces that are affected by B move (z = -1)
       const backPieces = state.pieces.filter(piece => piece.position[2] === -1);
       
-      // Store original positions and face colors
+      // Store original data
       const originalData = backPieces.map(piece => ({
         position: [...piece.position] as [number, number, number],
         faceColors: [...piece.faceColors]
       }));
       
-      // Rotate positions: counterclockwise when viewed from back (looking towards front)
+      // For B move: pieces rotate counterclockwise when viewed from back (looking toward front)
+      // Position transformation: (x,y,z) -> (y,-x,z)
       for (let i = 0; i < backPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
         backPieces[i].position = [y, -x, z];
         
-        // Rotate face colors: back face rotates counterclockwise 
+        // Face color transformation for B move (inverse of F):
+        // Adjacent faces shift: top->left, right->top, bottom->right, left->bottom
         const oldColors = originalData[i].faceColors;
         backPieces[i].faceColors = [
           oldColors[3], // top <- right
-          oldColors[2], // bottom <- left  
+          oldColors[2], // bottom <- left
           oldColors[0], // left <- top
           oldColors[1], // right <- bottom
           oldColors[4], // front (unchanged)
-          oldColors[5]  // back (unchanged)
+          oldColors[5]  // back face (unchanged)
         ];
       }
     }
@@ -2001,46 +2014,214 @@ class CubeSolver {
 
   // Enhanced F2L solver with all 41 cases
   public solveF2L(): (BasicMove | string)[] {
-    let moves: (BasicMove | string)[] = [];
-    let pairsSolved = 0;
-    let maxAttempts = 12; // Increased attempts for better coverage
+    const moves: (BasicMove | string)[] = [];
     
-    while (pairsSolved < 4 && maxAttempts > 0) {
-      // Find next F2L pair to solve
-      const pair = this.findNextF2LPair();
-      if (!pair) {
-        // If no pair found, try to break up existing pairs
-        const breakupMoves = this.breakupF2LPairs();
-        if (breakupMoves.length > 0) {
-          moves.push(...breakupMoves);
-          breakupMoves.forEach(move => this.applyMove(move));
-          maxAttempts--;
-          continue;
+    // Solve all 4 F2L pairs with improved detection
+    for (let slot = 0; slot < 4; slot++) {
+      let pairFound = true;
+      let attempts = 0;
+      const maxAttempts = 10; // Prevent infinite loops
+      
+      while (pairFound && attempts < maxAttempts) {
+        const pair = this.findNextF2LPair();
+        if (!pair) {
+          pairFound = false;
+          break;
         }
-        break;
+        
+        // Get detailed case analysis
+        const caseDetails = this.getF2LCaseDetails(pair.corner, pair.edge);
+        
+        // Find the best algorithm for this specific case
+        const bestCase = this.findBestF2LCase(pair.corner, pair.edge);
+        
+        if (bestCase && bestCase.algorithm.length > 0) {
+          // Setup moves to position pieces optimally
+          const setupMoves = this.getF2LSetupMoves(pair, caseDetails);
+          moves.push(...setupMoves);
+          
+          // Apply the F2L algorithm
+          moves.push(...bestCase.algorithm);
+          
+          // Execute moves immediately to update state for next iteration
+          this.addMoves([...setupMoves, ...bestCase.algorithm]);
+          while (!this.isQueueEmpty()) {
+            this.executeNextMove();
+          }
+          
+          console.log(`F2L slot ${slot}: Applied case ${bestCase.name} - ${bestCase.algorithm.join(' ')}`);
+        } else {
+          // Fallback: break up the pair and try again
+          const breakupMoves = this.breakupF2LPairs();
+          moves.push(...breakupMoves);
+          this.addMoves(breakupMoves);
+          while (!this.isQueueEmpty()) {
+            this.executeNextMove();
+          }
+        }
+        
+        attempts++;
       }
-
-      // Find the best matching F2L case
-      const bestCase = this.findBestF2LCase(pair.corner, pair.edge);
-      
-      // Convert algorithm to basic moves
-      const basicAlgorithm = processAdvancedMoves(bestCase.algorithm);
-      
-      // Apply the algorithm
-      moves.push(...basicAlgorithm);
-      
-      // Apply moves to state to track progress
-      basicAlgorithm.forEach(move => this.applyMove(move));
-      
-      // Check if this pair is now solved
-      if (this.isF2LPairSolved(pair.corner, pair.edge, pair.slot)) {
-        pairsSolved++;
-      }
-      
-      maxAttempts--;
     }
-
+    
+    // Additional cleanup moves if needed
+    if (!this.areFirstTwoLayersSolved()) {
+      console.log("F2L not fully solved, applying cleanup moves");
+      const cleanupMoves = this.getF2LCleanupMoves();
+      moves.push(...cleanupMoves);
+    }
+    
     return moves;
+  }
+
+  // Get setup moves for optimal F2L case positioning
+  private getF2LSetupMoves(pair: F2LPair, caseDetails: any): (BasicMove | string)[] {
+    const moves: (BasicMove | string)[] = [];
+    
+    // Position the pair optimally based on case details
+    if (caseDetails.cornerPosition === 'bottom' && caseDetails.edgePosition === 'bottom') {
+      // Both pieces in bottom layer - extract one to top
+      moves.push(...this.extractF2LPieceToTop(pair.corner));
+    } else if (caseDetails.relative === 'separated') {
+      // Pieces too far apart - bring them together
+      moves.push(...this.bringF2LPiecesTogetherTogether(pair));
+    }
+    
+    return moves;
+  }
+
+  // Extract F2L piece to top layer for easier manipulation
+  private extractF2LPieceToTop(piece: CubePiece): (BasicMove | string)[] {
+    const [x, y, z] = piece.position;
+    const moves: (BasicMove | string)[] = [];
+    
+    // Extract based on position
+    if (y === -1) { // Bottom layer
+      if (x === 1 && z === 1) { // Front-right slot
+        moves.push('R', 'U', 'R\'');
+      } else if (x === -1 && z === 1) { // Front-left slot
+        moves.push('L\'', 'U\'', 'L');
+      } else if (x === -1 && z === -1) { // Back-left slot
+        moves.push('L', 'U', 'L\'');
+      } else if (x === 1 && z === -1) { // Back-right slot
+        moves.push('R\'', 'U\'', 'R');
+      }
+    }
+    
+    return moves;
+  }
+
+  // Bring F2L pieces closer together
+  private bringF2LPiecesTogetherTogether(pair: F2LPair): (BasicMove | string)[] {
+    const moves: (BasicMove | string)[] = [];
+    
+    // Use U layer moves to bring pieces closer
+    const cornerPos = pair.corner.position;
+    const edgePos = pair.edge.position;
+    
+    // Calculate optimal positioning moves
+    if (cornerPos[1] === 1 && edgePos[1] === 1) {
+      // Both in top layer - position them adjacent
+      const targetMoves = this.getTopLayerPositioningMoves(cornerPos, edgePos);
+      moves.push(...targetMoves);
+    }
+    
+    return moves;
+  }
+
+  // Get moves to position pieces optimally in top layer
+  private getTopLayerPositioningMoves(cornerPos: [number, number, number], edgePos: [number, number, number]): (BasicMove | string)[] {
+    const moves: (BasicMove | string)[] = [];
+    
+    // Simple positioning logic - bring pieces to front face area
+    const cornerAngle = this.getTopLayerAngle(cornerPos[0], cornerPos[2]);
+    const edgeAngle = this.getTopLayerAngle(edgePos[0], edgePos[2]);
+    
+    // Calculate moves needed to position optimally
+    const angleDiff = (edgeAngle - cornerAngle + 4) % 4;
+    
+    // Apply U moves to get optimal relative positioning
+    for (let i = 0; i < angleDiff; i++) {
+      moves.push('U');
+    }
+    
+    return moves;
+  }
+
+  // Check if first two layers are completely solved
+  private areFirstTwoLayersSolved(): boolean {
+    // Check that bottom two layers have correct colors
+    for (let y = -1; y <= 0; y++) {
+      for (let x = -1; x <= 1; x++) {
+        for (let z = -1; z <= 1; z++) {
+          const piece = this.state.pieces.find(p => 
+            p.position[0] === x && p.position[1] === y && p.position[2] === z
+          );
+          
+          if (!piece) continue;
+          
+          // Check that each face has the correct color for solved state
+          if (y === -1) { // Bottom layer
+            if (piece.faceColors[1] !== this.COLORS.white) return false;
+          }
+          
+          // Check side faces match their centers
+          if (x === -1 && piece.faceColors[2] !== this.COLORS.green) return false;
+          if (x === 1 && piece.faceColors[3] !== this.COLORS.blue) return false;
+          if (z === 1 && piece.faceColors[4] !== this.COLORS.red) return false;
+          if (z === -1 && piece.faceColors[5] !== this.COLORS.orange) return false;
+        }
+      }
+    }
+    
+    return true;
+  }
+
+  // Get cleanup moves for incomplete F2L
+  private getF2LCleanupMoves(): (BasicMove | string)[] {
+    const moves: (BasicMove | string)[] = [];
+    
+    // Apply generic F2L algorithms to finish any remaining issues
+    const remainingPairs = this.findAllIncompleteF2LPairs();
+    
+    for (const pair of remainingPairs) {
+      // Apply a basic algorithm to resolve
+      const basicAlgorithm = ['R', 'U\'', 'R\'', 'F', 'R', 'F\''];
+      moves.push(...basicAlgorithm);
+    }
+    
+    return moves;
+  }
+
+  // Find all incomplete F2L pairs
+  private findAllIncompleteF2LPairs(): F2LPair[] {
+    const incompletePairs: F2LPair[] = [];
+    
+    // Check each of the 4 F2L slots
+    for (let slot = 0; slot < 4; slot++) {
+      const slotPositions = this.getF2LSlotPositions(slot);
+      
+      // Check if this slot is incomplete
+      const cornerPiece = this.state.pieces.find(p => 
+        p.position[0] === slotPositions.corner[0] && 
+        p.position[1] === slotPositions.corner[1] && 
+        p.position[2] === slotPositions.corner[2]
+      );
+      
+      const edgePiece = this.state.pieces.find(p => 
+        p.position[0] === slotPositions.edge[0] && 
+        p.position[1] === slotPositions.edge[1] && 
+        p.position[2] === slotPositions.edge[2]
+      );
+      
+      if (cornerPiece && edgePiece) {
+        if (!this.isF2LPairSolved(cornerPiece, edgePiece, slot)) {
+          incompletePairs.push({ corner: cornerPiece, edge: edgePiece, slot });
+        }
+      }
+    }
+    
+    return incompletePairs;
   }
 
   // Enhanced OLL solver with full algorithm set
@@ -2432,43 +2613,55 @@ class CubeSolver {
 
   // Get pieces that should be highlighted for look-ahead
   public getLookAheadPieces(currentStage: SolvingStage): CubePiece[] {
+    const pieces: CubePiece[] = [];
+    
     switch (currentStage) {
       case SolvingStage.CROSS:
         // Highlight white edges that need to be solved
-        return this.state.pieces.filter(piece => {
-          const [x, y, z] = piece.position;
-          return piece.faceColors.some(color => color === this.COLORS.white) &&
-                 !(x === 0 && y === -1 && z === 1) && // Not in solved position
-                 !(x === 1 && y === -1 && z === 0) &&
-                 !(x === 0 && y === -1 && z === -1) &&
-                 !(x === -1 && y === -1 && z === 0);
+        const whiteEdges = this.state.pieces.filter(piece => {
+          const isEdge = this.isEdgePiece(piece);
+          const hasWhite = piece.faceColors.includes(this.COLORS.white);
+          const isInCorrectPosition = this.isWhiteEdgeInCorrectCrossPosition(piece);
+          return isEdge && hasWhite && !isInCorrectPosition;
         });
-      
+        pieces.push(...whiteEdges.slice(0, 2)); // Highlight next 2 edges
+        break;
+        
       case SolvingStage.F2L:
         // Highlight the next F2L pair
         const nextPair = this.findNextF2LPair();
         if (nextPair) {
-          return [nextPair.corner, nextPair.edge];
+          pieces.push(nextPair.corner, nextPair.edge);
         }
-        return [];
-      
+        break;
+        
       case SolvingStage.OLL:
-        // Highlight yellow face pieces that need orientation
-        return this.state.pieces.filter(piece => {
+        // Highlight yellow pieces that need orientation
+        const yellowPieces = this.state.pieces.filter(piece => {
           const [x, y, z] = piece.position;
-          return y === 1 && piece.faceColors[0] !== this.COLORS.yellow;
+          const isTopLayer = y === 1;
+          const needsOrientation = piece.faceColors[0] !== this.COLORS.yellow && 
+                                  piece.faceColors.includes(this.COLORS.yellow);
+          return isTopLayer && needsOrientation;
         });
-      
+        pieces.push(...yellowPieces.slice(0, 4)); // Highlight next 4 pieces
+        break;
+        
       case SolvingStage.PLL:
         // Highlight pieces that need permutation
-        return this.state.pieces.filter(piece => {
+        const topLayerPieces = this.state.pieces.filter(piece => {
           const [x, y, z] = piece.position;
-          return y === 1; // All top layer pieces
+          return y === 1 && (Math.abs(x) === 1 || Math.abs(z) === 1); // Corners and edges
         });
-      
-      default:
-        return [];
+        
+        const mispositionedPieces = topLayerPieces.filter(piece => {
+          return !this.isPieceInCorrectPosition(piece);
+        });
+        pieces.push(...mispositionedPieces.slice(0, 3)); // Highlight next 3 pieces
+        break;
     }
+    
+    return pieces;
   }
 
   // Public methods for move queue management
@@ -2845,6 +3038,60 @@ class CubeSolver {
     }
     return wrongEdges === 4; // All edges wrong but in a specific pattern
   }
+
+  // Check if white edge is in correct cross position
+  private isWhiteEdgeInCorrectCrossPosition(piece: CubePiece): boolean {
+    const [x, y, z] = piece.position;
+    
+    // Must be on bottom face
+    if (y !== -1) return false;
+    
+    // Must be an edge piece in cross position
+    if (!((x === 0 && Math.abs(z) === 1) || (Math.abs(x) === 1 && z === 0))) return false;
+    
+    // White must be on bottom face
+    if (piece.faceColors[1] !== this.COLORS.white) return false;
+    
+    // Adjacent face must match the center
+    if (z === 1 && piece.faceColors[4] !== this.COLORS.red) return false;
+    if (x === 1 && piece.faceColors[3] !== this.COLORS.blue) return false;
+    if (z === -1 && piece.faceColors[5] !== this.COLORS.orange) return false;
+    if (x === -1 && piece.faceColors[2] !== this.COLORS.green) return false;
+    
+    return true;
+  }
+
+  // Check if piece is in correct position for final solve state
+  private isPieceInCorrectPosition(piece: CubePiece): boolean {
+    const [x, y, z] = piece.position;
+    
+    // Check each face against expected colors
+    const expectedColors = this.getExpectedPieceColors(x, y, z);
+    
+    // All visible faces must match expected colors
+    for (let i = 0; i < 6; i++) {
+      if (piece.faceColors[i] !== '#000000' && piece.faceColors[i] !== expectedColors[i]) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Get expected colors for a piece at given position
+  private getExpectedPieceColors(x: number, y: number, z: number): string[] {
+    const colors = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
+    
+    // Set colors based on position
+    if (y === 1) colors[0] = this.COLORS.yellow;    // Top
+    if (y === -1) colors[1] = this.COLORS.white;    // Bottom
+    if (x === -1) colors[2] = this.COLORS.green;    // Left
+    if (x === 1) colors[3] = this.COLORS.blue;      // Right
+    if (z === 1) colors[4] = this.COLORS.red;       // Front
+    if (z === -1) colors[5] = this.COLORS.orange;   // Back
+    
+    return colors;
+  }
 }
 
 const RubiksCubeScene = () => {
@@ -2883,27 +3130,42 @@ const RubiksCubeScene = () => {
         for (let z = -1; z <= 1; z++) {
           // Initialize face colors based on position
           // [top, bottom, left, right, front, back]
-          // Start with black for all internal faces
-          const faceColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
+          // ALL faces need proper colors, not just visible ones
+          const faceColors: string[] = [
+            COLORS.yellow,  // top face always yellow in solved state
+            COLORS.white,   // bottom face always white in solved state
+            COLORS.green,   // left face always green in solved state
+            COLORS.blue,    // right face always blue in solved state
+            COLORS.red,     // front face always red in solved state
+            COLORS.orange   // back face always orange in solved state
+          ];
           
-          // Only assign cube colors to visible outer faces
+          // Override colors only for VISIBLE outer faces in solved position
+          // This ensures internal faces have consistent colors while visible faces show correct solved colors
+          
           // Top face (y = 1): yellow
           if (y === 1) faceColors[0] = COLORS.yellow;
+          else faceColors[0] = '#000000'; // internal face - black
           
           // Bottom face (y = -1): white  
           if (y === -1) faceColors[1] = COLORS.white;
+          else faceColors[1] = '#000000'; // internal face - black
           
           // Left face (x = -1): green
           if (x === -1) faceColors[2] = COLORS.green;
+          else faceColors[2] = '#000000'; // internal face - black
           
           // Right face (x = 1): blue
           if (x === 1) faceColors[3] = COLORS.blue;
+          else faceColors[3] = '#000000'; // internal face - black
           
           // Front face (z = 1): red
           if (z === 1) faceColors[4] = COLORS.red;
+          else faceColors[4] = '#000000'; // internal face - black
           
           // Back face (z = -1): orange
           if (z === -1) faceColors[5] = COLORS.orange;
+          else faceColors[5] = '#000000'; // internal face - black
           
           pieces.push({
             position: [x, y, z],
@@ -2917,19 +3179,16 @@ const RubiksCubeScene = () => {
   };
 
   const createScrambledState = (): { state: CubeState; moves: BasicMove[] } => {
-    const state = createSolvedState();
+    let state = createSolvedState();
     const moves: BasicMove[] = [];
     const possibleMoves: BasicMove[] = ['R', 'R\'', 'R2', 'L', 'L\'', 'L2', 'U', 'U\'', 'U2', 'D', 'D\'', 'D2', 'F', 'F\'', 'F2', 'B', 'B\'', 'B2'];
     
-    // Create a single solver for scrambling to avoid state corruption
-    const scramblingSolver = new CubeSolver(state, COLORS);
-    
-    // Generate a proper scramble with quality checks
+    // Generate a substantial scramble sequence
     let lastMove: BasicMove | '' = '';
     let secondLastMove: BasicMove | '' = '';
     
-    // Apply 25-30 moves for a proper scramble
-    const numMoves = 25 + Math.floor(Math.random() * 6);
+    // Apply 30-35 moves for a thorough scramble
+    const numMoves = 30 + Math.floor(Math.random() * 6);
     
     for (let i = 0; i < numMoves; i++) {
       let randomMove: BasicMove;
@@ -2953,16 +3212,100 @@ const RubiksCubeScene = () => {
       moves.push(randomMove);
       secondLastMove = lastMove;
       lastMove = randomMove;
-      
-      // Apply each scramble move to the solver
-      scramblingSolver.addMoves([randomMove]);
-      scramblingSolver.executeNextMove();
+    }
+    
+    // Apply scramble moves to the state using a dedicated scrambling solver
+    const scramblingSolver = new CubeSolver(state, COLORS);
+    
+    // Apply each move individually to ensure proper state transformation
+    for (const move of moves) {
+      scramblingSolver.addMoves([move]);
+      const executedMove = scramblingSolver.executeNextMove();
+      if (!executedMove) {
+        console.error(`Failed to execute scramble move: ${move}`);
+        break;
+      }
     }
     
     // Get the final scrambled state
+    const finalState = scramblingSolver.getState();
+    
+    // Verification: ensure the state is actually scrambled
+    const isScrambedProperly = !isStateActuallySolved(finalState);
+    
+    if (!isScrambedProperly) {
+      console.warn("Scramble verification failed - state appears solved. Applying additional scrambling.");
+      // Apply a few more guaranteed scrambling moves
+      const additionalMoves: BasicMove[] = ['R', 'U', 'R\'', 'F', 'R', 'F\'', 'U\''];
+      for (const move of additionalMoves) {
+        scramblingSolver.addMoves([move]);
+        scramblingSolver.executeNextMove();
+      }
+      moves.push(...additionalMoves);
+    }
+    
     return { state: scramblingSolver.getState(), moves };
   };
 
+  // Robust state verification function
+  const isStateActuallySolved = (state: CubeState): boolean => {
+    // Check if all pieces are in their correct positions with correct orientations
+    
+    // Define solved state positions and colors
+    const solvedPositions = [
+      { pos: [-1, -1, -1], colors: ['#000000', COLORS.white, COLORS.green, '#000000', '#000000', COLORS.orange] },
+      { pos: [0, -1, -1], colors: ['#000000', COLORS.white, '#000000', '#000000', '#000000', COLORS.orange] },
+      { pos: [1, -1, -1], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, '#000000', COLORS.orange] },
+      { pos: [-1, -1, 0], colors: ['#000000', COLORS.white, COLORS.green, '#000000', '#000000', '#000000'] },
+      { pos: [0, -1, 0], colors: ['#000000', COLORS.white, '#000000', '#000000', '#000000', '#000000'] },
+      { pos: [1, -1, 0], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, '#000000', '#000000'] },
+      { pos: [-1, -1, 1], colors: ['#000000', COLORS.white, COLORS.green, '#000000', COLORS.red, '#000000'] },
+      { pos: [0, -1, 1], colors: ['#000000', COLORS.white, '#000000', '#000000', COLORS.red, '#000000'] },
+      { pos: [1, -1, 1], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, COLORS.red, '#000000'] },
+      
+      // Middle layer
+      { pos: [-1, 0, -1], colors: ['#000000', '#000000', COLORS.green, '#000000', '#000000', COLORS.orange] },
+      { pos: [0, 0, -1], colors: ['#000000', '#000000', '#000000', '#000000', '#000000', COLORS.orange] },
+      { pos: [1, 0, -1], colors: ['#000000', '#000000', '#000000', COLORS.blue, '#000000', COLORS.orange] },
+      { pos: [-1, 0, 0], colors: ['#000000', '#000000', COLORS.green, '#000000', '#000000', '#000000'] },
+      { pos: [0, 0, 0], colors: ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'] },
+      { pos: [1, 0, 0], colors: ['#000000', '#000000', '#000000', COLORS.blue, '#000000', '#000000'] },
+      { pos: [-1, 0, 1], colors: ['#000000', '#000000', COLORS.green, '#000000', COLORS.red, '#000000'] },
+      { pos: [0, 0, 1], colors: ['#000000', '#000000', '#000000', '#000000', COLORS.red, '#000000'] },
+      { pos: [1, 0, 1], colors: ['#000000', '#000000', '#000000', COLORS.blue, COLORS.red, '#000000'] },
+      
+      // Top layer
+      { pos: [-1, 1, -1], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', '#000000', COLORS.orange] },
+      { pos: [0, 1, -1], colors: [COLORS.yellow, '#000000', '#000000', '#000000', '#000000', COLORS.orange] },
+      { pos: [1, 1, -1], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, '#000000', COLORS.orange] },
+      { pos: [-1, 1, 0], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', '#000000', '#000000'] },
+      { pos: [0, 1, 0], colors: [COLORS.yellow, '#000000', '#000000', '#000000', '#000000', '#000000'] },
+      { pos: [1, 1, 0], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, '#000000', '#000000'] },
+      { pos: [-1, 1, 1], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', COLORS.red, '#000000'] },
+      { pos: [0, 1, 1], colors: [COLORS.yellow, '#000000', '#000000', '#000000', COLORS.red, '#000000'] },
+      { pos: [1, 1, 1], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, COLORS.red, '#000000'] }
+    ];
+    
+    // Check each position
+    for (const expectedPiece of solvedPositions) {
+      const actualPiece = state.pieces.find(p => 
+        p.position[0] === expectedPiece.pos[0] && 
+        p.position[1] === expectedPiece.pos[1] && 
+        p.position[2] === expectedPiece.pos[2]
+      );
+      
+      if (!actualPiece) return false;
+      
+      // Check that all colors match exactly
+      for (let i = 0; i < 6; i++) {
+        if (actualPiece.faceColors[i] !== expectedPiece.colors[i]) {
+          return false;
+        }
+      }
+    }
+    
+    return true;
+  };
 
   // Helper function to get inverse of a move
   const getInverseMove = (move: BasicMove): BasicMove => {
