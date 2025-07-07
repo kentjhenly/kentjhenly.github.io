@@ -28,11 +28,10 @@ interface CubeProps {
   position: [number, number, number];
   faceColors: string[]; // [top, bottom, left, right, front, back]
   id: number;
-  isAnimating?: boolean;
   isHighlighted?: boolean;
 }
 
-const Cube = ({ position, faceColors, id, isAnimating, isHighlighted }: CubeProps) => {
+const Cube = ({ position, faceColors, id, isHighlighted }: CubeProps) => {
   return (
     <mesh position={position}>
       <boxGeometry args={[0.9, 0.9, 0.9]} />
@@ -1181,17 +1180,17 @@ class CubeSolver {
       }));
       
       // For F move: pieces rotate clockwise when viewed from the front
-      // Position transformation: (x,y,z) -> (-y,x,z)
+      // Position transformation: (x,y,z) -> (y,-x,z) - corrected for proper F move
       for (let i = 0; i < frontPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        frontPieces[i].position = [-y, x, z];
+        frontPieces[i].position = [y, -x, z];
         
-        // Face color transformation for F move:
-        // Adjacent faces shift: top->right, left->top, bottom->left, right->bottom
+        // Face color transformation for F move (clockwise when viewed from front):
+        // Adjacent faces shift: top->right, right->bottom, bottom->left, left->top
         const oldColors = originalData[i].faceColors;
         frontPieces[i].faceColors = [
           oldColors[2], // top <- left
-          oldColors[3], // bottom <- right
+          oldColors[3], // bottom <- right  
           oldColors[1], // left <- bottom
           oldColors[0], // right <- top
           oldColors[4], // front face (unchanged)
@@ -1213,14 +1212,14 @@ class CubeSolver {
         faceColors: [...piece.faceColors]
       }));
       
-      // For B move: pieces rotate counterclockwise when viewed from back (looking toward front)
-      // Position transformation: (x,y,z) -> (y,-x,z)
+      // For B move: pieces rotate clockwise when viewed from back (standard B move)
+      // Position transformation: (x,y,z) -> (-y,x,z) - corrected for proper B move
       for (let i = 0; i < backPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        backPieces[i].position = [y, -x, z];
+        backPieces[i].position = [-y, x, z];
         
-        // Face color transformation for B move (inverse of F):
-        // Adjacent faces shift: top->left, right->top, bottom->right, left->bottom
+        // Face color transformation for B move (clockwise when viewed from back):
+        // Adjacent faces shift: top->left, left->bottom, bottom->right, right->top
         const oldColors = originalData[i].faceColors;
         backPieces[i].faceColors = [
           oldColors[3], // top <- right
@@ -2084,7 +2083,7 @@ class CubeSolver {
       moves.push(...this.extractF2LPieceToTop(pair.corner));
     } else if (caseDetails.relative === 'separated') {
       // Pieces too far apart - bring them together
-      moves.push(...this.bringF2LPiecesTogetherTogether(pair));
+              moves.push(...this.bringF2LPiecesTogether(pair));
     }
     
     return moves;
@@ -2112,7 +2111,7 @@ class CubeSolver {
   }
 
   // Bring F2L pieces closer together
-  private bringF2LPiecesTogetherTogether(pair: F2LPair): (BasicMove | string)[] {
+  private bringF2LPiecesTogether(pair: F2LPair): (BasicMove | string)[] {
     const moves: (BasicMove | string)[] = [];
     
     // Use U layer moves to bring pieces closer
@@ -3128,44 +3127,29 @@ const RubiksCubeScene = () => {
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          // Initialize face colors based on position
+          // Initialize face colors with proper colors for ALL faces
           // [top, bottom, left, right, front, back]
-          // ALL faces need proper colors, not just visible ones
+          // Every cubie gets proper colors based on its position in the solved cube
+          
           const faceColors: string[] = [
-            COLORS.yellow,  // top face always yellow in solved state
-            COLORS.white,   // bottom face always white in solved state
-            COLORS.green,   // left face always green in solved state
-            COLORS.blue,    // right face always blue in solved state
-            COLORS.red,     // front face always red in solved state
-            COLORS.orange   // back face always orange in solved state
+            // Top face (index 0): yellow if on top layer, otherwise the layer's natural color
+            y === 1 ? COLORS.yellow : (y === 0 ? COLORS.yellow : COLORS.white),
+            
+            // Bottom face (index 1): white if on bottom layer, otherwise the layer's natural color  
+            y === -1 ? COLORS.white : (y === 0 ? COLORS.white : COLORS.yellow),
+            
+            // Left face (index 2): green if on left side, otherwise the side's natural color
+            x === -1 ? COLORS.green : (x === 0 ? COLORS.green : COLORS.blue),
+            
+            // Right face (index 3): blue if on right side, otherwise the side's natural color
+            x === 1 ? COLORS.blue : (x === 0 ? COLORS.blue : COLORS.green),
+            
+            // Front face (index 4): red if on front side, otherwise the side's natural color
+            z === 1 ? COLORS.red : (z === 0 ? COLORS.red : COLORS.orange),
+            
+            // Back face (index 5): orange if on back side, otherwise the side's natural color
+            z === -1 ? COLORS.orange : (z === 0 ? COLORS.orange : COLORS.red)
           ];
-          
-          // Override colors only for VISIBLE outer faces in solved position
-          // This ensures internal faces have consistent colors while visible faces show correct solved colors
-          
-          // Top face (y = 1): yellow
-          if (y === 1) faceColors[0] = COLORS.yellow;
-          else faceColors[0] = '#000000'; // internal face - black
-          
-          // Bottom face (y = -1): white  
-          if (y === -1) faceColors[1] = COLORS.white;
-          else faceColors[1] = '#000000'; // internal face - black
-          
-          // Left face (x = -1): green
-          if (x === -1) faceColors[2] = COLORS.green;
-          else faceColors[2] = '#000000'; // internal face - black
-          
-          // Right face (x = 1): blue
-          if (x === 1) faceColors[3] = COLORS.blue;
-          else faceColors[3] = '#000000'; // internal face - black
-          
-          // Front face (z = 1): red
-          if (z === 1) faceColors[4] = COLORS.red;
-          else faceColors[4] = '#000000'; // internal face - black
-          
-          // Back face (z = -1): orange
-          if (z === -1) faceColors[5] = COLORS.orange;
-          else faceColors[5] = '#000000'; // internal face - black
           
           pieces.push({
             position: [x, y, z],
@@ -3250,56 +3234,39 @@ const RubiksCubeScene = () => {
   // Robust state verification function
   const isStateActuallySolved = (state: CubeState): boolean => {
     // Check if all pieces are in their correct positions with correct orientations
+    // Now uses the same logic as createSolvedState - no more black placeholders
     
-    // Define solved state positions and colors
-    const solvedPositions = [
-      { pos: [-1, -1, -1], colors: ['#000000', COLORS.white, COLORS.green, '#000000', '#000000', COLORS.orange] },
-      { pos: [0, -1, -1], colors: ['#000000', COLORS.white, '#000000', '#000000', '#000000', COLORS.orange] },
-      { pos: [1, -1, -1], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, '#000000', COLORS.orange] },
-      { pos: [-1, -1, 0], colors: ['#000000', COLORS.white, COLORS.green, '#000000', '#000000', '#000000'] },
-      { pos: [0, -1, 0], colors: ['#000000', COLORS.white, '#000000', '#000000', '#000000', '#000000'] },
-      { pos: [1, -1, 0], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, '#000000', '#000000'] },
-      { pos: [-1, -1, 1], colors: ['#000000', COLORS.white, COLORS.green, '#000000', COLORS.red, '#000000'] },
-      { pos: [0, -1, 1], colors: ['#000000', COLORS.white, '#000000', '#000000', COLORS.red, '#000000'] },
-      { pos: [1, -1, 1], colors: ['#000000', COLORS.white, '#000000', COLORS.blue, COLORS.red, '#000000'] },
-      
-      // Middle layer
-      { pos: [-1, 0, -1], colors: ['#000000', '#000000', COLORS.green, '#000000', '#000000', COLORS.orange] },
-      { pos: [0, 0, -1], colors: ['#000000', '#000000', '#000000', '#000000', '#000000', COLORS.orange] },
-      { pos: [1, 0, -1], colors: ['#000000', '#000000', '#000000', COLORS.blue, '#000000', COLORS.orange] },
-      { pos: [-1, 0, 0], colors: ['#000000', '#000000', COLORS.green, '#000000', '#000000', '#000000'] },
-      { pos: [0, 0, 0], colors: ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'] },
-      { pos: [1, 0, 0], colors: ['#000000', '#000000', '#000000', COLORS.blue, '#000000', '#000000'] },
-      { pos: [-1, 0, 1], colors: ['#000000', '#000000', COLORS.green, '#000000', COLORS.red, '#000000'] },
-      { pos: [0, 0, 1], colors: ['#000000', '#000000', '#000000', '#000000', COLORS.red, '#000000'] },
-      { pos: [1, 0, 1], colors: ['#000000', '#000000', '#000000', COLORS.blue, COLORS.red, '#000000'] },
-      
-      // Top layer
-      { pos: [-1, 1, -1], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', '#000000', COLORS.orange] },
-      { pos: [0, 1, -1], colors: [COLORS.yellow, '#000000', '#000000', '#000000', '#000000', COLORS.orange] },
-      { pos: [1, 1, -1], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, '#000000', COLORS.orange] },
-      { pos: [-1, 1, 0], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', '#000000', '#000000'] },
-      { pos: [0, 1, 0], colors: [COLORS.yellow, '#000000', '#000000', '#000000', '#000000', '#000000'] },
-      { pos: [1, 1, 0], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, '#000000', '#000000'] },
-      { pos: [-1, 1, 1], colors: [COLORS.yellow, '#000000', COLORS.green, '#000000', COLORS.red, '#000000'] },
-      { pos: [0, 1, 1], colors: [COLORS.yellow, '#000000', '#000000', '#000000', COLORS.red, '#000000'] },
-      { pos: [1, 1, 1], colors: [COLORS.yellow, '#000000', '#000000', COLORS.blue, COLORS.red, '#000000'] }
-    ];
-    
-    // Check each position
-    for (const expectedPiece of solvedPositions) {
-      const actualPiece = state.pieces.find(p => 
-        p.position[0] === expectedPiece.pos[0] && 
-        p.position[1] === expectedPiece.pos[1] && 
-        p.position[2] === expectedPiece.pos[2]
-      );
-      
-      if (!actualPiece) return false;
-      
-      // Check that all colors match exactly
-      for (let i = 0; i < 6; i++) {
-        if (actualPiece.faceColors[i] !== expectedPiece.colors[i]) {
-          return false;
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          const piece = state.pieces.find(p => 
+            p.position[0] === x && p.position[1] === y && p.position[2] === z
+          );
+          
+          if (!piece) return false;
+          
+          // Expected colors based on position (same logic as createSolvedState)
+          const expectedColors = [
+            // Top face: yellow if on top layer, otherwise natural color
+            y === 1 ? COLORS.yellow : (y === 0 ? COLORS.yellow : COLORS.white),
+            // Bottom face: white if on bottom layer, otherwise natural color  
+            y === -1 ? COLORS.white : (y === 0 ? COLORS.white : COLORS.yellow),
+            // Left face: green if on left side, otherwise natural color
+            x === -1 ? COLORS.green : (x === 0 ? COLORS.green : COLORS.blue),
+            // Right face: blue if on right side, otherwise natural color
+            x === 1 ? COLORS.blue : (x === 0 ? COLORS.blue : COLORS.green),
+            // Front face: red if on front side, otherwise natural color
+            z === 1 ? COLORS.red : (z === 0 ? COLORS.red : COLORS.orange),
+            // Back face: orange if on back side, otherwise natural color
+            z === -1 ? COLORS.orange : (z === 0 ? COLORS.orange : COLORS.red)
+          ];
+          
+          // Check that all face colors match the expected colors
+          for (let i = 0; i < 6; i++) {
+            if (piece.faceColors[i] !== expectedColors[i]) {
+              return false;
+            }
+          }
         }
       }
     }
