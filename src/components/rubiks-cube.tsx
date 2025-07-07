@@ -1047,10 +1047,10 @@ class CubeSolver {
       }));
       
       // For R move: pieces rotate clockwise when viewed from the right face
-      // Position transformation: (x,y,z) -> (x,-z,y)
+      // Position transformation: (x,y,z) -> (x,z,-y)
       for (let i = 0; i < rightPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        rightPieces[i].position = [x, -z, y];
+        rightPieces[i].position = [x, z, -y];
         
         // Face color transformation for R move:
         // - Right face (index 3) rotates internally 
@@ -1081,10 +1081,10 @@ class CubeSolver {
       }));
       
       // For L move: pieces rotate counterclockwise when viewed from the left face
-      // Position transformation: (x,y,z) -> (x,z,-y)
+      // Position transformation: (x,y,z) -> (x,-z,y)
       for (let i = 0; i < leftPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        leftPieces[i].position = [x, z, -y];
+        leftPieces[i].position = [x, -z, y];
         
         // Face color transformation for L move (inverse of R):
         // Adjacent faces shift: top->front, back->top, bottom->back, front->bottom
@@ -1180,10 +1180,10 @@ class CubeSolver {
       }));
       
       // For F move: pieces rotate clockwise when viewed from the front
-      // Position transformation: (x,y,z) -> (y,-x,z) - corrected for proper F move
+      // Position transformation: (x,y,z) -> (-y,x,z) - corrected for proper F move
       for (let i = 0; i < frontPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        frontPieces[i].position = [y, -x, z];
+        frontPieces[i].position = [-y, x, z];
         
         // Face color transformation for F move (clockwise when viewed from front):
         // Adjacent faces shift: top->right, right->bottom, bottom->left, left->top
@@ -1213,10 +1213,10 @@ class CubeSolver {
       }));
       
       // For B move: pieces rotate clockwise when viewed from back (standard B move)
-      // Position transformation: (x,y,z) -> (-y,x,z) - corrected for proper B move
+      // Position transformation: (x,y,z) -> (y,-x,z) - corrected for proper B move
       for (let i = 0; i < backPieces.length; i++) {
         const [x, y, z] = originalData[i].position;
-        backPieces[i].position = [-y, x, z];
+        backPieces[i].position = [y, -x, z];
         
         // Face color transformation for B move (clockwise when viewed from back):
         // Adjacent faces shift: top->left, left->bottom, bottom->right, right->top
@@ -2048,7 +2048,7 @@ class CubeSolver {
             this.executeNextMove();
           }
           
-          console.log(`F2L slot ${slot}: Applied case ${bestCase.name} - ${bestCase.algorithm.join(' ')}`);
+  
         } else {
           // Fallback: break up the pair and try again
           const breakupMoves = this.breakupF2LPairs();
@@ -2065,7 +2065,7 @@ class CubeSolver {
     
     // Additional cleanup moves if needed
     if (!this.areFirstTwoLayersSolved()) {
-      console.log("F2L not fully solved, applying cleanup moves");
+
       const cleanupMoves = this.getF2LCleanupMoves();
       moves.push(...cleanupMoves);
     }
@@ -3127,28 +3127,28 @@ const RubiksCubeScene = () => {
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          // Initialize face colors with proper colors for ALL faces
+          // Initialize face colors - only assign colors to VISIBLE faces
           // [top, bottom, left, right, front, back]
-          // Every cubie gets proper colors based on its position in the solved cube
+          // Internal faces use black (#000000) as placeholder
           
           const faceColors: string[] = [
-            // Top face (index 0): yellow if on top layer, otherwise the layer's natural color
-            y === 1 ? COLORS.yellow : (y === 0 ? COLORS.yellow : COLORS.white),
+            // Top face (index 0): yellow if this is actually on the top, black otherwise
+            y === 1 ? COLORS.yellow : '#000000',
             
-            // Bottom face (index 1): white if on bottom layer, otherwise the layer's natural color  
-            y === -1 ? COLORS.white : (y === 0 ? COLORS.white : COLORS.yellow),
+            // Bottom face (index 1): white if this is actually on the bottom, black otherwise  
+            y === -1 ? COLORS.white : '#000000',
             
-            // Left face (index 2): green if on left side, otherwise the side's natural color
-            x === -1 ? COLORS.green : (x === 0 ? COLORS.green : COLORS.blue),
+            // Left face (index 2): green if this is actually on the left, black otherwise
+            x === -1 ? COLORS.green : '#000000',
             
-            // Right face (index 3): blue if on right side, otherwise the side's natural color
-            x === 1 ? COLORS.blue : (x === 0 ? COLORS.blue : COLORS.green),
+            // Right face (index 3): blue if this is actually on the right, black otherwise
+            x === 1 ? COLORS.blue : '#000000',
             
-            // Front face (index 4): red if on front side, otherwise the side's natural color
-            z === 1 ? COLORS.red : (z === 0 ? COLORS.red : COLORS.orange),
+            // Front face (index 4): red if this is actually on the front, black otherwise
+            z === 1 ? COLORS.red : '#000000',
             
-            // Back face (index 5): orange if on back side, otherwise the side's natural color
-            z === -1 ? COLORS.orange : (z === 0 ? COLORS.orange : COLORS.red)
+            // Back face (index 5): orange if this is actually on the back, black otherwise
+            z === -1 ? COLORS.orange : '#000000'
           ];
           
           pieces.push({
@@ -3234,7 +3234,7 @@ const RubiksCubeScene = () => {
   // Robust state verification function
   const isStateActuallySolved = (state: CubeState): boolean => {
     // Check if all pieces are in their correct positions with correct orientations
-    // Now uses the same logic as createSolvedState - no more black placeholders
+    // Only check VISIBLE faces - internal faces should be black (#000000)
     
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
@@ -3245,20 +3245,20 @@ const RubiksCubeScene = () => {
           
           if (!piece) return false;
           
-          // Expected colors based on position (same logic as createSolvedState)
+          // Expected colors based on position - same logic as createSolvedState
           const expectedColors = [
-            // Top face: yellow if on top layer, otherwise natural color
-            y === 1 ? COLORS.yellow : (y === 0 ? COLORS.yellow : COLORS.white),
-            // Bottom face: white if on bottom layer, otherwise natural color  
-            y === -1 ? COLORS.white : (y === 0 ? COLORS.white : COLORS.yellow),
-            // Left face: green if on left side, otherwise natural color
-            x === -1 ? COLORS.green : (x === 0 ? COLORS.green : COLORS.blue),
-            // Right face: blue if on right side, otherwise natural color
-            x === 1 ? COLORS.blue : (x === 0 ? COLORS.blue : COLORS.green),
-            // Front face: red if on front side, otherwise natural color
-            z === 1 ? COLORS.red : (z === 0 ? COLORS.red : COLORS.orange),
-            // Back face: orange if on back side, otherwise natural color
-            z === -1 ? COLORS.orange : (z === 0 ? COLORS.orange : COLORS.red)
+            // Top face: yellow if actually on top, black otherwise
+            y === 1 ? COLORS.yellow : '#000000',
+            // Bottom face: white if actually on bottom, black otherwise  
+            y === -1 ? COLORS.white : '#000000',
+            // Left face: green if actually on left, black otherwise
+            x === -1 ? COLORS.green : '#000000',
+            // Right face: blue if actually on right, black otherwise
+            x === 1 ? COLORS.blue : '#000000',
+            // Front face: red if actually on front, black otherwise
+            z === 1 ? COLORS.red : '#000000',
+            // Back face: orange if actually on back, black otherwise
+            z === -1 ? COLORS.orange : '#000000'
           ];
           
           // Check that all face colors match the expected colors
@@ -3356,13 +3356,12 @@ const RubiksCubeScene = () => {
 
   // Start solving with CFOP method
   const startSolving = async () => {
-    setIsSolving(true);
+    // First prepare everything before setting isSolving to true
     setCurrentStage(null);
-    setCurrentAlgorithm("");
+    setCurrentAlgorithm("Preparing cube state...");
     
     // Create scrambled state and store scramble moves
     const { state: scrambledState, moves: newScrambleMoves } = createScrambledState();
-    console.log("Scramble moves:", newScrambleMoves);
     setCubeState(scrambledState);
     setScrambleMoves(newScrambleMoves);
     
@@ -3370,13 +3369,8 @@ const RubiksCubeScene = () => {
     solverRef.current = new CubeSolver(scrambledState, COLORS);
     
     // Check if cube is already solved before generating solution
-    console.log("Is cube solved after scrambling?", solverRef.current.isSolved());
-    
     if (solverRef.current.isSolved()) {
-      console.error("ERROR: Cube is detected as solved immediately after scrambling!");
-      console.log("Scrambled state pieces:", JSON.stringify(scrambledState.pieces.map(p => ({ pos: p.position, colors: p.faceColors })), null, 2));
       setCurrentAlgorithm("ERROR: Cube appears solved after scrambling");
-      setIsSolving(false);
       return;
     }
     
@@ -3385,9 +3379,6 @@ const RubiksCubeScene = () => {
     setCurrentAlgorithm("Generating CFOP solution...");
     
     const { moves: cfopSolution, stages } = solverRef.current.generateCFOPSolution(useFullOLL, useFullPLL);
-    console.log("CFOP solution:", cfopSolution);
-    console.log("CFOP stages:", stages);
-    console.log("Generated CFOP solution:", cfopSolution.length, "moves");
     solverRef.current.addMoves(cfopSolution);
     
     // Store stages for tracking
@@ -3412,7 +3403,8 @@ const RubiksCubeScene = () => {
       stageMoves
     });
     
-    // Animation will be started by useEffect when isSolving becomes true
+    // Now that everything is ready, start the animation
+    setIsSolving(true);
   };
 
   // Use useEffect to manage animation loop based on isSolving state
