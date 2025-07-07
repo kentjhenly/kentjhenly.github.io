@@ -1987,15 +1987,17 @@ const RubiksCubeScene = () => {
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          const faceColors: string[] = [COLORS.white, COLORS.white, COLORS.white, COLORS.white, COLORS.white, COLORS.white];
+          // Initialize all faces with black (for inner faces)
+          // [top, bottom, left, right, front, back]
+          const faceColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
           
-          // Set face colors based on position
-          if (z === 1) faceColors[4] = COLORS.red; // Front
-          if (z === -1) faceColors[5] = COLORS.orange; // Back
-          if (x === 1) faceColors[3] = COLORS.blue; // Right
-          if (x === -1) faceColors[2] = COLORS.green; // Left
-          if (y === 1) faceColors[0] = COLORS.yellow; // Top
-          if (y === -1) faceColors[1] = COLORS.white; // Bottom
+          // Set face colors only for faces that are on the outer surface
+          if (y === 1) faceColors[0] = COLORS.yellow;   // top face
+          if (y === -1) faceColors[1] = COLORS.white;   // bottom face
+          if (x === -1) faceColors[2] = COLORS.green;   // left face
+          if (x === 1) faceColors[3] = COLORS.blue;     // right face
+          if (z === 1) faceColors[4] = COLORS.red;      // front face
+          if (z === -1) faceColors[5] = COLORS.orange;  // back face
           
           pieces.push({
             position: [x, y, z],
