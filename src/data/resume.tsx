@@ -50,13 +50,11 @@ export const DATA = {
       href: "https://deepmind.com",
       badges: [],
       location: "Remote",
-      title: "Google Summer of Code Participant",
+      title: "Open Source Software Developer\nGoogle Summer of Code Participant",
       logoUrl: "/deepmind.jpg",
       start: "May 2025",
       end: "Present",
       bullets: [
-        "Open Source Software Developer",
-        "Google Summer of Code Participant",
         "Engineered a scalable model evaluation platform using Python, PyTorch, and Docker, which improved benchmarking efficiency by 15% and supported parallel execution across 5+ academic test suites (e.g., MMLU, HumanEval)",
         "Designed and deployed a fully automated CI/CD pipeline with GitHub Actions to enforce 95% unit test coverage, guaranteeing reproducible, production-ready builds for a system"
       ],
