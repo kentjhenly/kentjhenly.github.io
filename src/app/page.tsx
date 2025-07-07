@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 
 const GitHubContributions = dynamic(() => import("@/components/github-contributions").then(mod => mod.GitHubContributions), { ssr: false });
-const RubiksCube = dynamic(() => import("@/components/rubiks-cube").then(mod => mod.default), { ssr: false });
+const RubiksCube = dynamic(() => import("@/components/rubiks-cube").then(mod => mod.RubiksCube), { ssr: false });
 const HongKongMap = dynamic(() => import("@/components/hong-kong-map").then(mod => mod.HongKongMap), { ssr: false });
 const WorldMap = dynamic(() => import("@/components/world-map").then(mod => mod.WorldMap), { ssr: false });
 const BlurFade = dynamic(() => import("@/components/magicui/blur-fade").then(mod => mod.default), { ssr: false });
