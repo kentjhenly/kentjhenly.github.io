@@ -56,15 +56,15 @@ export const TimelineItem = ({
   };
 
   const content = (
-    <div className="relative pl-8 pb-12 last:pb-0">
+    <div className="relative pl-6 sm:pl-8 pb-8 sm:pb-12 last:pb-0">
       {/* Timeline line */}
       {!isLast && (
-        <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-border to-muted/30" />
+        <div className="absolute left-4 sm:left-6 top-10 sm:top-12 bottom-0 w-0.5 bg-gradient-to-b from-border to-muted/30" />
       )}
       
       {/* Timeline dot with logo */}
-      <div className="absolute left-0 top-0 w-12 h-12 rounded-full border-2 border-background shadow-lg bg-background flex items-center justify-center">
-        <Avatar className="size-10 border">
+      <div className="absolute left-0 top-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-background shadow-lg bg-background flex items-center justify-center">
+        <Avatar className="size-6 sm:size-10 border">
           <AvatarImage
             src={logoUrl}
             alt={altText}
@@ -76,35 +76,36 @@ export const TimelineItem = ({
 
       {/* Content */}
       <div className="group cursor-pointer" onClick={handleClick}>
-        <div className="bg-card border border-border/50 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-border transition-all duration-300">
+        <div className="bg-card border border-border/50 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md hover:border-border transition-all duration-300">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:items-start sm:justify-between sm:gap-4 mb-3">
             <div className="flex-1">
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-tight">
                 {title}
-                {badges && badges.length > 0 && (
-                  <span className="inline-flex gap-1 ml-2 flex-wrap">
-                    {badges.map((badge, index) => (
-                      <Badge
-                        variant="secondary"
-                        className="text-xs"
-                        key={index}
-                      >
-                        {badge}
-                      </Badge>
-                    ))}
-                  </span>
-                )}
               </h3>
               {subtitle && (
                 <p className="text-muted-foreground text-sm mt-1 leading-relaxed whitespace-pre-line">
                   {subtitle}
                 </p>
               )}
+              {/* Badges moved below title on mobile */}
+              {badges && badges.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {badges.map((badge, index) => (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs"
+                      key={index}
+                    >
+                      {badge}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
             
-            <div className="flex items-start gap-2">
-              <span className="text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1 rounded-full whitespace-nowrap">
+            <div className="flex items-center justify-between sm:justify-start gap-2">
+              <span className="text-sm font-medium text-muted-foreground bg-muted/50 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
                 {period}
               </span>
               {(description || bullets) && (
