@@ -2050,7 +2050,7 @@ class CubeSolver {
       const ollCase = this.recognizeFullOLLCase();
       const algorithm = FULL_OLL_ALGORITHMS[ollCase as keyof typeof FULL_OLL_ALGORITHMS];
       if (algorithm) {
-        return processAdvancedMoves(algorithm as (BasicMove | string)[]);
+        return processAdvancedMoves(algorithm as Move[]);
       }
     }
     
@@ -2063,83 +2063,86 @@ class CubeSolver {
       switch (edgeCase) {
         case 'dot':
           // For dot case, use F R U R' U' F' to get L shape, then solve L shape
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
           moves.forEach(move => this.applyMove(move));
           // Now solve the resulting L shape
           const afterDotCase = this.recognizeOLLEdgeCase();
           if (afterDotCase === 'L') {
-            const lMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]);
+            const lMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]);
             moves.push(...lMoves);
             lMoves.forEach(move => this.applyMove(move));
           }
           break;
         case 'L':
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
           break;
         case 'line':
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
           break;
         case 'diagonal':
           // For diagonal case, use algorithm to get line, then solve line
-          moves.push(...processAdvancedMoves(['F', 'U', 'R', 'U\'', 'R\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'U', 'R', 'U\'', 'R\'', 'F\''] as Move[]));
           moves.forEach(move => this.applyMove(move));
           // Check result and solve accordingly
           const afterDiagonalCase = this.recognizeOLLEdgeCase();
           if (afterDiagonalCase === 'line') {
-            const lineMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]);
+            const lineMoves = processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]);
             moves.push(...lineMoves);
             lineMoves.forEach(move => this.applyMove(move));
           }
           break;
         case 'single':
           // Single edge oriented - use algorithm to get better case
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
           break;
         case 'three':
           // Three edges oriented - one more move should complete
-          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as (BasicMove | string)[]));
+          moves.push(...processAdvancedMoves(['F', 'R', 'U', 'R\'', 'U\'', 'F\''] as Move[]));
           break;
         default:
           // Already have cross or unknown case
           break;
       }
+      
+      moves.forEach(move => this.applyMove(move));
     }
     
-    // Then, orient all corners
+    // Second, orient all corners
     if (!this.areAllCornersOriented()) {
       const cornerCase = this.recognizeOLLCornerCase();
       let cornerMoves: (BasicMove | string)[] = [];
       switch (cornerCase) {
         case 'sune':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
           break;
         case 'antisune':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_ANTISUNE as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_ANTISUNE as Move[]);
           break;
         case 'pi':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_PI as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_PI as Move[]);
           break;
         case 'H':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_H as Move[]);
           break;
         case 'T':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_T as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_T as Move[]);
           break;
         case 'L':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_L as Move[]);
           break;
         case 'U':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_U as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_U as Move[]);
           break;
         case 'solved':
           // Corners already oriented
           break;
         default:
           // Fallback to SUNE for unknown cases
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.OLL_SUNE as Move[]);
           break;
       }
       moves.push(...cornerMoves);
+      cornerMoves.forEach(move => this.applyMove(move));
     }
     
     return moves;
@@ -2224,7 +2227,7 @@ class CubeSolver {
       const pllCase = this.recognizeFullPLLCase();
       const algorithm = FULL_PLL_ALGORITHMS[pllCase as keyof typeof FULL_PLL_ALGORITHMS];
       if (algorithm) {
-        return processAdvancedMoves(algorithm as (BasicMove | string)[]);
+        return processAdvancedMoves(algorithm as Move[]);
       }
     }
     
@@ -2237,17 +2240,17 @@ class CubeSolver {
       let cornerMoves: (BasicMove | string)[] = [];
       switch (cornerCase) {
         case 'Aa':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
           break;
         case 'Ab':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
           cornerMoves.push('U'); // Adjust for Ab case
           break;
         case 'E':
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_E as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_E as Move[]);
           break;
         default:
-          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as (BasicMove | string)[]);
+          cornerMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_A as Move[]);
           break;
       }
       moves.push(...cornerMoves);
@@ -2262,23 +2265,24 @@ class CubeSolver {
       let edgeMoves: (BasicMove | string)[] = [];
       switch (edgeCase) {
         case 'Ua':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
           break;
         case 'Ub':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
           edgeMoves.push('U2'); // Adjust for Ub case
           break;
         case 'H':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_H as (BasicMove | string)[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_H as Move[]);
           break;
         case 'Z':
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_Z as (BasicMove | string)[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_Z as Move[]);
           break;
         default:
-          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as (BasicMove | string)[]);
+          edgeMoves = processAdvancedMoves(CFOP_ALGORITHMS.PLL_U as Move[]);
           break;
       }
       moves.push(...edgeMoves);
+      edgeMoves.forEach(move => this.applyMove(move));
     }
     
     return moves;
@@ -2472,8 +2476,10 @@ class CubeSolver {
     const processedMoves = moves.flatMap(move => {
       if (typeof move === 'string' && move.startsWith('CUBE_ROTATION_')) {
         return [move]; // Already a cube rotation
-      } else if (isBasicMove(move)) {
-        return [move]; // Already a basic move
+      } else if (typeof move === 'string' && isBasicMove(move as BasicMove)) {
+        return [move as BasicMove]; // Basic move as string
+      } else if (isBasicMove(move as BasicMove)) {
+        return [move as BasicMove]; // Already a basic move
       } else {
         return processAdvancedMoves([move as Move]); // Convert advanced move
       }
