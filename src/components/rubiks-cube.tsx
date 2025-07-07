@@ -2706,32 +2706,30 @@ class CubeSolver {
   }
 
   public isSolved(): boolean {
-    // Check if all faces are solved by verifying that the correct color 
-    // is on the correct visible face of each piece
+    // Check each piece to see if it's in the correct position with the correct orientation
+    // In the solved state, each piece should match the expected color pattern
     
-    // Check top face (yellow)
-    const topPieces = this.state.pieces.filter(p => p.position[1] === 1);
-    if (!topPieces.every(piece => piece.faceColors[0] === this.COLORS.yellow)) return false;
-    
-    // Check bottom face (white)  
-    const bottomPieces = this.state.pieces.filter(p => p.position[1] === -1);
-    if (!bottomPieces.every(piece => piece.faceColors[1] === this.COLORS.white)) return false;
-    
-    // Check front face (red)
-    const frontPieces = this.state.pieces.filter(p => p.position[2] === 1);
-    if (!frontPieces.every(piece => piece.faceColors[4] === this.COLORS.red)) return false;
-    
-    // Check back face (orange)
-    const backPieces = this.state.pieces.filter(p => p.position[2] === -1);
-    if (!backPieces.every(piece => piece.faceColors[5] === this.COLORS.orange)) return false;
-    
-    // Check right face (blue)
-    const rightPieces = this.state.pieces.filter(p => p.position[0] === 1);
-    if (!rightPieces.every(piece => piece.faceColors[3] === this.COLORS.blue)) return false;
-    
-    // Check left face (green)
-    const leftPieces = this.state.pieces.filter(p => p.position[0] === -1);
-    if (!leftPieces.every(piece => piece.faceColors[2] === this.COLORS.green)) return false;
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          const piece = this.state.pieces.find(p => 
+            p.position[0] === x && p.position[1] === y && p.position[2] === z
+          );
+          
+          if (!piece) return false;
+          
+          // Get expected colors for this position
+          const expectedColors = this.getExpectedPieceColors(x, y, z);
+          
+          // Check that all face colors match the expected solved state pattern
+          for (let i = 0; i < 6; i++) {
+            if (piece.faceColors[i] !== expectedColors[i]) {
+              return false;
+            }
+          }
+        }
+      }
+    }
     
     return true;
   }
@@ -3082,15 +3080,26 @@ class CubeSolver {
 
   // Get expected colors for a piece at given position
   private getExpectedPieceColors(x: number, y: number, z: number): string[] {
-    // Every piece has the same color orientation in the solved state
+    // Expected colors for a piece in the solved state at position (x,y,z)
     // [top, bottom, left, right, front, back]
     const colors = [
-      this.COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
-      this.COLORS.white,   // The sticker on the -Y side of any piece is White
-      this.COLORS.green,   // The sticker on the -X side of any piece is Green
-      this.COLORS.blue,    // The sticker on the +X side of any piece is Blue
-      this.COLORS.red,     // The sticker on the +Z side of any piece is Red
-      this.COLORS.orange,  // The sticker on the -Z side of any piece is Orange
+      // Top face (index 0)
+      y === 1 ? this.COLORS.yellow : this.COLORS.white,  // Yellow on top surface, white elsewhere
+      
+      // Bottom face (index 1)
+      y === -1 ? this.COLORS.white : this.COLORS.yellow,  // White on bottom surface, yellow elsewhere
+      
+      // Left face (index 2)
+      x === -1 ? this.COLORS.green : this.COLORS.blue,   // Green on left surface, blue elsewhere
+      
+      // Right face (index 3)
+      x === 1 ? this.COLORS.blue : this.COLORS.green,    // Blue on right surface, green elsewhere
+      
+      // Front face (index 4)
+      z === 1 ? this.COLORS.red : this.COLORS.orange,    // Red on front surface, orange elsewhere
+      
+      // Back face (index 5)
+      z === -1 ? this.COLORS.orange : this.COLORS.red    // Orange on back surface, red elsewhere
     ];
     
     return colors;
@@ -3131,21 +3140,28 @@ const RubiksCubeScene = () => {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
           
-          // This defines the color of each face of a cubie at position (x,y,z) in the solved state.
-          // The problem in the original code was that faces not on the surface were assigned a grey color.
-          // When these pieces were rotated, the grey faces became visible and broke the solver's logic.
-          // The fix is to define a "whole" piece with correctly colored faces on all sides.
-          // In a standard Rubik's Cube orientation, the Yellow face points up (+Y), White points down (-Y),
-          // Blue points right (+X), Green points left (-X), Red points front (+Z), and Orange points back (-Z).
-          // Every piece inherits this orientation in the solved state.
+          // REALISTIC STICKER MODEL: Each piece gets proper sticker colors based on its position
+          // Visible faces get their correct sticker color, internal faces use a contrasting but realistic color
           const faceColors: string[] = [
             // [top, bottom, left, right, front, back]
-            COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
-            COLORS.white,   // The sticker on the -Y side of any piece is White
-            COLORS.green,   // The sticker on the -X side of any piece is Green
-            COLORS.blue,    // The sticker on the +X side of any piece is Blue
-            COLORS.red,     // The sticker on the +Z side of any piece is Red
-            COLORS.orange,  // The sticker on the -Z side of any piece is Orange
+            
+            // Top face (index 0)
+            y === 1 ? COLORS.yellow : COLORS.white,  // Yellow on top surface, white elsewhere
+            
+            // Bottom face (index 1)
+            y === -1 ? COLORS.white : COLORS.yellow,  // White on bottom surface, yellow elsewhere
+            
+            // Left face (index 2)
+            x === -1 ? COLORS.green : COLORS.blue,   // Green on left surface, blue elsewhere
+            
+            // Right face (index 3)
+            x === 1 ? COLORS.blue : COLORS.green,    // Blue on right surface, green elsewhere
+            
+            // Front face (index 4)
+            z === 1 ? COLORS.red : COLORS.orange,    // Red on front surface, orange elsewhere
+            
+            // Back face (index 5)
+            z === -1 ? COLORS.orange : COLORS.red    // Orange on back surface, red elsewhere
           ];
           
           pieces.push({
@@ -3231,7 +3247,7 @@ const RubiksCubeScene = () => {
   // Robust state verification function
   const isStateActuallySolved = (state: CubeState): boolean => {
     // Check if all pieces are in their correct positions with correct orientations
-    // Now uses the same logic as createSolvedState - every piece has full colors
+    // Uses same logic as createSolvedState - visible faces have proper sticker colors
     
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
@@ -3243,15 +3259,25 @@ const RubiksCubeScene = () => {
           if (!piece) return false;
           
           // Expected colors based on position (same logic as createSolvedState)
-          // Every piece has the same color orientation in the solved state
           const expectedColors = [
             // [top, bottom, left, right, front, back]
-            COLORS.yellow,  // The sticker on the +Y side of any piece is Yellow
-            COLORS.white,   // The sticker on the -Y side of any piece is White
-            COLORS.green,   // The sticker on the -X side of any piece is Green
-            COLORS.blue,    // The sticker on the +X side of any piece is Blue
-            COLORS.red,     // The sticker on the +Z side of any piece is Red
-            COLORS.orange,  // The sticker on the -Z side of any piece is Orange
+            // Top face (index 0)
+            y === 1 ? COLORS.yellow : COLORS.white,  // Yellow on top surface, white elsewhere
+            
+            // Bottom face (index 1)
+            y === -1 ? COLORS.white : COLORS.yellow,  // White on bottom surface, yellow elsewhere
+            
+            // Left face (index 2)
+            x === -1 ? COLORS.green : COLORS.blue,   // Green on left surface, blue elsewhere
+            
+            // Right face (index 3)
+            x === 1 ? COLORS.blue : COLORS.green,    // Blue on right surface, green elsewhere
+            
+            // Front face (index 4)
+            z === 1 ? COLORS.red : COLORS.orange,    // Red on front surface, orange elsewhere
+            
+            // Back face (index 5)
+            z === -1 ? COLORS.orange : COLORS.red    // Orange on back surface, red elsewhere
           ];
           
           // Check that all face colors match the expected colors
