@@ -91,7 +91,9 @@ export default function Page() {
       </section>
 
       <section id="ethics" className="mb-section-lg">
-        <EthicsQuote delay={BLUR_FADE_DELAY * 15.5} />
+        <div className="space-y-content-md">
+          <EthicsQuote delay={BLUR_FADE_DELAY * 15.5} />
+        </div>
       </section>
 
       <section id="work" className="mb-section-lg">

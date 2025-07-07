@@ -34,7 +34,20 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
       scale: 1,
       transition: {
         duration: 0.8,
-        delay: delay + 0.3,
+        delay: delay + 0.4,
+        ease: [0.25, 0.1, 0.25, 1],
+      },
+    },
+  };
+
+  const textVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        delay: delay + 0.2,
         ease: [0.25, 0.1, 0.25, 1],
       },
     },
@@ -46,11 +59,17 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
       variants={containerVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      className="max-w-6xl mx-auto space-y-8"
+      className="space-y-content-md"
     >
-      {/* Clean blockquote with soft accent */}
-      <blockquote className="relative pl-6 py-6 border-l-4 border-primary/60 bg-gradient-to-r from-muted/30 to-transparent rounded-r-lg max-w-3xl">
-        <p className="text-base md:text-lg leading-relaxed text-foreground/90 mb-4">
+      {/* Section title */}
+      <h2 className="text-xl font-bold">Featured on Wikipedia</h2>
+      
+      {/* Description text */}
+      <motion.div
+        variants={textVariants}
+        className="space-y-content-sm"
+      >
+        <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
           In June 2025, I raised public concerns about the authorship and data ethics of a youth-led AI healthcare project. This sparked a discussion in Hong Kong on research integrity and was later{" "}
           <Link
             href="https://en.wikipedia.org/wiki/MediSafe_controversy"
@@ -62,7 +81,7 @@ export const EthicsQuote = ({ delay = 0 }: EthicsQuoteProps) => {
           </Link>
           .
         </p>
-      </blockquote>
+      </motion.div>
 
       {/* Safari mockup with Wikipedia screenshot */}
       <motion.div
