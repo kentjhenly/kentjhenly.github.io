@@ -7,6 +7,7 @@ const EthicsQuote = dynamic(() => import("@/components/ethics-quote").then(mod =
 const TechStack = dynamic(() => import("@/components/tech-stack").then(mod => mod.TechStack), { ssr: false });
 const TimelineItem = dynamic(() => import("@/components/resume-card").then(mod => mod.TimelineItem), { ssr: false });
 const ContactOrbiting = dynamic(() => import("@/components/contact-orbiting").then(mod => mod.ContactOrbiting), { ssr: false });
+const HeartEquation = dynamic(() => import("@/components/heart-equation").then(mod => mod.HeartEquation), { ssr: false });
 
 const HongKongMap = dynamic(() => import("@/components/hong-kong-map").then(mod => mod.HongKongMap), { ssr: false });
 const WorldMap = dynamic(() => import("@/components/world-map").then(mod => mod.WorldMap), { ssr: false });
@@ -59,35 +60,37 @@ export default function Page() {
         </div>
       </section>
 
-
+      <section id="heart" className="mb-section-lg">
+        <HeartEquation delay={BLUR_FADE_DELAY * 9} />
+      </section>
 
       <section id="about" className="mb-section-lg">
         <div className="space-y-content-md">
-          <BlurFade delay={BLUR_FADE_DELAY * 10}>
+          <BlurFade delay={BLUR_FADE_DELAY * 12}>
             <h2 className="text-xl font-bold">About</h2>
           </BlurFade>
           <div className="space-y-content-sm">
-            <BlurFade delay={BLUR_FADE_DELAY * 11}>
+            <BlurFade delay={BLUR_FADE_DELAY * 13}>
               <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
                 I&apos;m a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.
               </p>
             </BlurFade>
-            <BlurFade delay={BLUR_FADE_DELAY * 12}>
+            <BlurFade delay={BLUR_FADE_DELAY * 14}>
               <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
                 Before university, I was that kid obsessed with biology and completely hooked on the Olympiad. I loved exploring the mysteries of life. But after countless hours pipetting in the lab, I started to feel burnt out. I realized I loved biology, just not the endless wet lab work.
               </p>
             </BlurFade>
-            <BlurFade delay={BLUR_FADE_DELAY * 13}>
+            <BlurFade delay={BLUR_FADE_DELAY * 15}>
               <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
                 At the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: &ldquo;What if I could use math and code to solve big biology questions instead?&rdquo; That idea completely changed my path.
               </p>
             </BlurFade>
-            <BlurFade delay={BLUR_FADE_DELAY * 14}>
+            <BlurFade delay={BLUR_FADE_DELAY * 16}>
               <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
                 And so, here I am, merging my love for biology with the power of math and computation.
               </p>
             </BlurFade>
-            <BlurFade delay={BLUR_FADE_DELAY * 15}>
+            <BlurFade delay={BLUR_FADE_DELAY * 17}>
               <p className="prose max-w-full text-pretty font-sans text-sm text-muted-foreground dark:prose-invert">
                 When I&apos;m not coding or solving equations, you&apos;ll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it&apos;s always &ldquo;No.1&rdquo; at Comebuytea.
               </p>
@@ -98,18 +101,18 @@ export default function Page() {
 
       <section id="ethics" className="mb-section-lg">
         <div className="space-y-content-md">
-          <EthicsQuote delay={BLUR_FADE_DELAY * 15.5} />
+          <EthicsQuote delay={BLUR_FADE_DELAY * 17.5} />
         </div>
       </section>
 
       <section id="work" className="mb-section-lg">
         <div className="space-y-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 17}>
+          <BlurFade delay={BLUR_FADE_DELAY * 19}>
             <h2 className="text-xl font-bold">Technical Experience</h2>
           </BlurFade>
           <div className="space-y-0">
             {DATA.technicalExperience.map((work, id) => (
-              <BlurFade key={work.company} delay={BLUR_FADE_DELAY * 18 + id * 0.05}>
+              <BlurFade key={work.company} delay={BLUR_FADE_DELAY * 20 + id * 0.05}>
                 <TimelineItem
                   logoUrl={work.logoUrl}
                   altText={work.company}
@@ -129,12 +132,12 @@ export default function Page() {
 
       <section id="education" className="mb-section-lg">
         <div className="space-y-12">
-          <BlurFade delay={BLUR_FADE_DELAY * 19}>
+          <BlurFade delay={BLUR_FADE_DELAY * 21}>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
           <div className="space-y-0">
             {DATA.education.map((education, id) => (
-              <BlurFade key={education.school} delay={BLUR_FADE_DELAY * 20 + id * 0.05}>
+              <BlurFade key={education.school} delay={BLUR_FADE_DELAY * 22 + id * 0.05}>
                 <TimelineItem
                   logoUrl={education.logoUrl}
                   altText={education.school}
@@ -151,12 +154,12 @@ export default function Page() {
       </section>
 
       <section id="tech-stack" className="mb-section-lg">
-        <TechStack delay={BLUR_FADE_DELAY * 21} />
+        <TechStack delay={BLUR_FADE_DELAY * 23} />
       </section>
 
       <section id="projects" className="mb-section-lg">
         <div className="space-y-content-lg">
-          <BlurFade delay={BLUR_FADE_DELAY * 22}>
+          <BlurFade delay={BLUR_FADE_DELAY * 24}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -174,7 +177,7 @@ export default function Page() {
             {DATA.projects.map((project, id) => (
               <BlurFade
                 key={project.title}
-                delay={BLUR_FADE_DELAY * 23 + id * 0.05}
+                delay={BLUR_FADE_DELAY * 25 + id * 0.05}
               >
                 <ProjectCard
                   href={project.href}
@@ -194,12 +197,12 @@ export default function Page() {
       </section>
 
       <section id="github" className="mb-section-lg">
-        <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 24} />
+        <GitHubContributions username="heilcheng" delay={BLUR_FADE_DELAY * 26} />
       </section>
 
       <section id="books" className="mb-section-lg">
         <div className="space-y-content-lg">
-          <BlurFade delay={BLUR_FADE_DELAY * 25}>
+          <BlurFade delay={BLUR_FADE_DELAY * 27}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -211,11 +214,11 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 26}>
+          <BlurFade delay={BLUR_FADE_DELAY * 28}>
             <div className="space-y-content-lg">
               {DATA.books.map((themeGroup, themeId) => (
                 <div key={themeGroup.theme} className="space-y-content-sm">
-                  <BlurFade delay={BLUR_FADE_DELAY * 27 + themeId * 0.1}>
+                  <BlurFade delay={BLUR_FADE_DELAY * 29 + themeId * 0.1}>
                     <h3 className="text-lg font-semibold text-muted-foreground">
                       {themeGroup.theme}
                     </h3>
@@ -224,7 +227,7 @@ export default function Page() {
                     {themeGroup.books.map((book, bookId) => (
                       <BlurFade
                         key={book.title + book.author}
-                        delay={BLUR_FADE_DELAY * 28 + themeId * 0.1 + bookId * 0.05}
+                        delay={BLUR_FADE_DELAY * 30 + themeId * 0.1 + bookId * 0.05}
                       >
                         <BookCard
                           title={book.title}
@@ -243,7 +246,7 @@ export default function Page() {
 
       <section id="hong-kong" className="mb-section-lg">
         <div className="space-y-content-lg">
-          <BlurFade delay={BLUR_FADE_DELAY * 29}>
+          <BlurFade delay={BLUR_FADE_DELAY * 31}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -255,13 +258,13 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <HongKongMap delay={BLUR_FADE_DELAY * 30} />
+          <HongKongMap delay={BLUR_FADE_DELAY * 32} />
         </div>
       </section>
 
       <section id="world" className="mb-section-lg">
         <div className="space-y-content-lg">
-          <BlurFade delay={BLUR_FADE_DELAY * 31}>
+          <BlurFade delay={BLUR_FADE_DELAY * 33}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -273,11 +276,11 @@ export default function Page() {
               </div>
             </div>
           </BlurFade>
-          <WorldMap delay={BLUR_FADE_DELAY * 32} />
+          <WorldMap delay={BLUR_FADE_DELAY * 34} />
         </div>
       </section>
 
-      <ContactOrbiting delay={BLUR_FADE_DELAY * 33} />
+      <ContactOrbiting delay={BLUR_FADE_DELAY * 35} />
     </main>
   );
 }
