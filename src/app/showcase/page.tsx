@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 const TorusMugMorph = dynamic(() => import("@/components/torus-mug-morph"), { ssr: false });
 const ProteinFolding = dynamic(() => import("@/components/protein-folding").then(mod => mod.default), { ssr: false });
-const RubiksCube = dynamic(() => import("@/components/rubiks-cube").then(mod => mod.RubiksCube), { ssr: false });
+const RubiksCube = dynamic(() => import("@/components/rubiks-cube"), { ssr: false });
 
 export default function ShowcasePage() {
   return (
@@ -11,13 +11,13 @@ export default function ShowcasePage() {
         <div className="space-y-content-lg">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Torus ↔ Mug Morph</h1>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Interactive 3D morphing between a torus (doughnut) and a coffee mug, demonstrating their topological equivalence.
-              </p>
+        <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Torus ↔ Mug Morph</h1>
+        <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          Interactive 3D morphing between a torus (doughnut) and a coffee mug, demonstrating their topological equivalence.
+        </p>
             </div>
-          </div>
-          <TorusMugMorph />
+      </div>
+      <TorusMugMorph />
         </div>
       </section>
       
@@ -25,13 +25,13 @@ export default function ShowcasePage() {
         <div className="space-y-content-lg">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Protein Folding Visualization</h1>
-              <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Interactive 3D visualization of protein folding from unfolded polypeptide chain to functional 3D structure.
-              </p>
+        <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Protein Folding Visualization</h1>
+        <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          Interactive 3D visualization of protein folding from unfolded polypeptide chain to functional 3D structure.
+        </p>
             </div>
-          </div>
-          <ProteinFolding />
+      </div>
+      <ProteinFolding />
         </div>
       </section>
       
@@ -45,7 +45,7 @@ export default function ShowcasePage() {
               </p>
             </div>
           </div>
-          <RubiksCube delay={0.04} />
+          <RubiksCube />
         </div>
       </section>
     </main>
