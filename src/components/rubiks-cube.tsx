@@ -80,7 +80,40 @@ const SimplifiedCube = ({ position, faceColors, id, isHighlighted }: CubeProps) 
   );
 };
 
-// Main React Component - Now properly using library
+// Apple-style Button Component
+const AppleButton = ({ 
+  onClick, 
+  disabled = false, 
+  variant = 'primary',
+  children,
+  className = ''
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'danger';
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const baseClasses = "px-6 py-3 font-medium text-sm rounded-xl transition-all duration-200 ease-out transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm";
+  
+  const variantClasses = {
+    primary: "bg-black text-white hover:bg-gray-800 focus:ring-gray-500 disabled:bg-gray-300 disabled:text-gray-500",
+    secondary: "bg-white text-black border border-gray-200 hover:bg-gray-50 focus:ring-gray-300 disabled:bg-gray-100 disabled:text-gray-400",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300"
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseClasses} ${variantClasses[variant]} ${className} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+// Main React Component - Now with Apple-style UI
 const RubiksCubeScene = () => {
   // Cube state management using library functions
   const [cubeState, setCubeState] = useState<CubeState>(() => createSolvedState(COLORS));
@@ -92,6 +125,7 @@ const RubiksCubeScene = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('Ready to scramble or solve');
   
   const groupRef = useRef<THREE.Group>(null);
   
@@ -158,6 +192,7 @@ const RubiksCubeScene = () => {
           );
           if (currentStageInfo) {
             setSolvingStage(currentStageInfo.stage);
+            setStatusMessage(`Solving ${currentStageInfo.stage}...`);
           }
         }
         
@@ -165,6 +200,7 @@ const RubiksCubeScene = () => {
         if (moveQueue.length === 1) {
           setIsSolving(false);
           setSolvingStage(SolvingStage.SOLVED);
+          setStatusMessage('Cube solved! 🎉');
         }
       }, 300);
     }
@@ -174,12 +210,13 @@ const RubiksCubeScene = () => {
     // Use library's isSolved method
     const currentSolver = new CubeSolver(cubeState, COLORS, { debug: debugMode, enableLogging: debugMode });
     if (currentSolver.isSolved()) {
-      alert("Cube is already solved!");
+      setStatusMessage("Cube is already solved!");
       return;
     }
     
     setIsSolving(true);
     setSolvingStage(SolvingStage.CROSS);
+    setStatusMessage("Generating CFOP solution...");
     
     try {
       // Create solver instance
@@ -192,6 +229,7 @@ const RubiksCubeScene = () => {
       
       if (solution && solution.length > 0) {
         setMoveQueue(solution as (BasicMove | CubeRotation)[]);
+        setStatusMessage(`Starting solution with ${solution.length} moves`);
         console.log(`CFOP Solution: ${solution.join(' ')} (${solution.length} moves)`);
         
         // Display stage information
@@ -206,22 +244,32 @@ const RubiksCubeScene = () => {
         console.error("Failed to generate solution");
         setIsSolving(false);
         setSolvingStage(SolvingStage.SOLVED);
+        setStatusMessage("Failed to generate solution");
       }
     } catch (error) {
       console.error("Error during CFOP solving:", error);
       setIsSolving(false);
       setSolvingStage(SolvingStage.SOLVED);
+      setStatusMessage("Error occurred during solving");
     }
   };
 
   const scrambleCube = () => {
-    const { state: scrambledState, moves: scrambleMoves } = createScrambledState();
-    setCubeState(scrambledState);
-    setSolver(null);
-    setMoveQueue([]);
-    setIsSolving(false);
-    setSolvingStage(SolvingStage.SOLVED);
-    console.log(`Scrambled with: ${scrambleMoves.join(' ')} (${scrambleMoves.length} moves)`);
+    setStatusMessage("Scrambling cube...");
+    
+    try {
+      const { state: scrambledState, moves: scrambleMoves } = createScrambledState();
+      setCubeState(scrambledState);
+      setSolver(null);
+      setMoveQueue([]);
+      setIsSolving(false);
+      setSolvingStage(SolvingStage.SOLVED);
+      setStatusMessage(`Scrambled with ${scrambleMoves.length} moves - ready to solve!`);
+      console.log(`Scrambled with: ${scrambleMoves.join(' ')} (${scrambleMoves.length} moves)`);
+    } catch (error) {
+      console.error("Error during scrambling:", error);
+      setStatusMessage("Error occurred during scrambling");
+    }
   };
 
   // Mouse interaction handlers
@@ -257,6 +305,7 @@ const RubiksCubeScene = () => {
     setMoveQueue([]);
     setIsSolving(false);
     setSolvingStage(SolvingStage.SOLVED);
+    setStatusMessage("Cube reset to solved state");
   };
 
   if (!isClient) return <div>Loading...</div>;
@@ -271,83 +320,92 @@ const RubiksCubeScene = () => {
     <div className="cube-container">
       {/* Debug Panel */}
       {debugMode && (
-        <div className="debug-panel bg-gray-800 text-white p-4 mb-4 rounded">
-          <h3 className="text-lg font-bold mb-2">Debug Info</h3>
-          <p>State: {isSolving ? `Solving (${solvingStage})` : 'Idle'}</p>
-          <p>Moves in queue: {moveQueue.length}</p>
-          <p>Current move: {currentMove || 'None'}</p>
-          <p>Is solved: {isCurrentlySolved() ? 'Yes' : 'No'}</p>
+        <div className="debug-panel bg-gray-900 text-white p-6 mb-6 rounded-2xl border border-gray-700">
+          <h3 className="text-lg font-semibold mb-3 text-gray-100">Debug Information</h3>
+          <div className="space-y-2 text-sm font-mono">
+            <p>State: <span className="text-green-400">{isSolving ? `Solving (${solvingStage})` : 'Idle'}</span></p>
+            <p>Moves in queue: <span className="text-blue-400">{moveQueue.length}</span></p>
+            <p>Current move: <span className="text-yellow-400">{currentMove || 'None'}</span></p>
+            <p>Is solved: <span className={isCurrentlySolved() ? 'text-green-400' : 'text-red-400'}>{isCurrentlySolved() ? 'Yes' : 'No'}</span></p>
+          </div>
         </div>
       )}
 
-      {/* Controls */}
-      <div className="controls mb-4 flex gap-4 flex-wrap">
-        <button 
+      {/* Apple-style Controls */}
+      <div className="controls mb-6 flex gap-3 flex-wrap justify-center">
+        <AppleButton 
           onClick={scrambleCube}
           disabled={isSolving}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          variant="secondary"
         >
           Scramble Cube
-        </button>
+        </AppleButton>
         
-        <button 
+        <AppleButton 
           onClick={startSolving}
           disabled={isSolving || isCurrentlySolved()}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+          variant="primary"
         >
           CFOP Solve
-        </button>
+        </AppleButton>
         
-        <button 
+        <AppleButton 
           onClick={resetCube}
           disabled={isSolving}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+          variant="secondary"
         >
           Reset to Solved
-        </button>
+        </AppleButton>
         
-        <button 
+        <AppleButton 
           onClick={() => setDebugMode(!debugMode)}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          variant="secondary"
+          className="text-xs"
         >
           {debugMode ? 'Hide Debug' : 'Show Debug'}
-        </button>
+        </AppleButton>
       </div>
 
-      {/* Status Display */}
-      <div className="status mb-4 p-3 bg-gray-100 rounded">
+      {/* Apple-style Status Display */}
+      <div className="status mb-6 p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
         <div className="flex justify-between items-center">
-          <span className="font-semibold">
-            Status: {isSolving ? `Solving - ${solvingStage}` : 'Ready'}
-          </span>
+          <div className="flex items-center space-x-3">
+            <div className={`w-3 h-3 rounded-full ${isSolving ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
+            <span className="font-medium text-gray-900">
+              {statusMessage}
+            </span>
+          </div>
           {moveQueue.length > 0 && (
-            <span className="text-sm text-gray-600">
-              Moves remaining: {moveQueue.length}
+            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {moveQueue.length} moves remaining
             </span>
           )}
         </div>
         {currentMove && (
-          <div className="mt-2 text-sm">
-            Executing: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{currentMove}</span>
+          <div className="mt-3 text-sm">
+            <span className="text-gray-600">Executing: </span>
+            <span className="font-mono bg-black text-white px-2 py-1 rounded text-xs">{currentMove}</span>
           </div>
         )}
       </div>
 
-      {/* 3D Cube Visualization */}
+      {/* 3D Cube Visualization with White Background */}
       <div 
-        className="canvas-container w-full h-96 border rounded"
+        className="canvas-container w-full h-96 border border-gray-200 rounded-2xl overflow-hidden shadow-lg bg-white"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <Canvas
           camera={{ position: [5, 5, 5], fov: 50 }}
-          style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+          style={{ background: 'white' }}
         >
-          <ambientLight intensity={0.6} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
+          <ambientLight intensity={0.7} />
+          <pointLight position={[10, 10, 10]} intensity={1.2} />
+          <pointLight position={[-10, -10, -10]} intensity={0.6} />
+          <pointLight position={[0, 10, 0]} intensity={0.4} />
           
           <RotatingCubeGroup isSolving={isSolving} groupRef={groupRef}>
             {cubeState.pieces.map((piece, index) => (
@@ -361,6 +419,11 @@ const RubiksCubeScene = () => {
             ))}
           </RotatingCubeGroup>
         </Canvas>
+      </div>
+      
+      {/* Apple-style Footer */}
+      <div className="mt-4 text-center text-sm text-gray-500">
+        Drag to rotate • Click buttons to interact
       </div>
     </div>
   );
@@ -379,18 +442,23 @@ const RubiksCube = () => {
       <div className="space-y-8">
         <div className="space-y-2">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Rubik&apos;s Cube Solver.
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-gray-900">
+              Rubik&apos;s Cube Solver
             </h2>
-            <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Interactive 3D visualization of the CFOP method in Rubik&apos;s cube solving, featuring Cross, F2L, OLL, and PLL stages.
+            <p className="text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed max-w-3xl mx-auto">
+              Interactive 3D visualization of the CFOP method in Rubik&apos;s cube solving, featuring Cross, F2L, OLL, and PLL stages with beautiful Apple-inspired design.
             </p>
           </div>
         </div>
         
         <div className="flex justify-center">
-          <div className="bg-card border rounded-lg p-6 w-full max-w-2xl">
-            {isClient ? <RubiksCubeScene /> : <div className="h-96 flex items-center justify-center">Loading 3D Cube...</div>}
+          <div className="bg-white border border-gray-200 rounded-3xl p-8 w-full max-w-4xl shadow-lg">
+            {isClient ? <RubiksCubeScene /> : (
+              <div className="h-96 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-900 border-t-transparent"></div>
+                <span className="ml-3 text-gray-600">Loading 3D Cube...</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
