@@ -22,37 +22,87 @@ export interface CFOPPlan { stages: StagePlan[]; moves: string[] }
 // Third-party minimal solver adapter (using vendored cubejs lib files)
 // We import the CommonJS bundles via require using a type-ignored dynamic import signature
 
+// Convert CubeState to 54-character facelet string in URFDLB order
+// Each face scanned row-major from viewer perspective: top-left → bottom-right
+// Colors mapped to face letters: W→U, Y→D, R→R, O→L, G→F, B→B
 function toFacelets(state: CubeState): string {
-  // Map our state into Singmaster facelets in URFDLB order (each face 9 chars)
-  // Colors letters must match U=U, R=R, F=F, D=D, L=L, B=B expected by solver.
-  // We'll convert our colors W,Y,O,R,G,B to face letters by sampling centers.
-  // Build a 3x3 grid per face by finding stickers on that face coordinates.
   const faces: FaceKey[] = ['U','R','F','D','L','B'];
-  const faceStr: Record<FaceKey,string> = {U:'',R:'',F:'',D:'',L:'',B:''};
-  const faceOrderCoords: Record<FaceKey, { x: number; y: number; z: number }[]> = {
-    U: [...Array(9)].map((_,i)=>({ x: (i%3)-1, y: 1, z: Math.floor(i/3)-1 })),
-    R: [...Array(9)].map((_,i)=>({ x: 1, y: 1- Math.floor(i/3), z: (i%3)-1 })),
-    F: [...Array(9)].map((_,i)=>({ x: (i%3)-1, y: 1- Math.floor(i/3), z: 1 })),
-    D: [...Array(9)].map((_,i)=>({ x: (i%3)-1, y: -1, z: 1- Math.floor(i/3) })),
-    L: [...Array(9)].map((_,i)=>({ x: -1, y: 1- Math.floor(i/3), z: 1- (i%3) })),
-    B: [...Array(9)].map((_,i)=>({ x: -((i%3)-1), y: 1- Math.floor(i/3), z: -1 })),
-  } as any;
   const colorToLetter: Record<string,string> = { W:'U', Y:'D', R:'R', O:'L', G:'F', B:'B' };
-  for (const f of faces) {
-    const coords = faceOrderCoords[f];
-    for (const c of coords) {
-      const cubie = state.cubies.find(q => q.pos.x===c.x && q.pos.y===c.y && q.pos.z===c.z);
-      if (!cubie) { faceStr[f] += f; continue; }
-      const col = cubie.faceColors[f as FaceKey];
-      const letter = col ? colorToLetter[col] ?? f : f;
-      faceStr[f] += letter;
+  
+  // Define 3x3 coordinate grids for each face (viewer perspective, row-major)
+  const faceCoords: Record<FaceKey, Array<{x:number,y:number,z:number}>> = {
+    // U face: looking down at top (y=1), scan from back-left to front-right
+    U: [
+      {x:-1,y:1,z:-1}, {x:0,y:1,z:-1}, {x:1,y:1,z:-1},
+      {x:-1,y:1,z:0},  {x:0,y:1,z:0},  {x:1,y:1,z:0},
+      {x:-1,y:1,z:1},  {x:0,y:1,z:1},  {x:1,y:1,z:1}
+    ],
+    // R face: looking at right side (x=1), scan from top-back to bottom-front
+    R: [
+      {x:1,y:1,z:-1}, {x:1,y:1,z:0}, {x:1,y:1,z:1},
+      {x:1,y:0,z:-1}, {x:1,y:0,z:0}, {x:1,y:0,z:1},
+      {x:1,y:-1,z:-1}, {x:1,y:-1,z:0}, {x:1,y:-1,z:1}
+    ],
+    // F face: looking at front (z=1), scan from top-left to bottom-right
+    F: [
+      {x:-1,y:1,z:1}, {x:0,y:1,z:1}, {x:1,y:1,z:1},
+      {x:-1,y:0,z:1}, {x:0,y:0,z:1}, {x:1,y:0,z:1},
+      {x:-1,y:-1,z:1}, {x:0,y:-1,z:1}, {x:1,y:-1,z:1}
+    ],
+    // D face: looking up at bottom (y=-1), scan from front-left to back-right
+    D: [
+      {x:-1,y:-1,z:1}, {x:0,y:-1,z:1}, {x:1,y:-1,z:1},
+      {x:-1,y:-1,z:0}, {x:0,y:-1,z:0}, {x:1,y:-1,z:0},
+      {x:-1,y:-1,z:-1}, {x:0,y:-1,z:-1}, {x:1,y:-1,z:-1}
+    ],
+    // L face: looking at left side (x=-1), scan from top-front to bottom-back  
+    L: [
+      {x:-1,y:1,z:1}, {x:-1,y:1,z:0}, {x:-1,y:1,z:-1},
+      {x:-1,y:0,z:1}, {x:-1,y:0,z:0}, {x:-1,y:0,z:-1},
+      {x:-1,y:-1,z:1}, {x:-1,y:-1,z:0}, {x:-1,y:-1,z:-1}
+    ],
+    // B face: looking at back (z=-1), scan from top-right to bottom-left
+    B: [
+      {x:1,y:1,z:-1}, {x:0,y:1,z:-1}, {x:-1,y:1,z:-1},
+      {x:1,y:0,z:-1}, {x:0,y:0,z:-1}, {x:-1,y:0,z:-1},
+      {x:1,y:-1,z:-1}, {x:0,y:-1,z:-1}, {x:-1,y:-1,z:-1}
+    ]
+  };
+  
+  let result = '';
+  for (const face of faces) {
+    const coords = faceCoords[face];
+    for (const coord of coords) {
+      const cubie = state.cubies.find(c => c.pos.x === coord.x && c.pos.y === coord.y && c.pos.z === coord.z);
+      const color = cubie?.faceColors[face];
+      const letter = color ? (colorToLetter[color] || face) : face;
+      result += letter;
     }
   }
-  return faces.map(f=>faceStr[f]).join('');
+  
+  return result;
 }
 
+// Parse and normalize solver output to ensure only U D L R F B moves with ' and 2
 function fromSolutionString(sol: string): string[] {
-  return parseMoves(sol);
+  const moves = parseMoves(sol);
+  return normalizeMoves(moves);
+}
+
+// Ensure only basic face turns, reject/warn on rotations or slice moves
+function normalizeMoves(moves: string[]): string[] {
+  const validMoves: string[] = [];
+  const validPattern = /^[UDLRFB]['′2]?$/;
+  
+  for (const move of moves) {
+    if (validPattern.test(move)) {
+      validMoves.push(move);
+    } else {
+      console.warn(`⚠️ Skipping unsupported move: ${move} (only U D L R F B with ' and 2 supported)`);
+    }
+  }
+  
+  return validMoves;
 }
 
 function changedCubies(before: CubeState, after: CubeState): string[] {
@@ -169,14 +219,28 @@ function crossTargetPosForEdge(edge: Cubie): { x: number; y: number; z: number }
 
 export function planCFOP(initial: CubeState): CFOPPlan {
   const facelets = toFacelets(initial);
-  // Prefer vendored cubejs: we import solve logic from local files
+  
+  // Validate facelet string format for solved state  
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    const solved = { cubies: initial.cubies.map(c => ({ ...c, pos: { ...c.pos }, faceColors: { ...c.faceColors } })) };
+    const solvedFacelets = toFacelets(solved);
+    console.assert(solvedFacelets.length === 54, `❌ Facelet length ${solvedFacelets.length}, expected 54`);
+    // Centers should be URFDLB at positions 4, 13, 22, 31, 40, 49
+    const centers = [4,13,22,31,40,49].map(i => solvedFacelets[i]).join('');
+    console.log(`🎯 Facelet centers: ${centers} (should be URFDLB)`);
+  }
+  
+  // Import vendored cubejs solver
   // @ts-ignore
   const solveJs = require('./thirdparty/cubejs-solve.js');
-  // @ts-ignore
+  // @ts-ignore  
   const cubeJs = require('./thirdparty/cubejs-cube.js');
-  // cubejs exports commonjs; use its solve function via global if needed
   const solver: any = (solveJs && (solveJs as any).solve) ? solveJs : (globalThis as any).cubejs || solveJs;
   const solutionStr: string = (solver.solve ? solver.solve : solver)(facelets);
+  
+  console.log(`🔧 Solver input: ${facelets}`);
+  console.log(`🔧 Solver output: ${solutionStr}`);
+  
   const allMoves = fromSolutionString(solutionStr);
 
   // Simulate and segment

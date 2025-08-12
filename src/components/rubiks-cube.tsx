@@ -4,13 +4,15 @@ import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import BlurFade from '@/components/magicui/blur-fade';
-import { applyMove, createSolvedState, CubeState, FaceKey, isSolved, randomScramble } from '@/lib/cube-core';
+import { applyMove, createSolvedState, CubeState, FaceKey, isSolved, randomScramble, runDevTests } from '@/lib/cube-core';
 import type { CFOPPlan } from '@/lib/cfop-solver';
 import type { BasicMove } from '@/lib/notation';
 
 const FACE_ORDER: FaceKey[] = ['U','D','L','R','F','B'];
 
-function colorToHex(c: string): string {
+const PLASTIC_HEX = '#1a1a1a'; // Dark grey plastic for inner faces
+
+function colorToHex(c?: string): string {
   switch (c) {
     case 'W': return '#ffffff';
     case 'Y': return '#ffff00';
@@ -18,7 +20,8 @@ function colorToHex(c: string): string {
     case 'R': return '#ff3333';
     case 'G': return '#00cc55';
     case 'B': return '#0066ff';
-    default: return '#222222';
+    // undefined or any unknown -> inner plastic
+    default:  return PLASTIC_HEX;
   }
 }
 
@@ -37,7 +40,7 @@ function CubieMesh({
 }) {
   const materials = useMemo(() => {
     return FACE_ORDER.map((k) => new THREE.MeshStandardMaterial({
-      color: colorToHex(faces[k] ?? ''),
+      color: colorToHex(faces[k]),
       emissive: highlighted ? new THREE.Color('#ffff88') : new THREE.Color('#000000'),
       transparent: highlighted,
       opacity: highlighted ? 0.9 : 1,
@@ -47,7 +50,7 @@ function CubieMesh({
   const setRef = useCallback((node: THREE.Object3D | null) => {
     refCallback(id, node);
   }, [id, refCallback]);
-
+  
   return (
     <mesh ref={setRef} position={position}>
       <boxGeometry args={[0.95, 0.95, 0.95]} />
@@ -187,6 +190,11 @@ const AppleButton = ({
 // Main React Component using pure core + face-group animation
 const RubiksCubeScene = () => {
   const [cube, setCube] = useState<CubeState>(() => createSolvedState());
+  
+  // Run dev tests on mount
+  useEffect(() => {
+    runDevTests();
+  }, []);
   const [queue, setQueue] = useState<BasicMove[]>([]);
   const [currentMove, setCurrentMove] = useState<string | null>(null);
   const [isSolving, setIsSolving] = useState(false);
@@ -206,7 +214,7 @@ const RubiksCubeScene = () => {
   const [chunkSnapshots, setChunkSnapshots] = useState<Map<number, CubeState>>(new Map());
   const [highlightedIds, setHighlightedIds] = useState<Set<string>>(new Set());
   const lastSeekRef = useRef<number>(0);
-
+  
   const groupRef = useRef<THREE.Group>(null);
   const faceGroupRef = useRef<THREE.Group>(null);
   const rootRef = useRef<THREE.Group>(null);
@@ -468,8 +476,8 @@ const RubiksCubeScene = () => {
                 <div className="text-sm text-gray-700 truncate" title={current.chunkLabel}>
                   {current.chunkLabel}
                   {typeof current.chunkIndex==='number' && typeof current.chunkSize==='number' ? ` — ${current.chunkIndex+1}/${current.chunkSize}` : ''}
-                </div>
-              )}
+          </div>
+        )}
               <div className="text-xs font-mono text-gray-500 mt-1">{currentMove}</div>
               {/* Chunk pills */}
               {(() => {
@@ -523,8 +531,8 @@ const RubiksCubeScene = () => {
                   faces={c.faceColors}
                   highlighted={showHighlights && (plan ? highlightedIds.has(c.id) : (stage==='OLL' ? c.pos.y===1 : stage==='PLL' ? c.pos.y===1 : false))}
                   refCallback={(id,obj)=>{ if (obj) idToObj.current.set(id, obj); else idToObj.current.delete(id); }}
-                />
-              ))}
+              />
+            ))}
             </group>
             <group ref={faceGroupRef} />
             <MovePlayer
@@ -547,7 +555,7 @@ const RubiksCubeScene = () => {
           </RotatingCubeGroup>
         </Canvas>
       </div>
-
+      
       <div className="mt-4 text-center text-sm text-gray-500">Drag to rotate • Click buttons to interact</div>
     </div>
   );
@@ -573,6 +581,6 @@ const RubiksCube = () => {
   );
 };
 
-export default RubiksCube;
+export default RubiksCube; 
 
 
