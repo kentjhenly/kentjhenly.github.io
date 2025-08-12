@@ -5,6 +5,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import BlurFade from '@/components/magicui/blur-fade';
 import { applyMove, createSolvedState, CubeState, FaceKey, isSolved, randomScramble } from '@/lib/cube-core';
+import { planCFOP, type CFOPPlan } from '@/lib/cfop-solver';
 import type { BasicMove } from '@/lib/notation';
 
 const FACE_ORDER: FaceKey[] = ['U','D','L','R','F','B'];
@@ -227,23 +228,17 @@ const RubiksCubeScene = () => {
   const onSolve = () => {
     if (isSolving || isSolved(cube)) return;
     setIsSolving(true);
-    setStatusMessage('Solving...');
-    // Use inverse of last scramble as a placeholder visual solution segmented into 4 phases
-    const inv = (m: BasicMove): BasicMove => (m.endsWith("'")) ? (m[0] as any) : m.endsWith('2') ? m as any : (m[0] + "'") as any;
-    const solution = (lastScramble ?? []).slice().reverse().map(inv);
-    if (solution.length === 0) {
-      setIsSolving(false);
-      setStatusMessage('No scramble history; please scramble first');
-      return;
-    }
-    solutionLenRef.current = solution.length;
+    setStatusMessage('Planning...');
+    const plan: CFOPPlan = planCFOP(cube);
+    solutionLenRef.current = plan.moves.length;
     doneCountRef.current = 0;
-    thresholdsRef.current = {
-      q1: Math.floor(solution.length*0.2),
-      q2: Math.floor(solution.length*0.6),
-      q3: Math.floor(solution.length*0.85),
-    };
-    setQueue(solution);
+    const crossLen = plan.stages.find(s=>s.stage==='Cross')?.steps.length ?? 0;
+    const f2lLen = plan.stages.find(s=>s.stage==='F2L')?.steps.length ?? 0;
+    const ollLen = plan.stages.find(s=>s.stage==='OLL')?.steps.length ?? 0;
+    thresholdsRef.current = { q1: crossLen, q2: crossLen + f2lLen, q3: crossLen + f2lLen + ollLen };
+    setStage('Cross');
+    setQueue(plan.moves as BasicMove[]);
+    setStatusMessage('Solving...');
   };
 
   const onReset = () => {
