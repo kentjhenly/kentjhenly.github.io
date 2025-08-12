@@ -16,8 +16,8 @@ function colorToHex(c?: string): string {
   switch (c) {
     case 'W': return '#ffffff';
     case 'Y': return '#ffff00';
-    case 'O': return '#ff8800';
-    case 'R': return '#ff3333';
+    case 'O': return '#ff9900';
+    case 'R': return '#ff0000';
     case 'G': return '#00cc55';
     case 'B': return '#0066ff';
     // undefined or any unknown -> inner plastic
@@ -57,6 +57,7 @@ function CubieMesh({
     polygonOffset: true,
     polygonOffsetFactor: -1,
     polygonOffsetUnits: -1,
+    side: THREE.DoubleSide,
   }), [highlighted]);
 
   // Plane transforms per face
