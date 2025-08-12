@@ -8,6 +8,11 @@ export interface StageStep {
   alg: string[];
   label?: string;
   highlightCubies?: string[];
+  // chunk metadata
+  chunkId?: string;
+  chunkLabel?: string;
+  chunkIndex?: number;
+  chunkSize?: number;
 }
 
 export interface StagePlan { stage: Stage; steps: StageStep[] }
@@ -286,8 +291,10 @@ export function planCFOP(initial: CubeState): CFOPPlan {
     stage: sp.stage,
     steps: sp.steps.map(st => ({ ...st, alg: simplifyMoves(st.alg) }))
   }));
-  const flatMoves = simplified.flatMap(sp => sp.steps.flatMap(s => s.alg));
-  return { stages: simplified, moves: flatMoves };
+  // Chunking pass per stage
+  const chunked = chunkStages(initial, simplified);
+  const flatMoves = chunked.flatMap(sp => sp.steps.flatMap(s => s.alg));
+  return { stages: chunked, moves: flatMoves };
 }
 
 // The following stage-specific planners are not used when third-party solver is active,
@@ -296,5 +303,228 @@ export function planCross(state: CubeState): StagePlan { return { stage: 'Cross'
 export function planF2L(state: CubeState): StagePlan { return { stage: 'F2L', steps: [] }; }
 export function planOLL(state: CubeState): StagePlan { return { stage: 'OLL', steps: [] }; }
 export function planPLL(state: CubeState): StagePlan { return { stage: 'PLL', steps: [] }; }
+
+// ===== Chunking =====
+function stageStartStates(initial: CubeState, stages: StagePlan[]): CubeState[] {
+  const starts: CubeState[] = [];
+  let acc = { cubies: initial.cubies.map(c=>({ id:c.id, pos:{...c.pos}, faceColors: { ...c.faceColors }})) };
+  for (const sp of stages) {
+    starts.push(acc);
+    for (const st of sp.steps) {
+      const m = st.alg[0] as BasicMove;
+      acc = applyMove(acc, m);
+    }
+  }
+  return starts;
+}
+
+function buildStatesForStage(start: CubeState, steps: StageStep[]): CubeState[] {
+  const s: CubeState[] = [start];
+  for (const st of steps) {
+    const m = st.alg[0] as BasicMove;
+    s.push(applyMove(s[s.length-1], m));
+  }
+  return s;
+}
+
+function whiteCrossCount(state: CubeState): number {
+  return getWhiteEdges(state).filter(e=>isWhiteCrossEdgeSolved(state, e)).length;
+}
+
+function solvedF2LSlots(state: CubeState): Array<'FR'|'FL'|'BR'|'BL'> {
+  const slots: ('FR'|'FL'|'BR'|'BL')[] = ['FR','FL','BR','BL'];
+  return slots.filter(s => isF2LPairSolved(state, s));
+}
+
+function areOLLEdgesOriented(state: CubeState): boolean {
+  // All U-layer edges have U sticker on U
+  const uEdges = uLayerCubies(state).filter(isEdge);
+  if (uEdges.length < 4) return false;
+  return uEdges.every(e => e.faceColors.U === SOLVED_COLORS.U);
+}
+
+function areOLLCornersOriented(state: CubeState): boolean {
+  const uCorners = uLayerCubies(state).filter(isCorner);
+  if (uCorners.length < 4) return false;
+  return uCorners.every(c => c.faceColors.U === SOLVED_COLORS.U);
+}
+
+function arePLLCornersPermuted(state: CubeState): boolean {
+  // After OLL, corners are oriented. Check if their side colors match centers at current positions.
+  const uCorners = uLayerCubies(state).filter(isCorner);
+  for (const c of uCorners) {
+    // check side faces at position
+    const sides: FaceKey[] = [];
+    if (c.pos.x === 1) sides.push('R'); else if (c.pos.x === -1) sides.push('L');
+    if (c.pos.z === 1) sides.push('F'); else if (c.pos.z === -1) sides.push('B');
+    for (const f of sides) {
+      const color = c.faceColors[f];
+      if (!color || color !== SOLVED_COLORS[f]) return false;
+    }
+  }
+  return true;
+}
+
+function arePLLEdgesPermuted(state: CubeState): boolean {
+  const uEdges = uLayerCubies(state).filter(isEdge);
+  for (const e of uEdges) {
+    if (e.pos.x === 0 && e.pos.z === 0) return false; // shouldn't happen
+    let f: FaceKey | undefined = undefined;
+    if (e.pos.x === 1) f = 'R'; else if (e.pos.x === -1) f = 'L';
+    if (e.pos.z === 1) f = 'F'; else if (e.pos.z === -1) f = 'B';
+    if (!f) return false;
+    const color = e.faceColors[f];
+    if (!color || color !== SOLVED_COLORS[f]) return false;
+  }
+  return true;
+}
+
+function stripUExtremes(seq: string[]): string[] {
+  const isU = (m: string) => m[0] === 'U';
+  let a = 0, b = seq.length - 1;
+  while (a <= b && isU(seq[a])) a++;
+  while (b >= a && isU(seq[b])) b--;
+  return seq.slice(a, b + 1);
+}
+
+const OLL_EDGES_DICT: Record<string,string[]> = {
+  line: ["F","R","U","R'","U'","F'"],
+  lshape: ["F","U","R","U'","R'","F'"],
+};
+const OLL_CORNERS_DICT: Record<string,string[]> = {
+  sune: ["R","U","R'","U","R","U2","R'"],
+  antisune: ["R'","U'","R","U'","R'","U2","R"],
+};
+const PLL_EDGES_DICT: Record<string,string[]> = {
+  ua: ["R","U'","R","U","R","U","R","U'","R'","U'","R2"],
+  ub: ["R2","U","R","U","R'","U'","R'","U'","R'","U","R'"],
+};
+
+function matchAlg(labelSet: Record<string,string[]>, seq: string[]): string | undefined {
+  const s = stripUExtremes(seq);
+  for (const key of Object.keys(labelSet)) {
+    const target = labelSet[key];
+    if (s.length === target.length && s.every((m,i)=>m===target[i])) return key;
+  }
+  return undefined;
+}
+
+function chunkStages(initial: CubeState, stages: StagePlan[]): StagePlan[] {
+  const starts = stageStartStates(initial, stages);
+  const out: StagePlan[] = [];
+  stages.forEach((sp, idx) => {
+    const start = starts[idx];
+    const states = buildStatesForStage(start, sp.steps);
+    const steps = sp.steps.map(s=>({ ...s }));
+    if (sp.stage === 'Cross') {
+      let chunkCounter = 0;
+      let chunkStart = 0;
+      let prevCount = whiteCrossCount(states[0]);
+      for (let i=0;i<steps.length;i++) {
+        const before = states[i];
+        const after = states[i+1];
+        const count = whiteCrossCount(after);
+        if (count > prevCount) {
+          // determine which edge placed
+          const edgesAfter = getWhiteEdges(after);
+          const placed = edgesAfter.find(e=>!isWhiteCrossEdgeSolved(before, before.cubies.find(c=>c.id===e.id)!));
+          const sideColor = placed ? (Object.values(placed.faceColors).find(c=>c!=='W') as Color) : undefined;
+          const chunkId = `Cross-${chunkCounter}`;
+          const label = sideColor ? `Cross: place ${sideColor} edge` : 'Cross: place edge';
+          const size = i - chunkStart + 1;
+          for (let j=chunkStart;j<=i;j++) {
+            steps[j].chunkId = chunkId;
+            steps[j].chunkLabel = label;
+            steps[j].chunkIndex = j - chunkStart;
+            steps[j].chunkSize = size;
+          }
+          chunkCounter++;
+          chunkStart = i+1;
+          prevCount = count;
+        }
+      }
+    } else if (sp.stage === 'F2L') {
+      const order: ('FR'|'FL'|'BR'|'BL')[] = ['FR','FL','BR','BL'];
+      let cursor = 0;
+      let chunkCounter = 0;
+      for (const slot of order) {
+        if (cursor >= steps.length) break;
+        if (isF2LPairSolved(states[cursor], slot)) continue;
+        const [c1,c2] = getF2LSlotColors(slot);
+        // find start index
+        let startIdx = cursor;
+        let corner = findCornerByColors(states[cursor], 'W', c1, c2);
+        let edge = findEdgeByColors(states[cursor], c1, c2);
+        for (let i=cursor;i<steps.length;i++) {
+          const ch = new Set(changedCubies(states[i], states[i+1]));
+          if ((corner && ch.has(corner.id)) || (edge && ch.has(edge.id))) { startIdx = i; break; }
+        }
+        // find end index (when slot solved)
+        let endIdx = steps.length-1;
+        for (let i=startIdx;i<steps.length;i++) {
+          if (isF2LPairSolved(states[i+1], slot)) { endIdx = i; break; }
+        }
+        const chunkId = `F2L-${chunkCounter}`;
+        const size = endIdx - startIdx + 1;
+        for (let j=startIdx;j<=endIdx;j++) {
+          steps[j].chunkId = chunkId;
+          steps[j].chunkLabel = `F2L: ${slot} (setup+insert)`;
+          steps[j].chunkIndex = j - startIdx;
+          steps[j].chunkSize = size;
+        }
+        cursor = endIdx + 1;
+        chunkCounter++;
+      }
+    } else if (sp.stage === 'OLL') {
+      // edges chunk then corners chunk
+      let edgeEnd = steps.length-1;
+      for (let i=0;i<steps.length;i++) {
+        if (!areOLLEdgesOriented(states[i]) && areOLLEdgesOriented(states[i+1])) { edgeEnd = i; break; }
+      }
+      const edgesSeq = steps.slice(0, edgeEnd+1).map(s=>s.alg[0]);
+      const matchE = matchAlg(OLL_EDGES_DICT, edgesSeq);
+      const edgesLabel = matchE ? `OLL: ${matchE}` : 'OLL: orient edges';
+      for (let j=0;j<=edgeEnd;j++) {
+        steps[j].chunkId = 'OLL-edges';
+        steps[j].chunkLabel = edgesLabel;
+        steps[j].chunkIndex = j;
+        steps[j].chunkSize = edgeEnd+1;
+      }
+      const cornersSeq = steps.slice(edgeEnd+1).map(s=>s.alg[0]);
+      const matchC = matchAlg(OLL_CORNERS_DICT, cornersSeq);
+      const cornersLabel = matchC ? `OLL: ${matchC}` : 'OLL: orient corners';
+      for (let j=edgeEnd+1;j<steps.length;j++) {
+        steps[j].chunkId = 'OLL-corners';
+        steps[j].chunkLabel = cornersLabel;
+        steps[j].chunkIndex = j - (edgeEnd+1);
+        steps[j].chunkSize = steps.length - (edgeEnd+1);
+      }
+    } else if (sp.stage === 'PLL') {
+      // corners then edges
+      let cornerEnd = steps.length-1;
+      for (let i=0;i<steps.length;i++) {
+        if (!arePLLCornersPermuted(states[i]) && arePLLCornersPermuted(states[i+1])) { cornerEnd = i; break; }
+      }
+      const cornersLabel = 'PLL: corners';
+      for (let j=0;j<=cornerEnd;j++) {
+        steps[j].chunkId = 'PLL-corners';
+        steps[j].chunkLabel = cornersLabel;
+        steps[j].chunkIndex = j;
+        steps[j].chunkSize = cornerEnd+1;
+      }
+      const edgesSeq = steps.slice(cornerEnd+1).map(s=>s.alg[0]);
+      const matchP = matchAlg(PLL_EDGES_DICT, edgesSeq);
+      const edgesLabel = matchP ? `PLL: ${matchP}` : 'PLL: edges';
+      for (let j=cornerEnd+1;j<steps.length;j++) {
+        steps[j].chunkId = 'PLL-edges';
+        steps[j].chunkLabel = edgesLabel;
+        steps[j].chunkIndex = j - (cornerEnd+1);
+        steps[j].chunkSize = steps.length - (cornerEnd+1);
+      }
+    }
+    out.push({ stage: sp.stage, steps });
+  });
+  return out;
+}
 
 

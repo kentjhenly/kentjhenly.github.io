@@ -5,7 +5,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import BlurFade from '@/components/magicui/blur-fade';
 import { applyMove, createSolvedState, CubeState, FaceKey, isSolved, randomScramble } from '@/lib/cube-core';
-import { planCFOP, type CFOPPlan } from '@/lib/cfop-solver';
+import type { CFOPPlan } from '@/lib/cfop-solver';
 import type { BasicMove } from '@/lib/notation';
 
 const FACE_ORDER: FaceKey[] = ['U','D','L','R','F','B'];
@@ -194,6 +194,9 @@ const RubiksCubeScene = () => {
   const [stage, setStage] = useState<'Cross'|'F2L'|'OLL'|'PLL'|'Solved'>('Solved');
   const [showHighlights, setShowHighlights] = useState(true);
   const [lastScramble, setLastScramble] = useState<BasicMove[] | null>(null);
+  const [plan, setPlan] = useState<CFOPPlan | null>(null);
+  const [planStartState, setPlanStartState] = useState<CubeState | null>(null);
+  const [globalStepIndex, setGlobalStepIndex] = useState(0);
 
   const groupRef = useRef<THREE.Group>(null);
   const faceGroupRef = useRef<THREE.Group>(null);
@@ -264,16 +267,22 @@ const RubiksCubeScene = () => {
     if (isSolving || isSolved(cube)) return;
     setIsSolving(true);
     setStatusMessage('Planning...');
-    const plan: CFOPPlan = planCFOP(cube);
-    solutionLenRef.current = plan.moves.length;
-    doneCountRef.current = 0;
-    const crossLen = plan.stages.find(s=>s.stage==='Cross')?.steps.length ?? 0;
-    const f2lLen = plan.stages.find(s=>s.stage==='F2L')?.steps.length ?? 0;
-    const ollLen = plan.stages.find(s=>s.stage==='OLL')?.steps.length ?? 0;
-    thresholdsRef.current = { q1: crossLen, q2: crossLen + f2lLen, q3: crossLen + f2lLen + ollLen };
-    setStage('Cross');
-    setQueue(plan.moves as BasicMove[]);
-    setStatusMessage('Solving...');
+    (async () => {
+      const { planCFOP } = await import('@/lib/cfop-solver');
+      const newPlan: CFOPPlan = planCFOP(cube);
+      setPlan(newPlan);
+      setPlanStartState(cube);
+      solutionLenRef.current = newPlan.moves.length;
+      doneCountRef.current = 0;
+      setGlobalStepIndex(0);
+      const crossLen = newPlan.stages.find(s=>s.stage==='Cross')?.steps.length ?? 0;
+      const f2lLen = newPlan.stages.find(s=>s.stage==='F2L')?.steps.length ?? 0;
+      const ollLen = newPlan.stages.find(s=>s.stage==='OLL')?.steps.length ?? 0;
+      thresholdsRef.current = { q1: crossLen, q2: crossLen + f2lLen, q3: crossLen + ollLen };
+      setStage('Cross');
+      setQueue(newPlan.moves as BasicMove[]);
+      setStatusMessage('Solving...');
+    })();
   };
 
   const onReset = () => {
@@ -313,6 +322,22 @@ const RubiksCubeScene = () => {
             <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{queue.length} moves remaining</span>
           )}
         </div>
+        {plan && (() => {
+          const flatSteps = plan.stages.flatMap(s => s.steps);
+          const current = flatSteps[globalStepIndex];
+          if (!current) return null;
+          return (
+            <div className="mt-2">
+              {current.chunkLabel && (
+                <div className="text-sm text-gray-700 truncate" title={current.chunkLabel}>
+                  {current.chunkLabel}
+                  {typeof current.chunkIndex==='number' && typeof current.chunkSize==='number' ? ` — ${current.chunkIndex+1}/${current.chunkSize}` : ''}
+                </div>
+              )}
+              <div className="text-xs font-mono text-gray-500 mt-1">{currentMove}</div>
+            </div>
+          );
+        })()}
       </div>
 
       <div 
