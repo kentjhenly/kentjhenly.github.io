@@ -38,26 +38,62 @@ function CubieMesh({
   highlighted: boolean;
   refCallback: (id: string, obj: THREE.Object3D | null) => void;
 }) {
-  const materials = useMemo(() => {
-    return FACE_ORDER.map((k) => new THREE.MeshStandardMaterial({
-      color: colorToHex(faces[k]),
-      emissive: highlighted ? new THREE.Color('#ffff88') : new THREE.Color('#000000'),
-      transparent: highlighted,
-      opacity: highlighted ? 0.9 : 1,
-    }));
-  }, [faces, highlighted]);
-
   const setRef = useCallback((node: THREE.Object3D | null) => {
     refCallback(id, node);
   }, [id, refCallback]);
-  
+
+  const baseMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    color: PLASTIC_HEX,
+    metalness: 0.1,
+    roughness: 0.8,
+    emissive: highlighted ? new THREE.Color('#404020') : new THREE.Color('#000000'),
+  }), [highlighted]);
+
+  const stickerMaterialFor = useCallback((hex: string) => new THREE.MeshStandardMaterial({
+    color: hex,
+    metalness: 0,
+    roughness: 0.5,
+    emissive: highlighted ? new THREE.Color('#ffff66') : new THREE.Color('#000000'),
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  }), [highlighted]);
+
+  // Plane transforms per face
+  const half = 0.95 / 2;
+  const eps = 0.001;
+  const stickerSize = 0.9;
+  const faceTransforms: Record<FaceKey, { pos: [number,number,number]; rot: [number,number,number] }> = {
+    U: { pos: [0,  half + eps, 0], rot: [-Math.PI/2, 0, 0] },
+    D: { pos: [0, -half - eps, 0], rot: [ Math.PI/2, 0, 0] },
+    F: { pos: [0, 0,  half + eps], rot: [0, 0, 0] },
+    B: { pos: [0, 0, -half - eps], rot: [0, Math.PI, 0] },
+    R: { pos: [ half + eps, 0, 0], rot: [0, -Math.PI/2, 0] },
+    L: { pos: [-half - eps, 0, 0], rot: [0,  Math.PI/2, 0] },
+  };
+
   return (
-    <mesh ref={setRef} position={position}>
-      <boxGeometry args={[1.0, 1.0, 1.0]} />
-      {materials.map((m, i) => (
-        <primitive key={i} attach={`material-${i}`} object={m} />
-      ))}
-    </mesh>
+    <group ref={setRef} position={position}>
+      {/* Base plastic cubie */}
+      <mesh renderOrder={0}>
+        <boxGeometry args={[0.95, 0.95, 0.95]} />
+        <primitive attach="material" object={baseMaterial} />
+      </mesh>
+
+      {/* Sticker planes */}
+      {Object.entries(faces).map(([face, col]) => {
+        if (!col) return null;
+        const f = face as FaceKey;
+        const t = faceTransforms[f];
+        const mat = stickerMaterialFor(colorToHex(col));
+        return (
+          <mesh key={f} position={t.pos} rotation={t.rot} renderOrder={2}>
+            <planeGeometry args={[stickerSize, stickerSize]} />
+            <primitive attach="material" object={mat} />
+          </mesh>
+        );
+      })}
+    </group>
   );
 }
 
