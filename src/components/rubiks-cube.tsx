@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import BlurFade from '@/components/magicui/blur-fade';
-import { applyMove, createSolvedState, CubeState, FaceKey, isSolved, randomScramble, runDevTests } from '@/lib/cube-core';
+import { applyMove, applyMoves, createSolvedState, CubeState, FaceKey, isSolved, randomScramble, runDevTests } from '@/lib/cube-core';
 import type { CFOPPlan } from '@/lib/cfop-solver';
 import type { BasicMove } from '@/lib/notation';
 
@@ -327,14 +327,33 @@ const RubiksCubeScene = () => {
   };
 
   const onSolve = () => {
-    if (isSolving || isSolved(cube)) return;
+    if (isSolving) return;
+    // If a scramble is in progress or queued, finish it instantly into logical state
+    if (anim.current || queue.length > 0) {
+      // cancel in-flight tween and reattach objects
+      if (anim.current) {
+        anim.current = null;
+        if (faceGroupRef.current && rootRef.current) {
+          const grp = faceGroupRef.current;
+          const toMove: THREE.Object3D[] = [];
+          grp.children.forEach(ch => toMove.push(ch));
+          toMove.forEach(ch => (rootRef.current as any).attach(ch));
+          grp.rotation.set(0,0,0);
+        }
+      }
+      const scrambled = applyMoves(cube, queue);
+      setCube(scrambled);
+      setQueue([]);
+    }
+    const base = queue.length === 0 ? cube : applyMoves(cube, queue);
+    if (isSolved(base)) return;
     setIsSolving(true);
     setStatusMessage('Planning...');
     (async () => {
       const { planCFOP } = await import('@/lib/cfop-solver');
-      const newPlan: CFOPPlan = planCFOP(cube);
+      const newPlan: CFOPPlan = planCFOP(base);
       setPlan(newPlan);
-      setPlanStartState(cube);
+      setPlanStartState(base);
       // flatten and indices
       const fs = newPlan.stages.flatMap(s=>s.steps);
       setFlatSteps(fs);
@@ -475,7 +494,7 @@ const RubiksCubeScene = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [plan, globalStepIndex, seekTo]);
 
-  const isCurrentlySolved = () => isSolved(cube);
+  const isCurrentlySolved = () => (queue.length === 0) && isSolved(cube);
 
   return (
     <div className="cube-container">
