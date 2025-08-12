@@ -77,6 +77,79 @@ const RotatingCubeGroup = ({ isSolving, children, groupRef }: {
   );
 };
 
+// Runs per-frame inside the Canvas context to animate current face rotation and commit moves
+const MovePlayer = ({
+  paused,
+  anim,
+  faceGroupRef,
+  rootRef,
+  queue,
+  setQueue,
+  setCube,
+  setCurrentMove,
+  solutionLenRef,
+  doneCountRef,
+  thresholdsRef,
+  setStage,
+  setIsSolving,
+  setStatusMessage,
+}: {
+  paused: boolean;
+  anim: React.MutableRefObject<null | { face: FaceKey; axis: 'x'|'y'|'z'; dir: 1|-1; turns: 1|2; start: number; duration: number; affected: string[] }>;
+  faceGroupRef: React.RefObject<THREE.Group>;
+  rootRef: React.RefObject<THREE.Group>;
+  queue: BasicMove[];
+  setQueue: React.Dispatch<React.SetStateAction<BasicMove[]>>;
+  setCube: React.Dispatch<React.SetStateAction<CubeState>>;
+  setCurrentMove: React.Dispatch<React.SetStateAction<string | null>>;
+  solutionLenRef: React.MutableRefObject<number>;
+  doneCountRef: React.MutableRefObject<number>;
+  thresholdsRef: React.MutableRefObject<{ q1:number; q2:number; q3:number }>;
+  setStage: (s: 'Cross'|'F2L'|'OLL'|'PLL'|'Solved') => void;
+  setIsSolving: (b: boolean) => void;
+  setStatusMessage: (s: string) => void;
+}) => {
+  useFrame(() => {
+    const a = anim.current;
+    if (!a || paused) return;
+    const now = performance.now();
+    const t = Math.min(1, (now - a.start) / a.duration);
+    const eased = t<0.5 ? 2*t*t : -1 + (4-2*t)*t;
+    const angle = eased * (Math.PI/2) * a.turns * a.dir;
+    if (faceGroupRef.current) {
+      (faceGroupRef.current.rotation as any)[a.axis] = angle;
+    }
+    if (t >= 1) {
+      if (faceGroupRef.current && rootRef.current) {
+        const grp = faceGroupRef.current;
+        const toMove: THREE.Object3D[] = [];
+        grp.children.forEach(ch => toMove.push(ch));
+        toMove.forEach(ch => (rootRef.current as any).attach(ch));
+        grp.rotation.set(0,0,0);
+      }
+      const mv = queue[0];
+      setCube(prev => applyMove(prev, mv));
+      setQueue(q => q.slice(1));
+      if (solutionLenRef.current > 0) {
+        doneCountRef.current += 1;
+        const d = doneCountRef.current;
+        const { q1, q2, q3 } = thresholdsRef.current;
+        const label = d < q1 ? 'Cross' : d < q2 ? 'F2L' : d < q3 ? 'OLL' : (d < solutionLenRef.current ? 'PLL' : 'Solved');
+        setStage(label as any);
+        if (d >= solutionLenRef.current) {
+          setIsSolving(false);
+          setStatusMessage('Solved');
+          setStage('Solved');
+          solutionLenRef.current = 0;
+        }
+      }
+      anim.current = null;
+      setCurrentMove(null);
+    }
+  });
+  return null;
+};
+
 const AppleButton = ({ 
   onClick, 
   disabled = false, 
@@ -159,45 +232,7 @@ const RubiksCubeScene = () => {
     });
   }, [queue, cube, speed]);
 
-  useFrame(() => {
-    const a = anim.current;
-    if (!a || paused) return;
-    const now = performance.now();
-    const t = Math.min(1, (now - a.start) / a.duration);
-    const eased = t<0.5 ? 2*t*t : -1 + (4-2*t)*t;
-    const angle = eased * (Math.PI/2) * a.turns * a.dir;
-    if (faceGroupRef.current) {
-      faceGroupRef.current.rotation[a.axis] = angle;
-    }
-    if (t >= 1) {
-      if (faceGroupRef.current && rootRef.current) {
-        const grp = faceGroupRef.current;
-        const toMove: THREE.Object3D[] = [];
-        grp.children.forEach(ch => toMove.push(ch));
-        toMove.forEach(ch => (rootRef.current as any).attach(ch));
-        grp.rotation.set(0,0,0);
-      }
-      const mv = queue[0];
-      setCube(prev => applyMove(prev, mv));
-      setQueue(q => q.slice(1));
-      // update stage progress
-      if (solutionLenRef.current > 0) {
-        doneCountRef.current += 1;
-        const d = doneCountRef.current;
-        const { q1, q2, q3 } = thresholdsRef.current;
-        const label = d < q1 ? 'Cross' : d < q2 ? 'F2L' : d < q3 ? 'OLL' : (d < solutionLenRef.current ? 'PLL' : 'Solved');
-        setStage(label as any);
-        if (d >= solutionLenRef.current) {
-          setIsSolving(false);
-          setStatusMessage('Solved');
-          setStage('Solved');
-          solutionLenRef.current = 0;
-        }
-      }
-      anim.current = null;
-      setCurrentMove(null);
-    }
-  });
+  // per-frame logic moved into MovePlayer inside Canvas
 
   useEffect(() => {
     if (!anim.current && queue.length > 0 && !paused) startNext();
@@ -307,6 +342,22 @@ const RubiksCubeScene = () => {
               ))}
             </group>
             <group ref={faceGroupRef} />
+            <MovePlayer
+              paused={paused}
+              anim={anim}
+              faceGroupRef={faceGroupRef}
+              rootRef={rootRef}
+              queue={queue}
+              setQueue={setQueue}
+              setCube={setCube}
+              setCurrentMove={setCurrentMove}
+              solutionLenRef={solutionLenRef}
+              doneCountRef={doneCountRef}
+              thresholdsRef={thresholdsRef}
+              setStage={setStage}
+              setIsSolving={setIsSolving}
+              setStatusMessage={setStatusMessage}
+            />
           </RotatingCubeGroup>
         </Canvas>
       </div>
