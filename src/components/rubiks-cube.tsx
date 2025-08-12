@@ -87,6 +87,7 @@ const MovePlayer = ({
   setQueue,
   setCube,
   setCurrentMove,
+  setGlobalStepIndex,
   solutionLenRef,
   doneCountRef,
   thresholdsRef,
@@ -102,6 +103,7 @@ const MovePlayer = ({
   setQueue: React.Dispatch<React.SetStateAction<BasicMove[]>>;
   setCube: React.Dispatch<React.SetStateAction<CubeState>>;
   setCurrentMove: React.Dispatch<React.SetStateAction<string | null>>;
+  setGlobalStepIndex: React.Dispatch<React.SetStateAction<number>>;
   solutionLenRef: React.MutableRefObject<number>;
   doneCountRef: React.MutableRefObject<number>;
   thresholdsRef: React.MutableRefObject<{ q1:number; q2:number; q3:number }>;
@@ -130,6 +132,7 @@ const MovePlayer = ({
       const mv = queue[0];
       setCube(prev => applyMove(prev, mv));
       setQueue(q => q.slice(1));
+      setGlobalStepIndex(i => i + 1);
       if (solutionLenRef.current > 0) {
         doneCountRef.current += 1;
         const d = doneCountRef.current;
@@ -197,6 +200,12 @@ const RubiksCubeScene = () => {
   const [plan, setPlan] = useState<CFOPPlan | null>(null);
   const [planStartState, setPlanStartState] = useState<CubeState | null>(null);
   const [globalStepIndex, setGlobalStepIndex] = useState(0);
+  const [flatSteps, setFlatSteps] = useState<any[]>([]);
+  const [stageOffsets, setStageOffsets] = useState<number[]>([]);
+  const [chunkStartIndices, setChunkStartIndices] = useState<number[]>([]);
+  const [chunkSnapshots, setChunkSnapshots] = useState<Map<number, CubeState>>(new Map());
+  const [highlightedIds, setHighlightedIds] = useState<Set<string>>(new Set());
+  const lastSeekRef = useRef<number>(0);
 
   const groupRef = useRef<THREE.Group>(null);
   const faceGroupRef = useRef<THREE.Group>(null);
@@ -235,6 +244,14 @@ const RubiksCubeScene = () => {
     });
   }, [queue, cube, speed]);
 
+  // Update highlights per current step
+  useEffect(() => {
+    if (!plan) { setHighlightedIds(new Set()); return; }
+    const fs = plan.stages.flatMap(s=>s.steps);
+    const step = fs[globalStepIndex];
+    setHighlightedIds(new Set(step?.highlightCubies ?? []));
+  }, [globalStepIndex, plan]);
+
   // per-frame logic moved into MovePlayer inside Canvas
 
   useEffect(() => {
@@ -261,6 +278,7 @@ const RubiksCubeScene = () => {
     const { moves } = randomScramble(25, Math.floor(Math.random()*1e9));
     setLastScramble(moves);
     setQueue(moves);
+    setPlan(null); setPlanStartState(null); setGlobalStepIndex(0); setFlatSteps([]); setStageOffsets([]); setChunkStartIndices([]); setChunkSnapshots(new Map());
   };
 
   const onSolve = () => {
@@ -272,6 +290,25 @@ const RubiksCubeScene = () => {
       const newPlan: CFOPPlan = planCFOP(cube);
       setPlan(newPlan);
       setPlanStartState(cube);
+      // flatten and indices
+      const fs = newPlan.stages.flatMap(s=>s.steps);
+      setFlatSteps(fs);
+      const offs: number[] = [];
+      let acc = 0;
+      for (const s of newPlan.stages) { offs.push(acc); acc += s.steps.length; }
+      setStageOffsets(offs);
+      // chunk starts and snapshots
+      const starts: number[] = [];
+      let prevId: string | undefined;
+      fs.forEach((st, i) => { const id = st.chunkId ?? `m-${i}`; if (id !== prevId) { starts.push(i); prevId = id; } });
+      setChunkStartIndices(starts);
+      const snaps = new Map<number, CubeState>();
+      let s = cube;
+      for (let i=0;i<fs.length;i++) {
+        if (starts.includes(i)) snaps.set(i, s);
+        s = applyMove(s, fs[i].alg[0] as any);
+      }
+      setChunkSnapshots(snaps);
       solutionLenRef.current = newPlan.moves.length;
       doneCountRef.current = 0;
       setGlobalStepIndex(0);
@@ -292,7 +329,106 @@ const RubiksCubeScene = () => {
     setCube(createSolvedState());
     setStatusMessage('Reset');
     setStage('Solved');
+    setPlan(null); setPlanStartState(null); setGlobalStepIndex(0); setFlatSteps([]); setStageOffsets([]); setChunkStartIndices([]); setChunkSnapshots(new Map()); setHighlightedIds(new Set());
   };
+
+  // Seek helpers
+  const clampIndex = useCallback((i:number) => {
+    const max = (plan ? plan.stages.flatMap(s=>s.steps).length : 0) - 1;
+    return Math.max(0, Math.min(i, max >= 0 ? max : 0));
+  }, [plan]);
+
+  const computeStateAt = useCallback((target:number): CubeState => {
+    if (!plan || !planStartState) return cube;
+    const idx = clampIndex(target);
+    const fs = plan.stages.flatMap(s=>s.steps);
+    // nearest snapshot at or before idx
+    let startIdx = 0;
+    for (const s of chunkStartIndices) { if (s <= idx && s >= startIdx) startIdx = s; }
+    let state = chunkSnapshots.get(startIdx) ?? planStartState;
+    for (let i=startIdx;i<idx;i++) state = applyMove(state, fs[i].alg[0] as any);
+    return state;
+  }, [plan, planStartState, chunkStartIndices, chunkSnapshots, cube, clampIndex]);
+
+  const cancelTween = useCallback(() => {
+    if (anim.current) {
+      anim.current = null;
+      if (faceGroupRef.current && rootRef.current) {
+        const grp = faceGroupRef.current;
+        const toMove: THREE.Object3D[] = [];
+        grp.children.forEach(ch => toMove.push(ch));
+        toMove.forEach(ch => (rootRef.current as any).attach(ch));
+        grp.rotation.set(0,0,0);
+      }
+    }
+  }, []);
+
+  const stageForIndex = useCallback((i:number): 'Cross'|'F2L'|'OLL'|'PLL'|'Solved' => {
+    if (!plan) return 'Solved';
+    let acc = 0;
+    for (const sp of plan.stages) {
+      const len = sp.steps.length;
+      if (i < acc + len) return sp.stage as any;
+      acc += len;
+    }
+    return 'Solved';
+  }, [plan]);
+
+  const seekTo = useCallback((idx:number) => {
+    if (!plan) return;
+    const now = Date.now();
+    if (now - lastSeekRef.current < 30) return; // debounce
+    lastSeekRef.current = now;
+    setPaused(true);
+    cancelTween();
+    const clamped = clampIndex(idx);
+    const nextState = computeStateAt(clamped);
+    setCube(nextState);
+    setGlobalStepIndex(clamped);
+    const fs = plan.stages.flatMap(s=>s.steps);
+    const remaining = fs.slice(clamped).map(s=>s.alg[0] as BasicMove);
+    setQueue(remaining);
+    setStage(stageForIndex(clamped));
+  }, [plan, clampIndex, computeStateAt, cancelTween, stageForIndex]);
+
+  // Keyboard controls
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (!plan) return;
+      const shift = e.shiftKey;
+      if (e.code === 'Space') { e.preventDefault(); setPaused(p=>!p); return; }
+      if (e.code === 'ArrowRight' && shift) {
+        e.preventDefault();
+        // next chunk
+        const fs = plan.stages.flatMap(s=>s.steps);
+        const curr = fs[globalStepIndex];
+        const currId = curr?.chunkId;
+        let i = globalStepIndex + 1;
+        while (i < fs.length && fs[i].chunkId === currId) i++;
+        seekTo(i);
+        return;
+      }
+      if (e.code === 'ArrowLeft' && shift) {
+        e.preventDefault();
+        const fs = plan.stages.flatMap(s=>s.steps);
+        // find start of current chunk
+        let i = globalStepIndex;
+        const currId = fs[i]?.chunkId;
+        while (i > 0 && fs[i-1].chunkId === currId) i--;
+        // go to previous chunk start
+        let j = i - 1;
+        const prevId = j >=0 ? fs[j]?.chunkId : undefined;
+        while (j > 0 && fs[j-1].chunkId === prevId) j--;
+        seekTo(Math.max(0,j));
+        return;
+      }
+      if (e.code === 'ArrowRight') { e.preventDefault(); seekTo(globalStepIndex + 1); return; }
+      if (e.code === 'ArrowLeft') { e.preventDefault(); seekTo(globalStepIndex - 1); return; }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [plan, globalStepIndex, seekTo]);
 
   const isCurrentlySolved = () => isSolved(cube);
 
@@ -335,6 +471,30 @@ const RubiksCubeScene = () => {
                 </div>
               )}
               <div className="text-xs font-mono text-gray-500 mt-1">{currentMove}</div>
+              {/* Chunk pills */}
+              {(() => {
+                // active stage chunks
+                let acc=0; let activeIdx=0;
+                for (let s=0; s<plan.stages.length; s++){ const len=plan.stages[s].steps.length; if (globalStepIndex < acc+len){ activeIdx=s; break;} acc+=len; }
+                const stage = plan.stages[activeIdx];
+                const stageStart = plan.stages.slice(0, activeIdx).reduce((a,st)=>a+st.steps.length,0);
+                const chunks: { id:string; label:string; start:number }[] = [];
+                let last: string | undefined;
+                stage.steps.forEach((st, idx) => { if (st.chunkId !== last){ chunks.push({ id: st.chunkId ?? `m-${idx}`, label: st.chunkLabel ?? plan!.stages[activeIdx].stage, start: idx }); last = st.chunkId; } });
+                return (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {chunks.map(ch => {
+                      const active = current.chunkId === ch.id;
+                      const startGlobal = stageStart + ch.start;
+                      return (
+                        <button key={ch.id} className={`px-2 py-1 rounded text-xs ${active ? 'bg-black/10' : 'bg-black/5'} hover:bg-black/10`} title={ch.label} onClick={() => seekTo(startGlobal)}>
+                          {ch.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           );
         })()}
@@ -361,7 +521,7 @@ const RubiksCubeScene = () => {
                   id={c.id}
                   position={[c.pos.x, c.pos.y, c.pos.z]}
                   faces={c.faceColors}
-                  highlighted={showHighlights && (stage==='OLL' ? c.pos.y===1 : stage==='PLL' ? c.pos.y===1 : false)}
+                  highlighted={showHighlights && (plan ? highlightedIds.has(c.id) : (stage==='OLL' ? c.pos.y===1 : stage==='PLL' ? c.pos.y===1 : false))}
                   refCallback={(id,obj)=>{ if (obj) idToObj.current.set(id, obj); else idToObj.current.delete(id); }}
                 />
               ))}
@@ -376,6 +536,7 @@ const RubiksCubeScene = () => {
               setQueue={setQueue}
               setCube={setCube}
               setCurrentMove={setCurrentMove}
+              setGlobalStepIndex={setGlobalStepIndex}
               solutionLenRef={solutionLenRef}
               doneCountRef={doneCountRef}
               thresholdsRef={thresholdsRef}
