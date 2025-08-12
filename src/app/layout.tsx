@@ -66,7 +66,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider delayDuration={0}>
             <div className="max-w-2xl mx-auto px-container-padding">
-              {children}
+            {children}
             </div>
             <Navbar />
           </TooltipProvider>

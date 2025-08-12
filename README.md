@@ -19,6 +19,11 @@ I wanted this site to be a reflection of my personality and passions. Here are s
 ### Interactive 3D Visualizations:
 
 - **Rubik's Cube Solver** (`/src/components/rubiks-cube.tsx`): A fully interactive 3D Rubik's Cube that visualizes the CFOP solving method. It's a nod to my love for algorithms and puzzles, breaking down the solution into the Cross, F2L, OLL, and PLL stages.
+  - Color scheme: U=W, D=Y, L=O, R=R, F=G, B=B.
+  - Notation: quarter turns and inverses: `U U' U2 D D' D2 L L' L2 R R' R2 F F' F2 B B' B2`.
+  - Speed: use the speed slider to tweak ms per quarter turn (150–600ms).
+  - Solver: currently animates a correct visual solution segmented by CFOP phases; full two-look OLL/PLL planner is modularized under `src/lib/cfop-solver.ts` for iteration.
+  - Limitations: not speed optimal; highlights emphasize U-layer during OLL/PLL; cross/F2L pair highlights are minimal.
 
 - **Protein Folding Viewer** (`/src/components/protein-folding.tsx`): Inspired by AlphaFold, this visualizer shows how a protein chain folds into its complex 3D structure. The colors represent pLDDT confidence scores, and it even includes a Predicted Aligned Error (PAE) plot.
 
