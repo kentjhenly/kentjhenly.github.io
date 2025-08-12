@@ -53,7 +53,7 @@ function CubieMesh({
   
   return (
     <mesh ref={setRef} position={position}>
-      <boxGeometry args={[0.95, 0.95, 0.95]} />
+      <boxGeometry args={[1.0, 1.0, 1.0]} />
       {materials.map((m, i) => (
         <primitive key={i} attach={`material-${i}`} object={m} />
       ))}
