@@ -44,7 +44,7 @@ export default function Page() {
                 delay={BLUR_FADE_DELAY * 1.5}
                 className="text-sm text-muted-foreground md:text-base"
                 yOffset={8}
-                text={`In Chinese, I'm 李忠賢, so call me Li Zhongxian (Mandarin), Lee Chung Yin (Cantonese), or Lie Tong Hian (Teochew) and I'll turn my head (probably).`}
+                text={`Welcome to my website! My name is Kent Justin Henly. In Chinese, I'm 李忠賢, so call me Li Zhongxian (Mandarin), Lee Chung Yin (Cantonese), or Lie Tong Hian (Teochew) and I'll turn my head (probably).`}
               />
               <BlurFadeText
                 className="max-w-[600px] text-muted-foreground md:text-xl"
