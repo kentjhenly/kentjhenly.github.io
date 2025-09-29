@@ -7,39 +7,43 @@ import geoData from "../../public/world-countries.json";
 
 // List of countries you've visited (ISO 3166-1 alpha-3 codes)
 const visitedCountries = [
-  "USA", // United States
+  "AUS", // Australia
+  "BEL", // Belgium
   "CHN", // China
-  "TWN", // Taiwan
+  "CHE", // Switzerland
+  "DEU", // Germany
+  "FRA", // France
+  "HKG", // Hong Kong
+  "IDN", // Indonesia
+  "ITA", // Italy
   "JPN", // Japan
   "KOR", // South Korea
   "MYS", // Malaysia
+  "NLD", // Netherlands
+  "SGP", // Singapore
   "THA", // Thailand
-  "FRA", // France
-  "ESP", // Spain
-  "CHE", // Switzerland
-  "ITA", // Italy
-  "QAT", // Qatar
-  "GBR", // United Kingdom
-  "FIN", // Finland
+  "TWN", // Taiwan
   "VAT", // Vatican City
 ];
 
 // Map of country codes to full names and categories for the word list
 const countryData: { [key: string]: { name: string; category: string } } = {
-  "USA": { name: "United States", category: "North America" },
+  "AUS": { name: "Australia", category: "Oceania" },
+  "BEL": { name: "Belgium", category: "Europe" },
   "CHN": { name: "China", category: "Asia" },
-  "TWN": { name: "Taiwan", category: "Asia" },
+  "CHE": { name: "Switzerland", category: "Europe" },
+  "DEU": { name: "Germany", category: "Europe" },
+  "FRA": { name: "France", category: "Europe" },
+  "HKG": { name: "Hong Kong", category: "Asia" },
+  "IDN": { name: "Indonesia", category: "Asia" },
+  "ITA": { name: "Italy", category: "Europe" },
   "JPN": { name: "Japan", category: "Asia" },
   "KOR": { name: "South Korea", category: "Asia" },
   "MYS": { name: "Malaysia", category: "Asia" },
+  "NLD": { name: "Netherlands", category: "Europe" },
+  "SGP": { name: "Singapore", category: "Asia" },
   "THA": { name: "Thailand", category: "Asia" },
-  "FRA": { name: "France", category: "Europe" },
-  "ESP": { name: "Spain", category: "Europe" },
-  "CHE": { name: "Switzerland", category: "Europe" },
-  "ITA": { name: "Italy", category: "Europe" },
-  "QAT": { name: "Qatar", category: "Middle East" },
-  "GBR": { name: "United Kingdom", category: "Europe" },
-  "FIN": { name: "Finland", category: "Europe" },
+  "TWN": { name: "Taiwan", category: "Asia" },
   "VAT": { name: "Vatican City", category: "Europe" },
 };
 
@@ -109,6 +113,8 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                       geographies.map((geo) => {
                         const code = getCountryCode(geo);
                         const isVisited = visitedSet.has(code);
+                        const isHome = code === "HKG" || code === "IDN";
+                        const fillColor = isHome ? "#ef4444" : (isVisited ? "#5AC8FA" : "#e5e7eb");
                         return (
                           <Geography
                             key={geo.rsmKey}
@@ -117,7 +123,7 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                             onMouseLeave={() => setHoveredCountry(null)}
                             style={{
                               default: {
-                                fill: isVisited ? "#5AC8FA" : "#e5e7eb",
+                                fill: fillColor,
                                 stroke: "#ffffff",
                                 strokeWidth: 0.75,
                                 outline: "none",
@@ -125,14 +131,14 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                                 cursor: "pointer",
                               },
                               hover: {
-                                fill: "#3b82f6",
+                                fill: isHome ? "#dc2626" : "#3b82f6",
                                 stroke: "#ffffff",
                                 strokeWidth: 1,
                                 outline: "none",
                                 cursor: "pointer",
                               },
                               pressed: {
-                                fill: isVisited ? "#5AC8FA" : "#e5e7eb",
+                                fill: fillColor,
                                 stroke: "#ffffff",
                                 strokeWidth: 1,
                                 outline: "none",
@@ -153,21 +159,21 @@ export const WorldMap = ({ delay }: WorldMapProps) => {
                 </div>
               )}
             </div>
-            {/* Legend */}
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#5AC8FA' }}></div>
-                <span>Visited</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-gray-300 rounded"></div>
-                <span>Not Yet Visited</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#007AFF' }}></div>
-                <span>Hover</span>
-              </div>
-            </div>
+             {/* Legend */}
+             <div className="flex items-center space-x-6 text-sm">
+               <div className="flex items-center space-x-2">
+                 <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ef4444' }}></div>
+                 <span>Home</span>
+               </div>
+               <div className="flex items-center space-x-2">
+                 <div className="w-4 h-4 rounded" style={{ backgroundColor: '#5AC8FA' }}></div>
+                 <span>Visited</span>
+               </div>
+               <div className="flex items-center space-x-2">
+                 <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                 <span>Not Yet Visited</span>
+               </div>
+             </div>
             
             {/* Visited Countries Word List */}
             <div className="w-full max-w-2xl">

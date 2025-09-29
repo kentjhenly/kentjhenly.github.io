@@ -1,43 +1,43 @@
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon, SparklesIcon } from "lucide-react";
+import { HomeIcon, NotebookIcon, ImageIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Hailey Cheng",
-  initials: "HC",
-  url: "https://heilcheng.github.io",
+  name: "Kent Justin Henly",
+  initials: "KJH",
+  url: "https://kentjhenly.github.io",
   location: "Hong Kong",
   locationLink: "https://www.google.com/maps/place/hongkong",
   description:
-    "A rising junior with research interests in Mathematical Biology and AI for biomedicine. I'm also a software engineer specializing in AI/ML, and I love building fun, meaningful apps with React Native. On the side, I share my journey with over 10,000 followers on Threads and 25,000 on LinkedIn.",
+    "A rising junior currently studying Computer Science (specializing in Artificial Intelligence) and Business in The Chinese University of Hong Kong. I aspire to be the go-to guy connecting people with tech. On the side, I also have a heavy interest in public speaking and empowering people to speak.",
   summary:
-    "I'm a Homo sapiens born and raised in Hong Kong. I also spent a year studying in the UK and semesters in the US and France, experiences that opened my mind and shaped how I see the world.\n\nBefore university, I was that kid obsessed with biology and completely hooked on the Olympiad. I loved exploring the mysteries of life. But after countless hours pipetting in the lab, I started to feel burnt out. I realized I loved biology, just not the endless wet lab work.\n\nAt the same time, I discovered the beauty and speed of simulations, where you can explore complex systems without spilling a single drop. One day, I had a lightbulb moment: \"What if I could use math and code to solve big biology questions instead?\" That idea completely changed my path.\n\nAnd so, here I am, merging my love for biology with the power of math and computation.\n\nWhen I'm not coding or solving equations, you'll find me kayaking, playing tennis, or on a mission to hunt down the best ramen and handmade pasta in Hong Kong (I might have tried them all by now). And when it comes to boba, it's always \"No.1\" at Comebuytea.",
-  avatarUrl: "/me.jpeg",
+    "At first glance I might seem like your average local Hong Konger, but I was actually born and raised in the hustle and bustle of Jakarta, Indonesia. You might not expect that place to be in any way similar to Hong Kong, but I grew up embracing the hearty commotion of the big city. I moved to Hong Kong when I turned 17 to pursue my studies, and it has been the highlight of my life. It taught me many life lessons on independence, time management, and cold hard work.\n\nBefore university, I was the kid who never needed to study maths. I didn't revise and would still get straight As. Maths was one of the only classes I would actually look forward to. It actually got to the point where I would ask my teacher for extra worksheets to do, and of course she ran out of them. I realized that Computer Science somewhere I can apply my interest in maths, and as someone who used to see computers as magic, I was eager to learn more about computers.\n\nAfter graduating high school, I moved thousands of miles away to pursue my studies, where I knew absolutely no one. I intentionally chose a city like Hong Kong where I had no friends or family, because when no one knows you, you are who you pretend to be, and I faked it till I made it. I somehow was able to reinvent myself, and I found my extroversion and my passion for public speaking, something that a few months prior I thought was impossible.\n\nThough after entering university, my extroversion shone through, and I felt like there was a whole other world that half of my peers was exploring, while most people in STEM majors like me ignored it. I realized that there weren't that many people in STEM who would love to communicate and work with others either in their career or day to day. Speaking to professionals only solidified my opinion, as they also struggled to find people who had both the technical and communication skills.\n\nI also realized after an internship that I loved to see how companies worked in the big picture, and how command flows through an organization of thousands and somehow, each person contributes to a system that they may not understand, but it still delivers service smoothly. This is the reason why I started my minor in Business.\n\nAnd so, here I am, merging my interests for the magic of computers, the warmth of connections and people, and the complexity and efficiency of businesses. I hope that I can encourage people that are just like me back then to conquer their fears of speaking out and being heard.\n\nSo that's basically my life story (haha). On a lighter note, when I'm not dialed in my work, you can find me writing articles or taking pictures with my digital camera. I'm all around, trying new things at new places. The only thing you can call me is all over the place. So that's that. Thanks for reading!",
+  avatarUrl: "/me.jpg",
 
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
-    { href: "/showcase", icon: SparklesIcon, label: "Showcase" },
+    { href: "/showcase", icon: ImageIcon, label: "Gallery" },
   ],
   contact: {
-    email: "haileycheng@proton.me",
-    tel: "+852-XXX-XXX-XXX",
+    email: "kentjustinhenly@gmail.com",
+    tel: "+852 9485 3889",
     social: {
       GitHub: {
         name: "GitHub",
-        url: "https://github.com/heilcheng",
+        url: "https://github.com/kentjhenly",
         icon: Icons.github,
         navbar: true,
       },
       LinkedIn: {
         name: "LinkedIn",
-        url: "https://linkedin.com/in/heilcheng",
+        url: "https://www.linkedin.com/in/kent-justin-henly-a286322a9",
         icon: Icons.linkedin,
         navbar: true,
       },
 
       email: {
         name: "Send Email",
-        url: "mailto:haileycheng@proton.me",
+        url: "mailto:kentjhenly@proton.me",
         icon: Icons.email,
         navbar: false,
       },
@@ -46,79 +46,96 @@ export const DATA = {
 
   technicalExperience: [
     {
-      company: "Google DeepMind",
-      href: "https://deepmind.com",
+      company: "Grab",
+      href: "https://grab.com",
       badges: [],
-      location: "Remote",
-      title: "Open Source Software Developer\nGoogle Summer of Code Participant",
-      logoUrl: "/deepmind.jpg",
-      start: "May 2025",
+      location: "Jakarta, Indonesia",
+      title: "Demand Analyst Intern",
+      logoUrl: "/Grab.png",
+      start: "July 2025",
       end: "Present",
       bullets: [
-        "Engineered a scalable model evaluation platform using Python, PyTorch, and Docker, which improved benchmarking efficiency by 15% and supported parallel execution across 5+ academic test suites (e.g., MMLU, HumanEval)",
-        "Designed and deployed a fully automated CI/CD pipeline with GitHub Actions to enforce 95% unit test coverage, guaranteeing reproducible, production-ready builds for a system"
+        "Delivered an exec-worthy deck tied to business KPIs based on findings and action items",
+        "Optimized merchant marketing campaign efficacy by analyzing 40k sign-ups by diff-in-diff",
+        "Processed mobility metrics across 5 different verticals to diagnose weekly demand trends"
       ],
     },
     {
-      company: "Stealth Startup",
+      company: "Merdeka Copper Gold",
+      badges: [],
+      href: "#",
+      location: "Jakarta, Indonesia",
+      title: "Web Development Intern",
+      logoUrl: "/Merdeka Copper Gold.jpg",
+      start: "July 2024",
+      end: "August 2024",
+      bullets: [
+        "Created an online approval form workflow that sends updates and notices into inboxes",
+        "Reduced approval time by automating SQL-based data entry with database of 500 employees",
+        "Built login systems within a Laravel framework through PHP utilizing CRUD operations"
+      ],
+    },
+  ],
+  organizationalExperience: [
+    {
+      company: "The Chinese University of Hong Kong",
+      href: "https://www.cuhk.edu.hk",
+      badges: [],
+      location: "Hong Kong",
+      title: "Campus Recruitment Ambassador",
+      logoUrl: "/CUHK.png",
+      start: "September 2025",
+      end: "Present",
+      bullets: [
+        "More coming soon!"
+      ],
+    },
+    {
+      company: "Toastmasters International District 89",
+      href: "#",
+      badges: [],
+      location: "Hong Kong",
+      title: "Program Quality Officer",
+      logoUrl: "/Toastmasters.jpg",
+      start: "June 2025",
+      end: "Present",
+      bullets: [
+        "Collaborated with Program Quality Committee responsible for 64 clubs in GBA region",
+        "Led 4 outreach campaigns to promote District 89 programs and workshops",
+        "Worked on strategies to increase club membership and engagement in District 89 clubs"
+      ],
+    },
+    {
+      company: "Chung Chi College Toastmasters Club",
       badges: [],
       href: "#",
       location: "Hong Kong",
-      title: "Co-Founder & Machine Learning Engineer",
-      logoUrl: "/Stealth.jpeg",
-      start: "November 2024",
-      end: "Present",
-      bullets: [
-        "Building next-generation AI products in stealth mode. Details coming soon!",
-        "Leading the development of proprietary deep learning models and scalable infrastructure for confidential projects."
-      ],
-    },
-    {
-      company: "City University of Hong Kong",
-      href: "https://www.cityu.edu.hk",
-      badges: [],
-      location: "Hong Kong",
-      title: "Undergraduate Researcher",
-      logoUrl: "/cityuhk.jpg",
+      title: "Vice President of Public Relations",
+      logoUrl: "/Chung Chi.png",
       start: "September 2024",
-      end: "Present",
+      end: "May 2025",
       bullets: [
-        "Thesis: Hybrid ODE-Neural Network for Personalized Treatment Prediction",
-        "Engineered a multi-task deep learning model in Python and PyTorch as a computationally efficient surrogate for a complex 15-state ODE system, reducing prediction latency from hours to milliseconds",
-        "Designed the neural network (98% AUC, 91.7% accuracy) and developed an end-to-end MLOps pipeline for data generation (N=1,000), training, and validation, achieving an R² of 0.78 on regression tasks"
+        "Won 2nd place runner up award for Table Topics Area Competition",
+        "Hosted a storytelling and public speaking workshop to uplift foreign domestic workers",
+        "Contacted 200 potential guests to fill 30 total guest roles for club visitation",
+        "Collaborated with Executive Committee to increase number of memberships by 20%"
       ],
     },
   ],
   education: [
     {
-      school: "City University of Hong Kong",
-      href: "https://www.cityu.edu.hk",
-      degree: "Bachelor of Science in Computing Mathematics (GREAT Stream), Minor in Computer Science",
-      logoUrl: "/cityuhk.jpg",
+      school: "The Chinese University of Hong Kong",
+      href: "https://www.cuhk.edu.hk",
+      degree: "Bachelor of Science in Computer Science (specializing in AI), Minor in Business",
+      logoUrl: "/CUHK.png",
       start: "2023",
       end: "2027",
-    },
-    {
-      school: "University of California, Berkeley",
-      href: "https://berkeley.edu",
-      degree: "Exchange Student, Mathematics",
-      logoUrl: "/Berkeley.png",
-      start: "2024",
-      end: "2024",
-    },
-    {
-      school: "Pearson Edexcel A-Levels",
-      href: "https://qualifications.pearson.com",
-      degree: "4A* in Mathematics, Biology, Economics, Chinese\nReceived offers from HKU, CUHK, KCL and Manchester",
-      logoUrl: "/pearson.jpeg",
-      start: "2022",
-      end: "2023",
     },
   ],
   projects: [
     {
       title: "MEQ-Bench",
-      href: "https://github.com/heilcheng/MEQ-Bench",
+      href: "https://github.com/kentjhenly/MEQ-Bench",
       dates: "2024 - Present",
       active: true,
       description:
@@ -132,7 +149,7 @@ export const DATA = {
       links: [
         {
           type: "Source",
-          href: "https://github.com/heilcheng/MEQ-Bench",
+          href: "https://github.com/kentjhenly/MEQ-Bench",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -141,7 +158,7 @@ export const DATA = {
     },
     {
       title: "Gemma Benchmark Suite",
-      href: "https://github.com/heilcheng/gemma-benchmark",
+      href: "https://github.com/kentjhenly/gemma-benchmark",
       dates: "2024 - Present",
       active: true,
       description:
@@ -155,7 +172,7 @@ export const DATA = {
       links: [
         {
           type: "Source",
-          href: "https://github.com/heilcheng/gemma-benchmark",
+          href: "https://github.com/kentjhenly/gemma-benchmark",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -164,7 +181,7 @@ export const DATA = {
     },
     {
       title: "DeepChem Drug Formulation Tutorial",
-      href: "https://github.com/heilcheng/deepchem-drug-formulation",
+      href: "https://github.com/kentjhenly/deepchem-drug-formulation",
       dates: "2024 - Present",
       active: true,
       description:
@@ -178,7 +195,7 @@ export const DATA = {
       links: [
         {
           type: "Source",
-          href: "https://github.com/heilcheng/deepchem-drug-formulation",
+          href: "https://github.com/kentjhenly/deepchem-drug-formulation",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -187,7 +204,7 @@ export const DATA = {
     },
     {
       title: "Truth or Dare (Cantonese)",
-      href: "https://github.com/heilcheng/Truth-or-Dare-Canto",
+      href: "https://github.com/kentjhenly/Truth-or-Dare-Canto",
       dates: "2024 - Present",
       active: true,
       description:
@@ -201,7 +218,7 @@ export const DATA = {
       links: [
         {
           type: "Source",
-          href: "https://github.com/heilcheng/Truth-or-Dare-Canto",
+          href: "https://github.com/kentjhenly/Truth-or-Dare-Canto",
           icon: <Icons.github className="size-3" />,
         },
       ],
@@ -209,86 +226,192 @@ export const DATA = {
       video: "",
     },
   ],
-  books: [
-    {
-      theme: "Political Philosophy & Social Theory",
-      books: [
-        {
-          title: "The Social Contract",
-          author: "Jean-Jacques Rousseau",
-          number: 1,
-        },
-        {
-          title: "On Liberty",
-          author: "John Stuart Mill",
-          number: 2,
-        },
-        {
-          title: "Distinction: A Social Critique of the Judgement of Taste",
-          author: "Pierre Bourdieu",
-          number: 3,
-        },
-        {
-          title: "The Spirit of the Laws",
-          author: "Montesquieu",
-          number: 4,
-        },
-      ],
-    },
-    {
-      theme: "Contemporary Philosophy",
-      books: [
-        {
-          title: "Agonie des Eros",
-          author: "Byung-Chul Han",
-          number: 5,
-        },
-        {
-          title: "Thus Spoke Zarathustra",
-          author: "Friedrich Nietzsche",
-          number: 6,
-        },
-      ],
-    },
-    {
-      theme: "History & Global Affairs",
-      books: [
-        {
-          title: "A Concise History of Hong Kong",
-          author: "John M. Carroll",
-          number: 7,
-        },
-        {
-          title: "Understanding Global Conflict and Cooperation",
-          author: "David A. Welch and Joseph S. Nye, Jr.",
-          number: 8,
-        },
-      ],
-    },
-    {
-      theme: "Digital Life & Privacy",
-      books: [
-        {
-          title: "The Art of Invisibility",
-          author: "Kevin Mitnick",
-          number: 9,
-        },
-        {
-          title: "Digital Minimalism",
-          author: "Cal Newport",
-          number: 10,
-        },
-      ],
-    },
-    {
-      theme: "Memoir & Personal Reflections",
-      books: [
-        {
-          title: "The Watching Brief",
-          author: "Margaret Ng Ngoi Yee",
-          number: 11,
-        },
-      ],
-    },
-  ],
+  entertainment: {
+    movies: [
+      {
+        title: "Arrival",
+        creator: "Denis Villeneuve",
+        year: "2016",
+        number: 1,
+      },
+      {
+        title: "Everything Everywhere All at Once",
+        creator: "Daniels",
+        year: "2022",
+        number: 2,
+      },
+      {
+        title: "Sore: Wife from the Future",
+        creator: "Yandy Laurens",
+        year: "2024",
+        number: 3,
+      },
+      {
+        title: "Falling in Love Like in Movies",
+        creator: "Yandy Laurens",
+        year: "2024",
+        number: 4,
+      },
+      {
+        title: "How to Make Millions Before Grandma Dies",
+        creator: "Pat Boonnitipat",
+        year: "2024",
+        number: 5,
+      },
+      {
+        title: "Parasite",
+        creator: "Bong Joon-ho",
+        year: "2019",
+        number: 6,
+      },
+      {
+        title: "Chungking Express",
+        creator: "Wong Kar-wai",
+        year: "1994",
+        number: 7,
+      },
+      {
+        title: "Perfect Days",
+        creator: "Wim Wenders",
+        year: "2023",
+        number: 8,
+      },
+      {
+        title: "Conclave",
+        creator: "Edward Berger",
+        year: "2024",
+        number: 9,
+      },
+      {
+        title: "Look Back",
+        creator: "Kiyotaka Oshiyama",
+        year: "2024",
+        number: 10,
+      },
+    ],
+    shows: [
+      {
+        title: "Severance",
+        creator: "Dan Erickson",
+        year: "2022",
+        number: 1,
+      },
+      {
+        title: "The Rehearsal",
+        creator: "Nathan Fielder",
+        year: "2022",
+        number: 2,
+      },
+      {
+        title: "The Good Place",
+        creator: "Michael Schur",
+        year: "2016-2020",
+        number: 3,
+      },
+      {
+        title: "Succession",
+        creator: "Jesse Armstrong",
+        year: "2018-2023",
+        number: 4,
+      },
+      {
+        title: "Avatar: The Last Airbender",
+        creator: "Michael Dante DiMartino & Bryan Konietzko",
+        year: "2005-2008",
+        number: 5,
+      },
+      {
+        title: "Delicious in Dungeon",
+        creator: "Ryōko Kui",
+        year: "2024",
+        number: 6,
+      },
+      {
+        title: "Signal",
+        creator: "Kim Eun-hee",
+        year: "2016",
+        number: 7,
+      },
+      {
+        title: "Nichijou",
+        creator: "Keiichi Arawi",
+        year: "2011-2012",
+        number: 8,
+      },
+      {
+        title: "Smiling Friends",
+        creator: "Michael Cusack & Zach Hadel",
+        year: "2020",
+        number: 9,
+      },
+      {
+        title: "The Amazing World of Gumball",
+        creator: "Ben Bocquelet",
+        year: "2011-2019",
+        number: 10,
+      },
+    ],
+    music: [
+      {
+        title: "To Pimp a Butterfly",
+        creator: "Kendrick Lamar",
+        year: "2015",
+        number: 1,
+      },
+      {
+        title: "OK Computer",
+        creator: "Radiohead",
+        year: "1997",
+        number: 2,
+      },
+      {
+        title: "Blonde",
+        creator: "Frank Ocean",
+        year: "2016",
+        number: 3,
+      },
+      {
+        title: "Random Access Memories",
+        creator: "Daft Punk",
+        year: "2013",
+        number: 4,
+      },
+      {
+        title: "Currents",
+        creator: "Tame Impala",
+        year: "2015",
+        number: 5,
+      },
+      {
+        title: "My Beautiful Dark Twisted Fantasy",
+        creator: "Kanye West",
+        year: "2010",
+        number: 6,
+      },
+      {
+        title: "Channel Orange",
+        creator: "Frank Ocean",
+        year: "2012",
+        number: 7,
+      },
+      {
+        title: "Discovery",
+        creator: "Daft Punk",
+        year: "2001",
+        number: 8,
+      },
+      {
+        title: "In Rainbows",
+        creator: "Radiohead",
+        year: "2007",
+        number: 9,
+      },
+      {
+        title: "good kid, m.A.A.d city",
+        creator: "Kendrick Lamar",
+        year: "2012",
+        number: 10,
+      },
+    ],
+  },
 } as const;

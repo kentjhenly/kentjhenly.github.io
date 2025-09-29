@@ -8,14 +8,14 @@ import { ChevronRight, ChevronDown } from "lucide-react";
 // Define the sections of your page
 const SECTIONS = [
   { id: "hero", label: "Home" },
-  { id: "rubiks-cube", label: "Rubik's Cube" },
   { id: "about", label: "About" },
-  { id: "work", label: "Work" },
+  { id: "work", label: "Technical Experience" },
+  { id: "organizational", label: "Organizational Experience" },
   { id: "education", label: "Education" },
-  { id: "projects", label: "Projects" },
-  { id: "books", label: "Books" },
-  { id: "hong-kong", label: "Hong Kong" },
-  { id: "world", label: "World" },
+  { id: "tech-stack", label: "Tech Stack" },
+  { id: "media-favorites", label: "Media" },
+  { id: "locations", label: "Best Spots" },
+  { id: "world", label: "World Map" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -29,7 +29,7 @@ export function TableOfContents() {
   const handleNextSection = () => {
     if (hasViewedAllSections) {
       // Redirect to GitHub
-      window.open('https://github.com/heilcheng', '_blank');
+      window.open('https://github.com/kentjhenly', '_blank');
       return;
     }
 
@@ -73,7 +73,29 @@ export function TableOfContents() {
       }
     });
 
-    // Clean up the observer on component unmount
+    // Add scroll listener to handle top and bottom of page
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // If at the very top of the page, activate hero section
+      if (scrollTop < 100) {
+        setActiveSection('hero');
+        setCurrentSectionIndex(0);
+        setHasViewedAllSections(false);
+      }
+      // If at the bottom of the page, activate contact section
+      else if (scrollTop + windowHeight >= documentHeight - 100) {
+        setActiveSection('contact');
+        setCurrentSectionIndex(SECTIONS.length - 1);
+        setHasViewedAllSections(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up the observer and scroll listener on component unmount
     return () => {
       SECTIONS.forEach((section) => {
         const el = document.getElementById(section.id);
@@ -81,14 +103,21 @@ export function TableOfContents() {
           observer.current?.unobserve(el);
         }
       });
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const element = document.getElementById(id);
+    if (element) {
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - 75; // Offset by 75px from the top
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
     setIsMobileMenuOpen(false); // Close mobile menu on navigation
   };
 

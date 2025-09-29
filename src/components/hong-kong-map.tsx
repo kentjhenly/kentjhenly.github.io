@@ -3,88 +3,66 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import Image from "next/image";
 import BlurFade from "./magicui/blur-fade";
 
 interface HongKongMapProps {
   delay?: number;
 }
 
-// Location data remains the same
+// Location data for Hong Kong spots
 const locations = {
-  "Tai Mo Shan": {
-    name: "Tai Mo Shan (大帽山)",
-    description: "Camping on December 31st to wait for the sunrise",
-    coordinates: [22.4197, 114.1175], // Lat, Lon for Leaflet
-    type: "nature"
+  "CUHK": {
+    name: "The Chinese University of Hong Kong (香港中文大學)",
+    description: "My university campus",
+    coordinates: [22.4197, 114.2075],
+    type: "education"
   },
-  "Tiu Chung Chau": {
-    name: "Tiu Chung Chau (吊鐘洲)",
-    description: "Kayaking spot (northeast, near Sai Kung; not Cheung Chau)",
-    coordinates: [22.348, 114.36], // Corrected coordinates for better placement
-    type: "nature"
+  "Kowloon Walled City Park": {
+    name: "Kowloon Walled City Park (九龍寨城公園)",
+    description: "Historic park with traditional Chinese architecture",
+    coordinates: [22.3319, 114.1914],
+    type: "culture"
   },
-  "Tai Tong": {
-    name: "Tai Tong Sweet Gum Woods (大棠紅葉楓香林)",
-    description: "Hiking with beautiful autumn leaves",
-    coordinates: [22.421, 114.019], // Corrected coordinates
-    type: "nature"
-  },
-  "Thousand Island Lake": {
-    name: "Thousand Island Lake (千島湖)",
-    description: "Hiking destination (near Tai Lam Chung Reservoir)",
-    coordinates: [22.37, 114.03], // Corrected coordinates
-    type: "nature"
-  },
-  "Braemar Hill": {
-    name: "Braemar Hill (寶馬山)",
-    description: "Night hiking with city views",
-    coordinates: [22.2822, 114.2006],
-    type: "nature"
-  },
-  "West Kowloon": {
-    name: "West Kowloon (西九龍)",
-    description: "Picnicking by the harbor",
-    coordinates: [22.3045, 114.1588],
+  "Cheung Sha Wan": {
+    name: "Cheung Sha Wan (長沙灣)",
+    description: "Local neighborhood with authentic Hong Kong vibes",
+    coordinates: [22.3381, 114.1556],
     type: "urban"
   },
-  "Admiralty": {
-    name: "Admiralty (金鐘)",
-    description: "Start of city walk",
-    coordinates: [22.2797, 114.1655],
+  "Sham Shui Po": {
+    name: "Sham Shui Po (深水埗)",
+    description: "Electronics market and local street food",
+    coordinates: [22.3308, 114.1583],
+    type: "urban"
+  },
+  "Mong Kok": {
+    name: "Mong Kok (旺角)",
+    description: "Bustling shopping and entertainment district",
+    coordinates: [22.3197, 114.1697],
+    type: "urban"
+  },
+  "Tsim Sha Tsui": {
+    name: "Tsim Sha Tsui (尖沙咀)",
+    description: "Harbor views and cultural attractions",
+    coordinates: [22.2972, 114.1719],
+    type: "urban"
+  },
+  "Kennedy Town": {
+    name: "Kennedy Town (堅尼地城)",
+    description: "Western district with waterfront dining",
+    coordinates: [22.2819, 114.1250],
     type: "urban"
   },
   "Causeway Bay": {
     name: "Causeway Bay (銅鑼灣)",
-    description: "End of city walk",
+    description: "Major shopping and entertainment hub",
     coordinates: [22.2806, 114.1860],
     type: "urban"
-  },
-  "SoHo": {
-    name: "SoHo",
-    description: "Bar Leone - Asia's Best Bar 2024",
-    coordinates: [22.2819, 114.1511],
-    type: "urban"
-  },
-  "Sai Kung": {
-    name: "Sai Kung (西貢)",
-    description: "Squid fishing",
-    coordinates: [22.3833, 114.2710],
-    type: "nature"
   }
 };
 
-// Custom icon definitions
-const natureIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const urbanIcon = new L.Icon({
+// Custom icon definition - single blue icon for all locations
+const blueIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
   iconSize: [25, 41],
@@ -146,7 +124,7 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   <Marker
                     key={key}
                     position={location.coordinates as [number, number]}
-                    icon={location.type === 'nature' ? natureIcon : urbanIcon}
+                    icon={blueIcon}
                   >
                     <Popup>
                       <span className="font-semibold">{location.name}</span>
@@ -156,28 +134,6 @@ export const HongKongMap = ({ delay = 0 }: HongKongMapProps) => {
                   </Marker>
                 ))}
               </MapContainer>
-            </div>
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <Image 
-                  src={natureIcon.options.iconUrl} 
-                  alt="Nature" 
-                  width={16} 
-                  height={16} 
-                  className="w-4 h-auto"
-                />
-                <span>Nature</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Image 
-                  src={urbanIcon.options.iconUrl} 
-                  alt="Urban" 
-                  width={16} 
-                  height={16} 
-                  className="w-4 h-auto"
-                />
-                <span>Urban</span>
-              </div>
             </div>
           </div>
         </div>
